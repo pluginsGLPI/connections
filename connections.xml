@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+   <name>Liaisons</name>
+   <key>connections</key>
+   <state>stable</state>
+  <logo></logo>
+   <description>
+      <short>
+         <fr><![CDATA[Ce plugin vous permet de créer des liaisons (ADSL, SDSL, ...).]]></fr>
+         <en><![CDATA[This plugin allows you to create connections (ADSL, SDSL, ...).]]></en>
+      </short>
+      <long>
+         <fr><![CDATA[Ce plugin vous permet de créer des liaisons (ADSL, SDSL, ...).]]></fr>
+         <en><![CDATA[This plugin allows you to create connections (ADSL, SDSL, ...).]]></en>
+      </long>
+   </description>
+   <homepage>https://forge.indepnet.net/projects/show/connections</homepage>
+   <download>https://forge.indepnet.net/projects/list_files/connections</download>
+   <authors>
+      <author>Damien BARON</author>
+   </authors>
+   <versions>
+      <version>
+          <num>1.5.0</num>
+          <compatibility>0.72</compatibility>
+      </version>
+   </versions>
+   <langs>
+      <lang>fr_FR</lang>
+   </langs>
+   <license>GPL v2+</license>
+   <tags>
+         <fr>
+            <tag>Réseau</tag>
+            <tag>connections</tag>
+         </fr>
+         <en>
+            <tag>Network</tag>
+            <tag>connections</tag>
+         </en>
+   </tags>
+</root>
