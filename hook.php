@@ -1,12 +1,12 @@
 <?php
 /*
- * @version $Id: hook.php 7355 2008-10-03 15:31:00Z moyo $
- ----------------------------------------------------------------------
+ * @version $Id: HEADER 1 2010-02-24 00:12 Tsmr $
+ -------------------------------------------------------------------------
  GLPI - Gestionnaire Libre de Parc Informatique
- Copynetwork (C) 2003-2006 by the INDEPNET Development Team.
+ Copyright (C) 2003-2010 by the INDEPNET Development Team.
 
- http://indepnet.net/   http://glpi-project.org/
- ----------------------------------------------------------------------
+ http://indepnet.net/   http://glpi-project.org
+ -------------------------------------------------------------------------
 
  LICENSE
 
@@ -25,595 +25,496 @@
  You should have received a copy of the GNU General Public License
  along with GLPI; if not, write to the Free Software
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- ------------------------------------------------------------------------
+ --------------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// Original Author of file: CAILLAUD Xavier
+// Purpose of file: plugin connections v1.3.0 - GLPI 0.78
+// ----------------------------------------------------------------------
  */
 
-// ----------------------------------------------------------------------
-// Original Author of file: DOMBRE Julien
-// Purpose of file:
-// ----------------------------------------------------------------------
+function plugin_connections_install() {
+   global $DB;
+   
+   include_once (GLPI_ROOT."/plugins/connections/inc/profile.class.php");
+   $update=false;
+   
+   if (!TableExists("glpi_plugin_connection") && !TableExists("glpi_plugin_connections_connections")) {
+      
+      $DB->runFile(GLPI_ROOT ."/plugins/connections/sql/empty-1.6.0.sql");
 
-foreach (glob(GLPI_ROOT . '/plugins/connections/inc/*.php') as $file)
-	include_once ($file);
+   } else if (TableExists("glpi_plugin_connection") && !FieldExists("glpi_plugin_connection","recursive")) {
+      
+      $update=true;
+      $DB->runFile(GLPI_ROOT ."/plugins/connections/sql/update-1.3.0.sql");
+      $DB->runFile(GLPI_ROOT ."/plugins/connections/sql/update-1.4.0.sql");
+      $DB->runFile(GLPI_ROOT ."/plugins/connections/sql/update-1.5.0.sql");
 
-function plugin_connections_install(){
-	global $DB, $LANG, $CFG_GLPI;
-		
-	include_once (GLPI_ROOT."/inc/profile.class.php");
-		
-	if(!TableExists("glpi_application") && !TableExists("glpi_plugin_connections") )
-	{
-		plugin_connections_installing("1.5.0");		
-	} elseif(!FieldExists("glpi_plugin_connections","recursive")) {		
-		plugin_connections_update("1.4");
-		plugin_connections_update("1.5.0");	
-	}elseif(TableExists("glpi_plugin_connections_profiles") && FieldExists("glpi_plugin_connections_profiles","interface")) {	
-		plugin_connections_update("1.5.0");		
-	}	
-	plugin_connections_createfirstaccess($_SESSION['glpiactiveprofile']['ID']);
-	return true;
+   } else if (TableExists("glpi_plugin_connection_profiles") && FieldExists("glpi_plugin_connection_profiles","interface")) {
+      
+      $update=true;
+      $DB->runFile(GLPI_ROOT ."/plugins/connections/sql/update-1.4.0.sql");
+      $DB->runFile(GLPI_ROOT ."/plugins/connections/sql/update-1.3.0.sql");
+
+   } else if (TableExists("glpi_plugin_connection") && !FieldExists("glpi_plugin_connection","helpdesk_visible")) {
+      
+      $update=true;
+      $DB->runFile(GLPI_ROOT ."/plugins/connections/sql/update-1.3.0.sql");
+      
+   }
+   
+
+   if ($update) {
+      $query_="SELECT *
+            FROM `glpi_plugin_connections_profiles` ";
+      $result_=$DB->query($query_);
+      if ($DB->numrows($result_)>0) {
+
+         while ($data=$DB->fetch_array($result_)) {
+            $query="UPDATE `glpi_plugin_connections_profiles`
+                  SET `profiles_id` = '".$data["id"]."'
+                  WHERE `id` = '".$data["id"]."';";
+            $result=$DB->query($query);
+
+         }
+      }
+      
+      $query="ALTER TABLE `glpi_plugin_connections_profiles`
+               DROP `name` ;";
+      $result=$DB->query($query);
+   
+      Plugin::migrateItemType(
+         array(4400=>'PluginConnectionsConnection'),
+         array("glpi_bookmarks", "glpi_bookmarks_users", "glpi_displaypreferences",
+               "glpi_documents_items", "glpi_infocoms", "glpi_logs", "glpi_tickets"),
+         array("glpi_plugin_connections_connections_items"));
+      
+      Plugin::migrateItemType(
+         array(1200 => "PluginAppliancesAppliance",1300 => "PluginWebapplicationsWebapplication"),
+         array("glpi_plugin_connections_connections_items"));
+	}
+	
+   PluginConnectionsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
+   return true;
 }
 
-function plugin_connections_uninstall(){
+function plugin_connections_uninstall() {
 	global $DB;
-	
-	$tables = array("glpi_plugin_connections",
-					"glpi_dropdown_plugin_connections_type",
+
+	$tables = array("glpi_plugin_connections_connections",
+					"glpi_plugin_connections_connections_items",
+					"glpi_plugin_connections_connectiontypes",
+					"glpi_plugin_connections_connectionrates",
+					"glpi_plugin_connections_connectionratesguaranteed",
 					"glpi_plugin_connections_profiles",
-					"glpi_plugin_connections_device");
-					
-	foreach($tables as $table)				
-		$DB->query("DROP TABLE `$table`;");
-		
-	$query="DELETE FROM glpi_display WHERE type='".PLUGIN_CONNECTIONS_TYPE."';";
-	$DB->query($query) or die($DB->error());
-	
-	$query="DELETE FROM glpi_doc_device WHERE device_type='".PLUGIN_CONNECTIONS_TYPE."';";
-	$DB->query($query) or die($DB->error());
-	
-	$query="DELETE FROM glpi_bookmark WHERE device_type='".PLUGIN_CONNECTIONS_TYPE."';";
-	$DB->query($query) or die($DB->error());
-	
-	$query="DELETE FROM glpi_history WHERE device_type='".PLUGIN_CONNECTIONS_TYPE."';";
-	$DB->query($query) or die($DB->error());
-	
-	if (TableExists("glpi_plugin_data_injection_models"))
-		$DB->query("DELETE FROM glpi_plugin_data_injection_models, glpi_plugin_data_injection_mappings, glpi_plugin_data_injection_infos USING glpi_plugin_data_injection_models, glpi_plugin_data_injection_mappings, glpi_plugin_data_injection_infos
-		WHERE glpi_plugin_data_injection_models.device_type=".PLUGIN_CONNECTIONS_TYPE."
-		AND glpi_plugin_data_injection_mappings.model_id=glpi_plugin_data_injection_models.ID
-		AND glpi_plugin_data_injection_infos.model_id=glpi_plugin_data_injection_models.ID");
-	
-	plugin_init_connections();
-	cleanCache("GLPI_HEADER_".$_SESSION["glpiID"]);
+					"glpi_plugin_connections_notificationstates");
+
+	foreach($tables as $table)
+		$DB->query("DROP TABLE IF EXISTS `$table`;");
+   
+   //old versions	
+   $tables = array("glpi_plugin_connection",
+					"glpi_plugin_connection_device",
+					"glpi_dropdown_plugin_connections_type",
+					"glpi_plugin_connection_profiles",
+					"glpi_plugin_connection_mailing");
+
+	foreach($tables as $table)
+		$DB->query("DROP TABLE IF EXISTS `$table`;");
+
+   	
+   $tables_glpi = array("glpi_displaypreferences",
+					"glpi_documents_items",
+					"glpi_bookmarks",
+					"glpi_logs");
+
+	foreach($tables_glpi as $table_glpi)
+		$DB->query("DELETE FROM `$table_glpi` WHERE `itemtype` = 'PluginConnectionsConnection';");
+
+	if (class_exists('PluginDatainjectionModel')) {
+      PluginDatainjectionModel::clean(array('itemtype'=>'PluginConnectionsConnection'));
+   }
 
 	return true;
 }
+
+function plugin_connections_AssignToTicket($types) {
+	global $LANG;
+
+	if (plugin_connections_haveRight("open_ticket","1"))
+		$types['PluginConnectionsConnection']=$LANG['plugin_connections']['title'][1];
+	return $types;
+}
+
 
 // Define dropdown relations
-function plugin_connections_getDatabaseRelations(){
-	
+function plugin_connections_getDatabaseRelations() {
+
 	$plugin = new Plugin();
-	
+
 	if ($plugin->isActivated("connections"))
-		return array("glpi_dropdown_plugin_connections_type"=>array("glpi_plugin_connections"=>"type"),
-					 "glpi_entities"=>array("glpi_plugin_connections"=>"FK_entities",
-											"glpi_dropdown_plugin_connections_type"=>"FK_entities"));
+		return array("glpi_plugin_connections_connectiontypes"=>array("glpi_plugin_connections_connections"=>"plugin_connections_connectiontypes_id"),
+					"glpi_plugin_connections_connectionrates"=>array("glpi_plugin_connections_connections"=>"plugin_connections_connectionrates_id"),
+					"glpi_plugin_connections_connectionratesguaranteed"=>array("glpi_plugin_connections_connections"=>"plugin_connections_connectionratesguaranteed_id"),
+                     "glpi_users"=>array("glpi_plugin_connections_connections"=>"users_id"),
+                     "glpi_groups"=>array("glpi_plugin_connections_connections"=>"groups_id"),
+                     "glpi_suppliers"=>array("glpi_plugin_connections_connections"=>"glpi_suppliers"),
+                     "glpi_plugin_connections_connections"=>array("glpi_plugin_connections_connections_items"=>"plugin_connections_connections_id"),
+                     "glpi_profiles" => array ("glpi_plugin_badges_profiles" => "profiles_id"),
+                     "glpi_entities"=>array("glpi_plugin_connections_connections"=>"entities_id",
+												"glpi_plugin_connections_connectiontypes"=>"entities_id"));
 	else
 		return array();
 }
 
 // Define Dropdown tables to be manage in GLPI :
-function plugin_connections_getDropdown(){
-	// Table => Name
-	global $LANG;	
-	$plugin = new Plugin();	
+function plugin_connections_getDropdown() {
+	global $LANG;
+	
+	$plugin = new Plugin();
+
 	if ($plugin->isActivated("connections"))
-		return array("glpi_dropdown_plugin_connections_type"=>$LANG['plugin_connections']['setup'][2]);
+		return array('PluginConnectionsConnectionType'=>$LANG['plugin_connections']['setup'][2],
+					'PluginConnectionsConnectionRates'=>$LANG['plugin_connections']['setup'][3],
+					'PluginConnectionsConnectionRatesGuaranteed'=>$LANG['plugin_connections']['setup'][4]);
 	else
 		return array();
 }
 
-function plugin_item_delete_connections($parm){
-	
-	if (isset($parm["type"]))
-		switch ($parm["type"])
-		{
-			case TRACKING_TYPE :
-				$plugin_connections=new plugin_connections;
-				$plugin_connections->cleanItems($parm['ID'], $parm['type']);
-				return true;
-				break;
-		}
-		
-	return false;
-}
+////// SEARCH FUNCTIONS ///////() {
 
-// Define headings added by the plugin
-function plugin_get_headings_connections($type,$ID,$withtemplate){
+function plugin_connections_getAddSearchOptions($itemtype) {
 	global $LANG;
-	
-	if (in_array($type,plugin_connections_getTypes())||
-		$type==PROFILE_TYPE) {
-		// template case
-		if ($ID>0 && !$withtemplate){
-				return array(
-					1 => $LANG['plugin_connections'][1],
-					);
-		}
+    
+   $sopt=array();
+
+   if (in_array($itemtype, PluginConnectionsConnection_Item::getClasses(true))) {
+      if (plugin_connections_haveRight("connections","r")) {
+         $sopt[4410]['table']='glpi_plugin_connections_connections';
+         $sopt[4410]['field']='name';
+         $sopt[4410]['linkfield']='';
+         $sopt[4410]['name']=$LANG['plugin_connections']['title'][1]." - ".$LANG['plugin_connections'][7];
+         $sopt[4410]['forcegroupby']='1';
+         $sopt[4410]['datatype']='itemlink';
+         $sopt[4410]['itemlink_type']='PluginConnectionsConnection';
+
+         $sopt[4411]['table']='glpi_plugin_connections_connectiontypes';
+         $sopt[4411]['field']='name';
+         $sopt[4411]['linkfield']='';
+         $sopt[4411]['name']=$LANG['plugin_connections']['title'][1]." - ".$LANG['plugin_connections'][12];
+         $sopt[4411]['forcegroupby']='1';
+	 
+         $sopt[4412]['table']='glpi_plugin_connections_connectionrates';
+         $sopt[4412]['field']='name';
+         $sopt[4412]['linkfield']='';
+         $sopt[4412]['name']=$LANG['plugin_connections']['title'][1]." - ".$LANG['plugin_connections'][12];
+         $sopt[4412]['forcegroupby']='1';
+
+         $sopt[4413]['table']='glpi_plugin_connections_connectionratesguaranteed';
+         $sopt[4413]['field']='name';
+         $sopt[4413]['linkfield']='';
+         $sopt[4413]['name']=$LANG['plugin_connections']['title'][1]." - ".$LANG['plugin_connections'][12];
+         $sopt[4413]['forcegroupby']='1';
+
+      }
 	}
-	
-	return false;
-}
-
-// Define headings actions added by the plugin	 
-function plugin_headings_actions_connections($type){
-		
-	if (in_array($type,plugin_connections_getTypes())||
-		$type==PROFILE_TYPE) {
-		return array(
-			1 => "plugin_headings_connections",
-		);
-	}
-	return false;
-	
-}
-
-// action heading
-function plugin_headings_connections($type,$ID,$withtemplate=0){
-	global $CFG_GLPI;
-	
-	switch ($type){
-			case PROFILE_TYPE :
-				$prof=new plugin_connections_Profile();	
-				if (!$prof->GetfromDB($ID))
-					plugin_connections_createaccess($ID);
-				$prof->showForm($CFG_GLPI["root_doc"]."/plugins/connections/front/plugin_connections.profile.php",$ID);
-				break;
-			default :
-				if (in_array($type, plugin_connections_getTypes())){
-					echo "<div align='center'>";
-					echo plugin_connections_showAssociated($type,$ID,$withtemplate);
-					echo "</div>";
-				}
-			break;
-		}
-}
-
-// Hook done on delete item case
-function plugin_pre_item_delete_connections($input){
-	if (isset($input["_item_type_"]))
-		switch ($input["_item_type_"]){
-			case PROFILE_TYPE :
-				// Manipulate data if needed 
-				$plugin_connections_Profile=new plugin_connections_Profile;
-				$plugin_connections_Profile->cleanProfiles($input["ID"]);
-				break;
-		}
-	return $input;
-}
-
-// Hook done on purge item case
-function plugin_item_purge_connections($parm){
-		
-	if (in_array($parm["type"], plugin_connections_getTypes())
-		&& $parm["type"]!=TRACKING_TYPE) {
-		$plugin_connections=new plugin_connections;
-		$plugin_connections->cleanItems($parm["ID"],$parm["type"]);
-		return true;
-	}else
-		return false;
-	
-}
-
-
-////// SEARCH FUNCTIONS ///////(){
-
-// Define search option for types of the plugins
-function plugin_connections_getSearchOption(){
-	global $LANG;
-	$sopt=array();
-	if (plugin_connections_haveRight("connections","r")){
-		// Part header
-		$sopt[PLUGIN_CONNECTIONS_TYPE]['common']=$LANG['plugin_connections'][1];
-		
-		$sopt[PLUGIN_CONNECTIONS_TYPE][1]['table']='glpi_plugin_connections';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][1]['field']='name';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][1]['linkfield']='name';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][1]['name']=$LANG['plugin_connections'][8];
-		$sopt[PLUGIN_CONNECTIONS_TYPE][1]['datatype']='itemlink';
-		
-		$sopt[PLUGIN_CONNECTIONS_TYPE][2]['table']='glpi_dropdown_plugin_connections_type';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][2]['field']='name';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][2]['linkfield']='type';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][2]['name']=$LANG['plugin_connections'][20];
-		
-		$sopt[PLUGIN_CONNECTIONS_TYPE][3]['table']='glpi_plugin_connections';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][3]['field']='bytes';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][3]['linkfield']='bytes';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][3]['name']=$LANG['plugin_connections'][11];
-	
-		$sopt[PLUGIN_CONNECTIONS_TYPE][4]['table']='glpi_dropdown_locations';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][4]['field']='completename';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][4]['linkfield']='location';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][4]['name']=$LANG['plugin_connections'][2];
-		
-		$sopt[PLUGIN_CONNECTIONS_TYPE][5]['table']='glpi_dropdown_state';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][5]['field']='name';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][5]['linkfield']='state';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][5]['name']=$LANG['plugin_connections'][28];
-		
-		$sopt[PLUGIN_CONNECTIONS_TYPE][6]['table']='glpi_plugin_connections';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][6]['field']='comments';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][6]['linkfield']='comments';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][6]['name']=$LANG['plugin_connections'][12];
-		$sopt[PLUGIN_CONNECTIONS_TYPE][6]['datatype']='text';
-		
-		$sopt[PLUGIN_CONNECTIONS_TYPE][7]['table']='glpi_plugin_connections_device';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][7]['field']='FK_device';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][7]['linkfield']='';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][7]['name']=$LANG['plugin_connections'][7];
-		$sopt[PLUGIN_CONNECTIONS_TYPE][7]['forcegroupby']=true;
-		
-		$sopt[PLUGIN_CONNECTIONS_TYPE][10]['table']='glpi_plugin_connections';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][10]['field']='recursive';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][10]['linkfield']='recursive';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][10]['name']=$LANG["entity"][9];
-		$sopt[PLUGIN_CONNECTIONS_TYPE][10]['datatype']='bool';
-		
-		$sopt[PLUGIN_CONNECTIONS_TYPE][30]['table']='glpi_plugin_connections';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][30]['field']='ID';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][30]['linkfield']='';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][30]['name']=$LANG["common"][2];
-		
-		$sopt[PLUGIN_CONNECTIONS_TYPE][80]['table']='glpi_entities';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][80]['field']='completename';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][80]['linkfield']='FK_entities';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][80]['name']=$LANG["entity"][0];
-		
-		/*$sopt[PLUGIN_CONNECTIONS_TYPE]['tracking']=$LANG['title'][24];
-
-		$sopt[PLUGIN_CONNECTIONS_TYPE][60]['table']='glpi_tracking';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][60]['field']='count';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][60]['linkfield']='';
-		$sopt[PLUGIN_CONNECTIONS_TYPE][60]['name']=$LANG['stats'][13];
-		$sopt[PLUGIN_CONNECTIONS_TYPE][60]['forcegroupby']=true;
-		$sopt[PLUGIN_CONNECTIONS_TYPE][60]['usehaving']=true;
-		$sopt[PLUGIN_CONNECTIONS_TYPE][60]['datatype']='number';*/
-		
-		$sopt[NETWORKING_TYPE][2710]['table']='glpi_plugin_connections';
-		$sopt[NETWORKING_TYPE][2710]['field']='name';
-		$sopt[NETWORKING_TYPE][2710]['linkfield']='';
-		$sopt[NETWORKING_TYPE][2710]['name']=$LANG['plugin_connections'][1]." - ".$LANG['plugin_connections'][8];
-		$sopt[NETWORKING_TYPE][2710]['forcegroupby']='1';
-		$sopt[NETWORKING_TYPE][2710]['datatype']='itemlink';
-		$sopt[NETWORKING_TYPE][2710]['itemlink_type']=PLUGIN_CONNECTIONS_TYPE;
-		
-		$sopt[NETWORKING_TYPE][2711]['table']='glpi_dropdown_plugin_connections_type';
-		$sopt[NETWORKING_TYPE][2711]['field']='name';
-		$sopt[NETWORKING_TYPE][2711]['linkfield']='';
-		$sopt[NETWORKING_TYPE][2711]['name']=$LANG['plugin_connections'][1]." - ".$LANG['plugin_connections'][20];
-	}	
 	return $sopt;
 }
 
-//for search
-function plugin_connections_addLeftJoin($type,$ref_table,$new_table,$linkfield,&$already_link_tables){
+function plugin_connections_addLeftJoin($type,$ref_table,$new_table,$linkfield,&$already_link_tables)  {
 
-	switch ($new_table){
-		
-		case "glpi_plugin_connections_device" : //from appweb list
-			return " LEFT JOIN $new_table ON ($ref_table.ID = $new_table.FK_connection) ";
+	switch ($new_table) {
+
+		case "glpi_plugin_connections_connections_items" :
+			return " LEFT JOIN `$new_table` ON (`$ref_table`.`id` = `$new_table`.`plugin_connections_connections_id`) ";
 			break;
-		case "glpi_plugin_connections" : // From items
-			$out= " LEFT JOIN glpi_plugin_connections_device ON ($ref_table.ID = glpi_plugin_connections_device.FK_device AND glpi_plugin_connections_device.device_type=$type) ";
-			$out.= " LEFT JOIN glpi_plugin_connections ON (glpi_plugin_connections.ID = glpi_plugin_connections_device.FK_connection) ";
+		case "glpi_plugin_connections_connections" : // From items
+			$out= " LEFT JOIN `glpi_plugin_connections_connections_items` ON (`$ref_table`.`id` = `glpi_plugin_connections_connections_items`.`items_id` AND `glpi_plugin_connections_connections_items`.`itemtype` = '$type') ";
+			$out.= " LEFT JOIN `glpi_plugin_connections_connections` ON (`glpi_plugin_connections_connections`.`id` = `glpi_plugin_connections_connections_items`.`plugin_connections_connections_id`) ";
 			return $out;
 			break;
-		case "glpi_dropdown_plugin_connections_type" : // From items
-			$out=addLeftJoin($type,$ref_table,$already_link_tables,"glpi_plugin_connections",$linkfield);
-			$out.= " LEFT JOIN glpi_dropdown_plugin_connections_type ON (glpi_dropdown_plugin_connections_type.ID = glpi_plugin_connections.type) ";
+		case "glpi_plugin_connections_connectiontypes" : // From items
+			$out=Search::addLeftJoin($type,$ref_table,$already_link_tables,"glpi_plugin_connections_connections",$linkfield);
+			$out.= " LEFT JOIN `glpi_plugin_connections_connectiontypes` ON (`glpi_plugin_connections_connectiontypes`.`id` = `glpi_plugin_connections_connections`.`plugin_connections_connectiontypes_id`) ";
+			return $out;
+		case "glpi_plugin_connections_connectionrates" : // From items
+			$out=Search::addLeftJoin($type,$ref_table,$already_link_tables,"glpi_plugin_connections_connections",$linkfield);
+			$out.= " LEFT JOIN `glpi_plugin_connections_connectionrates` ON (`glpi_plugin_connections_connectionrates`.`id` = `glpi_plugin_connections_connections`.`plugin_connections_connectionrates_id`) ";
+			return $out;
+		case "glpi_plugin_connections_connectionratesguaranteed" : // From items
+			$out=Search::addLeftJoin($type,$ref_table,$already_link_tables,"glpi_plugin_connections_connections",$linkfield);
+			$out.= " LEFT JOIN `glpi_plugin_connections_connectionratesguaranteed` ON (`glpi_plugin_connections_connectionratesguaranteed`.`id` = `glpi_plugin_connections_connections`.`plugin_connections_connectionratesguaranteed_id`) ";
 			return $out;
 			break;
 	}
-	
+
 	return "";
 }
 
-//force groupby for multible links to items
-function plugin_connections_forceGroupBy($type){
+function plugin_connections_forceGroupBy($type) {
 
-	return true;					// ????????
-	switch ($type){
-		case PLUGIN_CONNECTIONS_TYPE:
+	return true;
+	switch ($type) {
+		case 'PluginConnectionsConnection':
 			return true;
 			break;
-		
+
 	}
 	return false;
 }
 
+function plugin_connections_giveItem($type,$ID,$data,$num) {
+	global $CFG_GLPI, $DB, $LANG;
 
-function plugin_connections_giveItem($type,$ID,$data,$num){
-	global $CFG_GLPI, $INFOFORM_PAGES, $LANG,$SEARCH_OPTION,$LINK_ID_TABLE,$DB;
+	$searchopt=&Search::getOptions($type);
+	$table=$searchopt[$ID]["table"];
+	$field=$searchopt[$ID]["field"];
 
-	$table=$SEARCH_OPTION[$type][$ID]["table"];
-	$field=$SEARCH_OPTION[$type][$ID]["field"];
-	
-	switch ($table.'.'.$field){	
-		case "glpi_plugin_connections_device.FK_device" :
-			$query_device = "SELECT DISTINCT device_type FROM glpi_plugin_connections_device WHERE FK_connection = '".$data['ID']."' ORDER BY device_type";
+	switch ($table.'.'.$field) {
+		case "glpi_plugin_connections_connections_items.items_id" :
+			$query_device = "SELECT DISTINCT `itemtype`
+							FROM `glpi_plugin_connections_connections_items`
+							WHERE `plugin_connections_connections_id` = '".$data['id']."'
+							ORDER BY `itemtype`";
 			$result_device = $DB->query($query_device);
 			$number_device = $DB->numrows($result_device);
-			$y = 0;
 			$out='';
-			$connection=$data['ID'];
-			if ($number_device>0){
-				$ci=new CommonItem();
-				while ($y < $number_device) {
-					$column="name";
-					if ($type==TRACKING_TYPE) $column="ID";
-					$type=$DB->result($result_device, $y, "device_type");
-					if (!empty($LINK_ID_TABLE[$type])){
-						$query = "SELECT ".$LINK_ID_TABLE[$type].".*, glpi_plugin_connections_device.ID AS IDD, glpi_entities.ID AS entity "
-						." FROM glpi_plugin_connections_device, ".$LINK_ID_TABLE[$type]
-						." LEFT JOIN glpi_entities ON (glpi_entities.ID=".$LINK_ID_TABLE[$type].".FK_entities) "
-						." WHERE ".$LINK_ID_TABLE[$type].".ID = glpi_plugin_connections_device.FK_device  AND glpi_plugin_connections_device.device_type='$type' AND glpi_plugin_connections_device.FK_connection = '".$connection."' "
-						. getEntitiesRestrictRequest(" AND ",$LINK_ID_TABLE[$type],'','',isset($CFG_GLPI["recursive_type"][$type])); 
-	
-						if (in_array($LINK_ID_TABLE[$type],$CFG_GLPI["template_tables"])){
-							$query.=" AND ".$LINK_ID_TABLE[$type].".is_template='0'";
-					}
-					$query.=" ORDER BY glpi_entities.completename, ".$LINK_ID_TABLE[$type].".$column";
+			$connections=$data['id'];
+			if ($number_device>0) {
+				for ($i=0 ; $i < $number_device ; $i++) {
+					$column = "name";
+					$itemtype = $DB->result($result_device, $i, "itemtype");
 					
-					if ($result_linked=$DB->query($query))
-						if ($DB->numrows($result_linked)){
-							$ci->setType($type);
-							while ($data=$DB->fetch_assoc($result_linked)){
-								$out.=$ci->getType()." - ";
-								$ID="";
-								if($_SESSION["glpiview_ID"]||empty($data["name"])) $ID= " (".$data["ID"].")";
-								$name= "<a href=\"".$CFG_GLPI["root_doc"]."/".$INFOFORM_PAGES[$type]."?ID=".$data["ID"]."\">"
-								.$data["name"]."$ID</a>";
-								$out.=$name."<br>";
-								
-							}
-						}else
-							$out=' ';
-					}else
-						$out=' ';
-					$y++;
+					if (!class_exists($itemtype)) {
+                  continue;
+               }
+					$item = new $itemtype();
+					if ($item->canView()) {
+                  $table_item = getTableForItemType($itemtype);
+						$query = "SELECT `".$table_item."`.*, `glpi_entities`.`ID` AS entity "
+						." FROM `glpi_plugin_connections_connections_items`, `".$table_item
+						."` LEFT JOIN `glpi_entities` ON (`glpi_entities`.`id` = `".$table_item."`.`entities_id`) "
+						." WHERE `".$table_item."`.`id` = `glpi_plugin_connections_connections_items`.`items_id`
+						AND `glpi_plugin_connections_connections_items`.`itemtype` = '$itemtype'
+						AND `glpi_plugin_connections_connections_items`.`plugin_connections_connections_id` = '".$connections."' "
+						. getEntitiesRestrictRequest(" AND ",$table_item,'','',$item->maybeRecursive());
+
+						if ($item->maybeTemplate()) {
+							$query.=" AND `".$table_item."`.`is_template` = '0'";
+						}
+						$query.=" ORDER BY `glpi_entities`.`completename`, `".$table_item."`.`$column`";
+
+						if ($result_linked=$DB->query($query))
+							if ($DB->numrows($result_linked)) {
+								$item = new $itemtype();
+								while ($data = $DB->fetch_assoc($result_linked)) {
+                           if ($item->getFromDB($data['id'])) {
+                              $out .= $item->getTypeName()." - ".$item->getLink()."<br>";
+                           }
+								}
+							} else
+								$out.= ' ';
+						} else
+							$out.=' ';
 				}
-			}else
-				$out=' ';
-		return $out;
-		break;		
+			}
+         return $out;
+         break;
 	}
 	return "";
 }
-
 
 ////// SPECIFIC MODIF MASSIVE FUNCTIONS ///////
 
-function plugin_connections_MassiveActions($type){
+function plugin_connections_MassiveActions($type) {
 	global $LANG;
-
-	switch ($type){
-		case PLUGIN_CONNECTIONS_TYPE:
+	
+	switch ($type) {
+		case 'PluginConnectionsConnection':
 			return array(
-				// GLPI core one
-				"add_document"=>$LANG['document'][16],
-				// association with glpi items
-				"plugin_connections_install"=>$LANG['plugin_connections']['setup'][9],	
+				// Specific one
+				"plugin_connections_install"=>$LANG['plugin_connections']['setup'][9],
 				"plugin_connections_desinstall"=>$LANG['plugin_connections']['setup'][10],
-				//tranfer connections to another entity
 				"plugin_connections_transfert"=>$LANG['buttons'][48],
 				);
-			break;
-		default:
-			//adding connections from items lists
-			if (in_array($type, plugin_connections_getTypes())) {
-				return array("plugin_connections_add_item"=>$LANG['plugin_connections']['setup'][19]);
-			}
-			break;
-	}	
+         break;
+	}
+	if (in_array($type, PluginConnectionsConnection_Item::getClasses(true))) {
+			return array("plugin_connections_add_item"=>$LANG['plugin_connections']['setup'][18]);
+		}
 	return array();
 }
 
-function plugin_connections_MassiveActionsDisplay($type,$action){
-	global $LANG,$CFG_GLPI;
+function plugin_connections_MassiveActionsDisplay($options=array()) {
+	global $LANG;
+	
+	$PluginConnectionsConnection=new PluginConnectionsConnection();
 
-	switch ($type){		
-		case PLUGIN_CONNECTIONS_TYPE:
-			switch ($action){
-				
+	switch ($options['itemtype']) {
+		case 'PluginConnectionsConnection':
+			switch ($options['action']) {
 				// No case for add_document : use GLPI core one
 				case "plugin_connections_install":
-					dropdownAllItems("item_item",0,0,-1,plugin_connections_getTypes());
+					Dropdown::showAllItems("item_item",0,0,-1,PluginConnectionsConnection_Item::getClasses(true));
 					echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG['buttons'][2]."\" >";
-				break;
+               break;
 				case "plugin_connections_desinstall":
-					dropdownAllItems("item_item",0,0,-1,plugin_connections_getTypes());
-				echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG['buttons'][2]."\" >";
-				break;
+					Dropdown::showAllItems("item_item",0,0,-1,PluginConnectionsConnection_Item::getClasses(true));
+               echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG['buttons'][2]."\" >";
+               break;
 				case "plugin_connections_transfert":
-					dropdownValue("glpi_entities", "FK_entities", '');
-				echo "&nbsp;<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG['buttons'][2]."\" >";
-				break;
+					Dropdown::show('Entity');
+               echo "&nbsp;<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG['buttons'][2]."\" >";
+               break;
 			}
 		break;
 	}
-	if (in_array($type, plugin_connections_getTypes())) {
-				plugin_connections_dropdownconnections("conID");
-				echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG['buttons'][2]."\" >";
-		}
+	if (in_array($options['itemtype'], PluginConnectionsConnection_Item::getClasses(true))) {
+      $PluginConnectionsConnection->dropdownConnections("plugin_connections_connections_id");
+      echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"".$LANG['buttons'][2]."\" >";
+   }
 	return "";
 }
 
-function plugin_connections_MassiveActionsProcess($data){
-	global $LANG,$DB;
+function plugin_connections_MassiveActionsProcess($data) {
+   
+   $PluginConnectionsConnection=new PluginConnectionsConnection();
+   $PluginConnectionsConnection_Item = new PluginConnectionsConnection_Item();
+			
+	switch ($data['action']) {
 
-	switch ($data['action']){
 		case "plugin_connections_add_item":
-			$plugin_connections=new plugin_connections();
-			$ci2=new CommonItem();
-			if ($plugin_connections->getFromDB($data['conID'])){
-				foreach ($data["item"] as $key => $val){
-					if ($val==1) {
-						// Items exists ?
-						if ($ci2->getFromDB($data["device_type"],$key)){
-							// Entity security
-							 if (!isset($plugin_connections->obj->fields["FK_entities"])
-								||$ci2->obj->fields["FK_entities"]==$plugin_connections->obj->fields["FK_entities"]
-								||($ci2->obj->fields["recursive"] && in_array($ci2->obj->fields["FK_entities"], getEntityAncestors($plugin_connections->obj->fields["FK_entities"])))){
- 	                         plugin_connections_addDevice($data["conID"],$key,$data['device_type']);
-							}
-						}
+			foreach ($data["item"] as $key => $val) {
+            if ($val == 1) {
+               $input = array('plugin_connections_connections_id' => $data['plugin_connections_connections_id'],
+                              'items_id'      => $key,
+                              'itemtype'      => $data['itemtype']);
+               if ($PluginConnectionsConnection_Item->can(-1,'w',$input)) {
+                  $PluginConnectionsConnection_Item->add($input);
+               }
+            }
+         }
+         break;
+      case "plugin_connections_install":
+         foreach ($data["item"] as $key => $val) {
+            if ($val == 1) {
+               $input = array('plugin_connections_connections_id' => $key,
+                              'items_id'      => $data["item_item"],
+                              'itemtype'      => $data['itemtype']);
+               if ($PluginConnectionsConnection_Item->can(-1,'w',$input)) {
+                  $PluginConnectionsConnection_Item->add($input);
+               }
+            }
+         }
+			break;
+      case "plugin_connections_desinstall":
+         foreach ($data["item"] as $key => $val) {
+           if ($val == 1) {
+               $PluginConnectionsConnection_Item->deleteItemByConnectionsAndItem($key,$data['item_item'],$data['itemtype']);
+            }
+         }
+			break;
+      case "plugin_connections_transfert":
+         if ($data['itemtype'] == 'PluginConnectionsConnection') {
+				foreach ($data["item"] as $key => $val) {
+					if ($val == 1) {
+                  $PluginConnectionsConnection->getFromDB($key);
+
+                  $type = PluginConnectionsConnectionType::transfer($PluginConnectionsConnection->fields["plugin_connections_connections_id"],
+                                                                  $data['entities_id']);
+                  $values["id"] = $key;
+                  $values["plugin_connections_connections_id"] = $type;
+                  $values["entities_id"] = $data['entities_id'];
+                  $PluginConnectionsConnection->update($values);
 					}
 				}
 			}
-		break;
-		
-		case "plugin_connections_install":
-			if ($data['device_type']==PLUGIN_CONNECTIONS_TYPE){
-
-			$plugin_connections=new plugin_connections();
-			$ci=new CommonItem();
-			foreach ($data["item"] as $key => $val){
-				if ($val==1){
-					// Items exists ?
-					if ($plugin_connections->getFromDB($key)){
-						// Entity security
-						if ($ci->getFromDB($data['type'],$data['item_item'])){
-							if (!isset($plugin_connections->obj->fields["FK_entities"])
-								||$ci->obj->fields["FK_entities"]==$plugin_connections->obj->fields["FK_entities"]
-								||($ci->obj->fields["recursive"] && in_array($ci->obj->fields["FK_entities"], getEntityAncestors($plugin_connections->obj->fields["FK_entities"])))){
-								plugin_connections_addDevice($key,$data["item_item"],$data['type']); 
-							}
-						}
-					}
-				}
-			}
-		}
-	break;
-	case "plugin_connections_desinstall":
-			if ($data['device_type']==PLUGIN_CONNECTIONS_TYPE){
-				foreach ($data["item"] as $key => $val){
-					if ($val==1){
-						$query="DELETE 
-								FROM glpi_plugin_connections_device 
-								WHERE device_type='".$data['type']."' 
-								AND FK_device='".$data['item_item']."' 
-								AND FK_connection = '$key'";
-						$DB->query($query);
-				}
-			}
-		}
-	break;
-	case "plugin_connections_transfert":
-		if ($data['device_type']==PLUGIN_CONNECTIONS_TYPE){
-			foreach ($data["item"] as $key => $val){
-				if ($val==1){
-					$plugin_connections=new plugin_connections;
-					$plugin_connections->getFromDB($key);
-
-					$type=plugin_connections_transferDropdown($plugin_connections->fields["type"],$data['FK_entities']);
-					$query="UPDATE glpi_plugin_connections 
-							SET type = '".$type."' 
-							WHERE ID ='$key'";
-					$DB->query($query);
-					
-					$query="UPDATE glpi_plugin_connections 
-							SET FK_entities = '".$data['FK_entities']."' 
-							WHERE ID ='$key'";
-					$DB->query($query);
-				}
-			}
-		}	
-		break;
+         break;
 	}
 }
 
 //////////////////////////////
 
-function plugin_connections_data_injection_variables() {
-	global $IMPORT_PRIMARY_TYPES, $DATA_INJECTION_MAPPING, $LANG, $IMPORT_TYPES,$DATA_INJECTION_INFOS;
-	
-	$plugin = new Plugin();
-	
-	if (plugin_connections_haveRight("connections","w") && $plugin->isActivated("connections")){
-	
-		if (!in_array(PLUGIN_CONNECTIONS_TYPE, $IMPORT_PRIMARY_TYPES)) {
-			
-			//Add types of objects to be injected by data_injection plugin
-			array_push($IMPORT_PRIMARY_TYPES, PLUGIN_CONNECTIONS_TYPE);	
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['name']['table'] = 'glpi_plugin_connections';
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['name']['field'] = 'name';
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['name']['name'] = $LANG["connections"][8];
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['name']['type'] = "text";
-	
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['type']['table'] = 'glpi_dropdown_plugin_connections_type';
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['type']['field'] = 'name';
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['type']['linkfield'] = 'type';
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['type']['name'] = $LANG["connections"][20];
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['type']['type'] = "text";
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['type']['table_type'] = "dropdown";
-			
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['bytes']['table'] = 'glpi_plugin_connections';
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['bytes']['field'] = 'bytes';
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['bytes']['name'] = $LANG["connections"][11];
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['bytes']['type'] = "text";
-			
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['location']['table'] = 'glpi_dropdown_locations';
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['location']['field'] = 'completename';
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['location']['linkfield'] = 'location';
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['location']['name'] = $LANG["connections"][2];
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['location']['type'] = "text";
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['location']['table_type'] = "dropdown";
-			
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['state']['table'] = 'glpi_dropdown_state';
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['state']['field'] = 'name';
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['state']['linkfield'] = 'state';
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['state']['name'] = $LANG["connections"][28];
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['state']['type'] = "text";
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['state']['table_type'] = "dropdown";
-			
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['comments']['table'] = 'glpi_plugin_connections';
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['comments']['field'] = 'comments';
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['comments']['name'] = $LANG["connections"][12];
-			$DATA_INJECTION_MAPPING[PLUGIN_CONNECTIONS_TYPE]['comments']['type'] = "text";
-	
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['type']['table'] = 'glpi_dropdown_plugin_connections_type';
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['type']['field'] = 'name';
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['type']['linkfield'] = 'type';
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['type']['name'] = $LANG["connections"][20];
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['type']['type'] = "text";
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['type']['table_type'] = "dropdown";
-			
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['bytes']['table'] = 'glpi_plugin_connections';
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['bytes']['field'] = 'bytes';
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['bytes']['name'] = $LANG["connections"][11];
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['bytes']['type'] = "text";
-			
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['location']['table'] = 'glpi_dropdown_locations';
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['location']['field'] = 'completename';
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['location']['linkfield'] = 'location';
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['location']['name'] = $LANG["connections"][2];
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['location']['type'] = "text";
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['location']['table_type'] = "dropdown";
-			
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['state']['table'] = 'glpi_dropdown_state';
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['state']['field'] = 'name';
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['state']['linkfield'] = 'state';
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['state']['name'] = $LANG["connections"][28];
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['state']['type'] = "text";
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['state']['table_type'] = "dropdown";
-			
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['comments']['table'] = 'glpi_plugin_connections';
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['comments']['field'] = 'comments';
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['comments']['name'] = $LANG["connections"][12];
-			$DATA_INJECTION_INFOS[PLUGIN_CONNECTIONS_TYPE]['comments']['type'] = "text";
-			
+// Hook done on purge item case
+function plugin_item_purge_connections($item) {
+
+   $temp = new PluginConnectionsConnection_Item();
+   $temp->clean(array('itemtype' => get_class($item),
+                'items_id' => $item->getField('id')));
+   return true;
+}
+
+// Define headings added by the plugin
+function plugin_get_headings_connections($item,$withtemplate) {
+	global $LANG;
+  
+	if (get_class($item)=='CronTask') {
+    
+		if ($item->getField('id')) {
+         if ($item->getField('name')=="ConnectionsAlert") {
+            return array(
+               1 => $LANG['plugin_connections']['setup'][1],
+            );
+         }
+		}
+	} else if (in_array(get_class($item),PluginConnectionsConnection_Item::getClasses(true))||
+		get_class($item)=='Profile') {
+		// template case
+		if ($item->getField('id') && !$withtemplate) {
+         return array(
+            1 => $LANG['plugin_connections']['title'][1],
+            );
 		}
 	}
+
+	return false;
+
 }
+
+// Define headings actions added by the plugin
+function plugin_headings_actions_connections($item) {
+  
+	if (in_array(get_class($item),PluginConnectionsConnection_Item::getClasses(true))||
+		get_class($item)=='Profile'||
+		get_class($item)=='CronTask') {
+		return array(
+         1 => "plugin_headings_connections",
+         );
+	}
+	return false;
+}
+
+// action heading
+function plugin_headings_connections($item,$withtemplate=0) {
+	global $CFG_GLPI;
+  
+   $PluginConnectionsProfile=new PluginConnectionsProfile();
+   $PluginConnectionsConnection_Item=new PluginConnectionsConnection_Item();
+  
+   switch (get_class($item)) {
+      case 'Profile' :
+         if (!$PluginConnectionsProfile->getFromDBByProfile($item->getField('id')))
+            $PluginConnectionsProfile->createAccess($item->getField('id'));
+         $PluginConnectionsProfile->showForm($item->getField('id'), array('target' => $CFG_GLPI["root_doc"]."/plugins/connections/front/profile.form.php"));
+         break;
+      case 'Supplier':
+         $PluginConnectionsConnection_Item->showPluginFromSupplier(get_class($item),$item->getField('id'));
+         break;
+      case 'CronTask' :
+         if ($item->getField('name')=="ConnectionsAlert") {
+            PluginConnectionsConnection::configCron($CFG_GLPI["root_doc"]."/plugins/connections/front/config.form.php");
+         }
+         break;
+      default :
+         if (in_array(get_class($item), PluginConnectionsConnection_Item::getClasses(true))) {
+            $PluginConnectionsConnection_Item->showPluginFromItems(get_class($item),$item->getField('id'));
+         }
+         break;
+   }
+}
+
+function plugin_datainjection_populate_connections() {
+   global $INJECTABLE_TYPES;
+   $INJECTABLE_TYPES['PluginConnectionsConnectionInjection'] = 'connections';
+}
+
 ?>

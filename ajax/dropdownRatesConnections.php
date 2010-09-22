@@ -32,7 +32,7 @@
 // ----------------------------------------------------------------------
  */
 
-if (strpos($_SERVER['PHP_SELF'],"dropdownTypeConnections.php")) {
+if (strpos($_SERVER['PHP_SELF'],"dropdownRatesConnections.php")) {
 	define('GLPI_ROOT', '../../..');
 	$AJAX_INCLUDE=1;
 	include (GLPI_ROOT."/inc/includes.php");
@@ -44,20 +44,20 @@ checkCentralAccess();
 
 // Make a select box
 
-if (isset($_POST["plugin_connections_connectiontypes_id"])) {
+if (isset($_POST["plugin_connections_connectionrates_id"])) {
 
 	$rand=$_POST['rand'];
 
 	$use_ajax=false;
 	if ($CFG_GLPI["use_ajax"] && 
-		countElementsInTable('glpi_plugin_connections_connections',"glpi_plugin_connections_connections.plugin_connections_connectiontypes_id='".$_POST["plugin_connections_connectiontypes_id"]."' ".getEntitiesRestrictRequest("AND", "glpi_plugin_connections_connections","",$_POST["entity_restrict"],true) )>$CFG_GLPI["ajax_limit_count"]
+		countElementsInTable('glpi_plugin_connections_connections',"glpi_plugin_connections_connections.plugin_connections_connectionrates_id='".$_POST["plugin_connections_connectionrates_id"]."' ".getEntitiesRestrictRequest("AND", "glpi_plugin_connections_connections","",$_POST["entity_restrict"],true) )>$CFG_GLPI["ajax_limit_count"]
 	) {
 		$use_ajax=true;
 	}
 
 
 	$params=array('searchText'=>'__VALUE__',
-			'plugin_connections_connectiontypes_id'=>$_POST["plugin_connections_connectiontypes_id"],
+			'plugin_connections_connectionrates_id'=>$_POST["plugin_connections_connectionrates_id"],
 			'entity_restrict'=>$_POST["entity_restrict"],
 			'rand'=>$_POST['rand'],
 			'myname'=>$_POST['myname'],
@@ -65,7 +65,7 @@ if (isset($_POST["plugin_connections_connectiontypes_id"])) {
 			);
 	
 	$default="<select name='".$_POST["myname"]."'><option value='0'>".DROPDOWN_EMPTY_VALUE."</option></select>";
-	ajaxDropdown($use_ajax,"/plugins/connections/ajax/dropdownConnections.php",$params,$default,$rand);
+	ajaxDropdown($use_ajax,"/plugins/connections/ajax/dropdownConnectionsRates.php",$params,$default,$rand);
 
 }
 

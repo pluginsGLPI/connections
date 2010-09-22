@@ -32,41 +32,26 @@
 // ----------------------------------------------------------------------
  */
 
-if (strpos($_SERVER['PHP_SELF'],"dropdownTypeConnections.php")) {
-	define('GLPI_ROOT', '../../..');
-	$AJAX_INCLUDE=1;
-	include (GLPI_ROOT."/inc/includes.php");
-	header("Content-Type: text/html; charset=UTF-8");
-	header_nocache();
+define('GLPI_ROOT', '../../..');
+include (GLPI_ROOT."/inc/includes.php");
+
+$plugin = new Plugin();
+if ($plugin->isActivated("environment"))
+	commonHeader($LANG['plugin_connections']['title'][1],'',"plugins","environment","connections");
+else
+	commonHeader($LANG['plugin_connections']['title'][1],'',"plugins","connections");
+
+$PluginConnectionsConnection = new PluginConnectionsConnection();
+
+if ($PluginConnectionsConnection->canView() || haveRight("config","w")) {
+		
+	Search::show("PluginConnectionsConnection");	
+
+} else {
+	echo "<div align='center'><br><br><img src=\"".$CFG_GLPI["root_doc"]."/pics/warning.png\" alt=\"warning\"><br><br>";
+	echo "<b>".$LANG['login'][5]."</b></div>";
 }
 
-checkCentralAccess();
-
-// Make a select box
-
-if (isset($_POST["plugin_connections_connectiontypes_id"])) {
-
-	$rand=$_POST['rand'];
-
-	$use_ajax=false;
-	if ($CFG_GLPI["use_ajax"] && 
-		countElementsInTable('glpi_plugin_connections_connections',"glpi_plugin_connections_connections.plugin_connections_connectiontypes_id='".$_POST["plugin_connections_connectiontypes_id"]."' ".getEntitiesRestrictRequest("AND", "glpi_plugin_connections_connections","",$_POST["entity_restrict"],true) )>$CFG_GLPI["ajax_limit_count"]
-	) {
-		$use_ajax=true;
-	}
-
-
-	$params=array('searchText'=>'__VALUE__',
-			'plugin_connections_connectiontypes_id'=>$_POST["plugin_connections_connectiontypes_id"],
-			'entity_restrict'=>$_POST["entity_restrict"],
-			'rand'=>$_POST['rand'],
-			'myname'=>$_POST['myname'],
-			'used'=>$_POST['used']
-			);
-	
-	$default="<select name='".$_POST["myname"]."'><option value='0'>".DROPDOWN_EMPTY_VALUE."</option></select>";
-	ajaxDropdown($use_ajax,"/plugins/connections/ajax/dropdownConnections.php",$params,$default,$rand);
-
-}
+commonFooter();
 
 ?>

@@ -1,67 +1,67 @@
 <?php
 /*
+ * @version $Id: HEADER 1 2010-02-24 00:12 Tsmr $
+ -------------------------------------------------------------------------
+ GLPI - Gestionnaire Libre de Parc Informatique
+ Copyright (C) 2003-2010 by the INDEPNET Development Team.
 
-   ----------------------------------------------------------------------
-   GLPI - Gestionnaire Libre de Parc Informatique
-   Copyright (C) 2003-2008 by the INDEPNET Development Team.
+ http://indepnet.net/   http://glpi-project.org
+ -------------------------------------------------------------------------
 
-   http://indepnet.net/   http://glpi-project.org/
+ LICENSE
 
-   ----------------------------------------------------------------------
-   LICENSE
+ This file is part of GLPI.
 
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public License (GPL)
-   as published by the Free Software Foundation; either version 2
-   of the License, or (at your option) any later version.
+ GLPI is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+ GLPI is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-   To read the license please visit http://www.gnu.org/copyleft/gpl.html
-   ----------------------------------------------------------------------
-// Original Author of file: GRISARD Jean Marc & CAILLAUD Xavier
-Purpose of file:
-----------------------------------------------------------------------
+ You should have received a copy of the GNU General Public License
+ along with GLPI; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ --------------------------------------------------------------------------
+// ----------------------------------------------------------------------
+// Original Author of file: CAILLAUD Xavier
+// Purpose of file: plugin connections v1.3.0 - GLPI 0.78
+// ----------------------------------------------------------------------
  */
-//English
 
-$title = "Connections";	
+$title = "Connections";
 
-//$LANGCONNECTIONS["title"][1]	= "".$title."";
+$LANG['plugin_connections']['title'][1]	= "".$title."";
 
-$LANG['plugin_connections'][1]	= "".$title."";
-$LANG['plugin_connections'][2]	= "Location";
-$LANG['plugin_connections'][4]	= "No ".$title." found";
-$LANG['plugin_connections'][7]	= "Associated items";
-$LANG['plugin_connections'][8]	= "Name";
-$LANG['plugin_connections'][11] = "Flows";
-$LANG['plugin_connections'][12] = "Comments";
-$LANG['plugin_connections'][18] = "Add ".$title."";
-$LANG['plugin_connections'][20]	= "Type";
-$LANG['plugin_connections'][21]	= "Associated item(s)";
-$LANG['plugin_connections'][23]	= "Centreon";
-$LANG['plugin_connections'][27]	= "Associated connection";
-$LANG['plugin_connections'][28]	= "Status";
+$LANG['plugin_connections'][1] = "Crate a new domain";
+$LANG['plugin_connections'][2]  = "Supplier";
+$LANG['plugin_connections'][6]  = "Linked elements";
+$LANG['plugin_connections'][7]  = "Name";
+$LANG['plugin_connections'][8]  = "".$title." linked";
+$LANG['plugin_connections'][10] = "Comments";
+$LANG['plugin_connections'][12] = "Type";
+$LANG['plugin_connections'][13] = "Expire date";
+$LANG['plugin_connections'][14] = "Never expires";
+$LANG['plugin_connections'][15] = "Reset for infinite";
+$LANG['plugin_connections'][16] = "Others";
+$LANG['plugin_connections'][17] = "Creation date";
+$LANG['plugin_connections'][18] = "Technical reference";
 
-$LANG['plugin_connections']["profile"][0] = "Rights management";
-$LANG['plugin_connections']["profile"][1] = "$title";
-$LANG['plugin_connections']["profile"][6] = "List of profiles already configured";
+$LANG['plugin_connections']['mailing'][0] = "Expired Connections";
+$LANG['plugin_connections']['mailing'][2] = "Connections which are going to expire";
+$LANG['plugin_connections']['mailing'][3] = "Expired connections or connections which are going to expire";
+$LANG['plugin_connections']['mailing'][4] = "Domaines expirés depuis plus de";
+$LANG['plugin_connections']['mailing'][5] = "Domaines qui vont expirer dans moins de";
 
-$LANG['plugin_connections']["setup"][2] = "Type of ".$title."";
-$LANG['plugin_connections']["setup"][3] = "Setup of $title plugin";
-$LANG['plugin_connections']["setup"][4] = "Install $title plugin 1.4";
-$LANG['plugin_connections']["setup"][5] = "Update $title plugin to version 1.4";
-$LANG['plugin_connections']["setup"][6] = "Uninstall $title plugin 1.4";
-$LANG['plugin_connections']["setup"][7] = "Warning, the update is irreversible.";
-$LANG['plugin_connections']["setup"][8] = "Warning, the uninstallation of the plugin is irreversible.<br> You will loose all the data.";
-$LANG['plugin_connections']["setup"][9] = "Associate";
-$LANG['plugin_connections']["setup"][10] = "Dissociate";
-$LANG['plugin_connections']["setup"][12] = "Instructions";
-$LANG['plugin_connections']["setup"][13] = "FAQ";
-$LANG['plugin_connections']["setup"][19] = "Associate to connection";
-$LANG['plugin_connections']["setup"][20] = "Merci de vous placer sur l'entité racine (voir tous)";
+$LANG['plugin_connections']['setup'][1] = "Plugin Setup";
+$LANG['plugin_connections']['setup'][2]  = "Type of ".$title."";
+$LANG['plugin_connections']['setup'][9]  = "Link";
+$LANG['plugin_connections']['setup'][10] = "Unlik";
+$LANG['plugin_connections']['setup'][11] = "check's lead time of connections expiration ";
+$LANG['plugin_connections']['setup'][12] = "days";
+$LANG['plugin_connections']['setup'][18] = "Link to domain";
 
 ?>

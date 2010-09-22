@@ -32,41 +32,46 @@
 // ----------------------------------------------------------------------
  */
 
-if (strpos($_SERVER['PHP_SELF'],"dropdownTypeConnections.php")) {
-	define('GLPI_ROOT', '../../..');
-	$AJAX_INCLUDE=1;
-	include (GLPI_ROOT."/inc/includes.php");
-	header("Content-Type: text/html; charset=UTF-8");
-	header_nocache();
+if (!defined('GLPI_ROOT')) {
+	die("Sorry. You can't access directly to this file");
 }
 
-checkCentralAccess();
+// Class for a Dropdown
+class PluginConnectionsConnectionType extends CommonDropdown {
+   
+   static function getTypeName() {
+      global $LANG;
 
-// Make a select box
+      return $LANG['plugin_connections']['setup'][2];
+   }
+   
+   function canCreate() {
+      return plugin_connections_haveRight('connections', 'w');
+   }
 
-if (isset($_POST["plugin_connections_connectiontypes_id"])) {
+   function canView() {
+      return plugin_connections_haveRight('connections', 'r');
+   }
+   
+   static function transfer($ID, $entity) {
+      global $DB;
 
-	$rand=$_POST['rand'];
-
-	$use_ajax=false;
-	if ($CFG_GLPI["use_ajax"] && 
-		countElementsInTable('glpi_plugin_connections_connections',"glpi_plugin_connections_connections.plugin_connections_connectiontypes_id='".$_POST["plugin_connections_connectiontypes_id"]."' ".getEntitiesRestrictRequest("AND", "glpi_plugin_connections_connections","",$_POST["entity_restrict"],true) )>$CFG_GLPI["ajax_limit_count"]
-	) {
-		$use_ajax=true;
-	}
-
-
-	$params=array('searchText'=>'__VALUE__',
-			'plugin_connections_connectiontypes_id'=>$_POST["plugin_connections_connectiontypes_id"],
-			'entity_restrict'=>$_POST["entity_restrict"],
-			'rand'=>$_POST['rand'],
-			'myname'=>$_POST['myname'],
-			'used'=>$_POST['used']
-			);
-	
-	$default="<select name='".$_POST["myname"]."'><option value='0'>".DROPDOWN_EMPTY_VALUE."</option></select>";
-	ajaxDropdown($use_ajax,"/plugins/connections/ajax/dropdownConnections.php",$params,$default,$rand);
-
+      $temp = new self();
+      if ($ID<=0 || !$temp->getFromDB($ID)) {
+         return 0;
+      }
+      $query = "SELECT `id`
+                FROM `".$temp->getTable()."`
+                WHERE `entities_id` = '$entity'
+                  AND `name` = '".addslashes($temp->fields['name'])."'";
+      foreach ($DB->request($query) as $data) {
+         return $data['id'];
+      }
+      $input = $temp->fields;
+      $input['entities_id'] = $entity;
+      unset($input['id']);
+      return $temp->add($input);
+   }
 }
 
 ?>
