@@ -27,8 +27,8 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
-// Original Author of file: CAILLAUD Xavier
-// Purpose of file: plugin connections v1.3.0 - GLPI 0.78
+// Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc, GRISARD Jean Marc
+// Purpose of file: plugin connections v1.6.0 - GLPI 0.78
 // ----------------------------------------------------------------------
  */
 
@@ -43,18 +43,10 @@ $LANG['plugin_connections'][7] = "Nom";
 $LANG['plugin_connections'][8] = "".$title."(s) associé(s)";
 $LANG['plugin_connections'][10] = "Commentaires";
 $LANG['plugin_connections'][12] = "Type";
-$LANG['plugin_connections'][13] = "Date d'expiration";
 $LANG['plugin_connections'][14] = "N'expire pas";
-$LANG['plugin_connections'][15] = "Vide pour infini";
 $LANG['plugin_connections'][16] = "Autres";
 $LANG['plugin_connections'][17] = "Date de création";
 $LANG['plugin_connections'][18] = "Responsable technique";
-
-$LANG['plugin_connections']['mailing'][0] = "Domaines expirés";
-$LANG['plugin_connections']['mailing'][2] = "Domaines qui vont expirer";
-$LANG['plugin_connections']['mailing'][3] = "Domaines expirés ou qui vont expirer";
-$LANG['plugin_connections']['mailing'][4] = "Domaines expirés depuis plus de";
-$LANG['plugin_connections']['mailing'][5] = "Domaines qui vont expirer dans moins de";
 
 $LANG['plugin_connections']['setup'][1] = "Configuration du plugin";
 $LANG['plugin_connections']['setup'][2] = "Type de ".$title."";
@@ -62,8 +54,7 @@ $LANG['plugin_connections']['setup'][3] = "Débits";
 $LANG['plugin_connections']['setup'][4] = "Débits garantis";
 $LANG['plugin_connections']['setup'][9] = "Associer";
 $LANG['plugin_connections']['setup'][10] = "Dissocier";
-$LANG['plugin_connections']['setup'][11] = "Délai de vérification d'expiration des domaines";
 $LANG['plugin_connections']['setup'][12] = "jours";
-$LANG['plugin_connections']['setup'][18] = "Associer au domaine";
+$LANG['plugin_connections']['setup'][18] = "Associer a la connection";
 
 ?>

@@ -27,8 +27,8 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
-// Original Author of file: CAILLAUD Xavier
-// Purpose of file: plugin connections v1.3.0 - GLPI 0.78
+// Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
+// Purpose of file: plugin connections v1.6.0 - GLPI 0.78
 // ----------------------------------------------------------------------
  */
  

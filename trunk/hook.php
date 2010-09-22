@@ -27,8 +27,8 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
-// Original Author of file: CAILLAUD Xavier
-// Purpose of file: plugin connections v1.3.0 - GLPI 0.78
+// Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
+// Purpose of file: plugin connections v1.6.0 - GLPI 0.78
 // ----------------------------------------------------------------------
  */
 
@@ -153,8 +153,8 @@ function plugin_connections_getDatabaseRelations() {
 
 	if ($plugin->isActivated("connections"))
 		return array("glpi_plugin_connections_connectiontypes"=>array("glpi_plugin_connections_connections"=>"plugin_connections_connectiontypes_id"),
-					"glpi_plugin_connections_connectionrates"=>array("glpi_plugin_connections_connections"=>"plugin_connections_connectionrates_id"),
-					"glpi_plugin_connections_connectionratesguaranteed"=>array("glpi_plugin_connections_connections"=>"plugin_connections_connectionratesguaranteed_id"),
+					 "glpi_plugin_connections_connectionrates"=>array("glpi_plugin_connections_connections"=>"plugin_connections_connectionrates_id"),
+					 "glpi_plugin_connections_connectionratesguaranteed"=>array("glpi_plugin_connections_connections"=>"plugin_connections_connectionratesguaranteed_id"),
                      "glpi_users"=>array("glpi_plugin_connections_connections"=>"users_id"),
                      "glpi_groups"=>array("glpi_plugin_connections_connections"=>"groups_id"),
                      "glpi_suppliers"=>array("glpi_plugin_connections_connections"=>"glpi_suppliers"),
@@ -206,13 +206,13 @@ function plugin_connections_getAddSearchOptions($itemtype) {
          $sopt[4412]['table']='glpi_plugin_connections_connectionrates';
          $sopt[4412]['field']='name';
          $sopt[4412]['linkfield']='';
-         $sopt[4412]['name']=$LANG['plugin_connections']['title'][1]." - ".$LANG['plugin_connections'][12];
+         $sopt[4412]['name']=$LANG['plugin_connections']['title'][1]." - ".$LANG['plugin_connections']['setup'][3];
          $sopt[4412]['forcegroupby']='1';
 
          $sopt[4413]['table']='glpi_plugin_connections_connectionratesguaranteed';
          $sopt[4413]['field']='name';
          $sopt[4413]['linkfield']='';
-         $sopt[4413]['name']=$LANG['plugin_connections']['title'][1]." - ".$LANG['plugin_connections'][12];
+         $sopt[4413]['name']=$LANG['plugin_connections']['title'][1]." - ".$LANG['plugin_connections']['setup'][3];
          $sopt[4413]['forcegroupby']='1';
 
       }
@@ -474,8 +474,7 @@ function plugin_get_headings_connections($item,$withtemplate) {
 function plugin_headings_actions_connections($item) {
   
 	if (in_array(get_class($item),PluginConnectionsConnection_Item::getClasses(true))||
-		get_class($item)=='Profile'||
-		get_class($item)=='CronTask') {
+		get_class($item)=='Profile') {
 		return array(
          1 => "plugin_headings_connections",
          );
@@ -498,11 +497,6 @@ function plugin_headings_connections($item,$withtemplate=0) {
          break;
       case 'Supplier':
          $PluginConnectionsConnection_Item->showPluginFromSupplier(get_class($item),$item->getField('id'));
-         break;
-      case 'CronTask' :
-         if ($item->getField('name')=="ConnectionsAlert") {
-            PluginConnectionsConnection::configCron($CFG_GLPI["root_doc"]."/plugins/connections/front/config.form.php");
-         }
          break;
       default :
          if (in_array(get_class($item), PluginConnectionsConnection_Item::getClasses(true))) {
