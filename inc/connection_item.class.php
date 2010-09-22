@@ -27,8 +27,8 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
-// Original Author of file: CAILLAUD Xavier
-// Purpose of file: plugin connections v1.3.0 - GLPI 0.78
+// Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
+// Purpose of file: plugin connections v1.6.0 - GLPI 0.78
 // ----------------------------------------------------------------------
  */
 
@@ -69,8 +69,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
 	static function getClasses($all=false) {
 	
       static $types = array(
-         'Computer','Monitor','NetworkEquipment','Peripheral',
-         'Phone','Printer','Software','Supplier'
+         'NetworkEquipment'
          );
 
       $plugin = new Plugin();
@@ -291,8 +290,8 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
       echo "<th>".$LANG['plugin_connections'][2]."</th>";
       echo "<th>".$LANG['plugin_connections'][18]."</th>";
       echo "<th>".$LANG['plugin_connections'][12]."</th>";
-      echo "<th>".$LANG['plugin_connections'][17]."</th>";
-      echo "<th>".$LANG['plugin_connections'][13]."</th>";
+      echo "<th>".$LANG['plugin_connections']['setup'][3]."</th>";
+      echo "<th>".$LANG['plugin_connections']['setup'][4]."</th>";
       if ($this->canCreate())
          echo "<th>&nbsp;</th>";
       echo "</tr>";
@@ -322,13 +321,9 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
          echo "</a></td>";
          echo "<td class='center'>".getUsername($data["users_id"])."</td>";
          echo "<td class='center'>".Dropdown::getDropdownName("glpi_plugin_connections_connectiontypes",$data["plugin_connections_connectiontypes_id"])."</td>";
-         echo "<td class='center'>".convdate($data["date_creation"])."</td>";
-         if ($data["date_expiration"] <= date('Y-m-d') && !empty($data["date_expiration"]))
-            echo "<td class='center'><span class='plugin_connections_date_color'>".convdate($data["date_expiration"])."</span></td>";
-         else if (empty($data["date_expiration"]))
-            echo "<td class='center'>".$LANG['plugin_connections'][14]."</td>";
-         else
-            echo "<td class='center'>".convdate($data["date_expiration"])."</td>";
+		 echo "<td>&nbsp;</td>";
+         //echo "<td class='center'>".Dropdown::getDropdownName("glpi_plugin_connections_connectionrates",$data["plugin_connections_connectionrates_id"])."</td>";
+         echo "<td class='center'>".Dropdown::getDropdownName("glpi_plugin_connections_connectionratesguaranteed",$data["plugin_connections_connectionratesguaranteed_id"])."</td>";
 
          if ($this->canCreate()) {
             if ($withtemplate<2) echo "<td class='tab_bg_2 center'><a href='".$CFG_GLPI["root_doc"]."/plugins/connections/front/connection.form.php?deleteconnections=deleteconnections&amp;id=".$data["items_id"]."'><b>".$LANG['buttons'][6]."</b></a></td>";

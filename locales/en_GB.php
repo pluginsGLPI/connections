@@ -27,8 +27,8 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
-// Original Author of file: CAILLAUD Xavier
-// Purpose of file: plugin connections v1.3.0 - GLPI 0.78
+// Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
+// Purpose of file: plugin connections v1.6.0 - GLPI 0.78
 // ----------------------------------------------------------------------
  */
 
@@ -36,7 +36,7 @@ $title = "Connections";
 
 $LANG['plugin_connections']['title'][1]	= "".$title."";
 
-$LANG['plugin_connections'][1] = "Crate a new domain";
+$LANG['plugin_connections'][1] = "Crate a new connection";
 $LANG['plugin_connections'][2]  = "Supplier";
 $LANG['plugin_connections'][6]  = "Linked elements";
 $LANG['plugin_connections'][7]  = "Name";
@@ -50,18 +50,13 @@ $LANG['plugin_connections'][16] = "Others";
 $LANG['plugin_connections'][17] = "Creation date";
 $LANG['plugin_connections'][18] = "Technical reference";
 
-$LANG['plugin_connections']['mailing'][0] = "Expired Connections";
-$LANG['plugin_connections']['mailing'][2] = "Connections which are going to expire";
-$LANG['plugin_connections']['mailing'][3] = "Expired connections or connections which are going to expire";
-$LANG['plugin_connections']['mailing'][4] = "Domaines expirés depuis plus de";
-$LANG['plugin_connections']['mailing'][5] = "Domaines qui vont expirer dans moins de";
-
 $LANG['plugin_connections']['setup'][1] = "Plugin Setup";
 $LANG['plugin_connections']['setup'][2]  = "Type of ".$title."";
+$LANG['plugin_connections']['setup'][3]  = "Rates";
+$LANG['plugin_connections']['setup'][4]  = "Rates Guaranteed";
 $LANG['plugin_connections']['setup'][9]  = "Link";
 $LANG['plugin_connections']['setup'][10] = "Unlik";
-$LANG['plugin_connections']['setup'][11] = "check's lead time of connections expiration ";
 $LANG['plugin_connections']['setup'][12] = "days";
-$LANG['plugin_connections']['setup'][18] = "Link to domain";
+$LANG['plugin_connections']['setup'][18] = "Link to connections";
 
 ?>
