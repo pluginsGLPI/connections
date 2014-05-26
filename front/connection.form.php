@@ -28,7 +28,7 @@
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.2 - GLPI 0.83
+// Purpose of file: plugin connections v1.6.3 - GLPI 0.83.3
 // ----------------------------------------------------------------------
  */
 
@@ -90,10 +90,10 @@ if (isset($_POST["add"])) {
 
 	Html::back();
 	
-} else if (isset($_GET["deleteconnections"])) {
+} else if (isset($_POST["deleteconnections"])) {
 
-	$input = array('id' => $_GET["id"]);
-   $PluginConnectionsConnection_Item->check($_GET["id"],'w');
+	$input = array('id' => $_POST["id"]);
+   $PluginConnectionsConnection_Item->check($_POST["id"],'w');
 	$PluginConnectionsConnection_Item->delete($input);
 	Html::back();
 	
