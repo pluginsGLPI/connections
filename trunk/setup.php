@@ -51,9 +51,9 @@ function plugin_init_connections() {
 	Plugin::registerClass('PluginConnectionsConnection', array(
 		'linkuser_types' => true,
 		'linkgroup_types' => true,
-		'doc_types' => true,	
+		'document_types' => true,
 		'contract_types' => true,
-		'helpdesk_types'         => true,
+		'ticket_types'         => true,
 		'helpdesk_visible_types' => true,
 		'notificationtemplates_types' => true
 	));
@@ -112,22 +112,22 @@ function plugin_version_connections() {
 
 	return array (
 		'name' => $LANG['plugin_connections']['title'][1],
-		'version' => '1.6.0',
+		'version' => '1.6.1',
 		'oldname' => 'connection',
 		'author'=>'Xavier Caillaud, Jean Marc GRISARD',
-		'homepage'=>'https://forge.indepnet.net/wiki/connections',
-		'minGlpiVersion' => '0.78',// For compatibility / no install in version < 0.72
+		'homepage'=>'https://forge.indepnet.net/projects/connections',
+		'minGlpiVersion' => '0.80',// For compatibility / no install in version < 0.80
 	);
 
 }
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_connections_check_prerequisites() {
-	if (GLPI_VERSION>=0.78) {
-		return true;
-	} else {
-		echo "GLPI version not compatible need 0.78";
-	}
+   if (version_compare(GLPI_VERSION,'0.80', 'lt') || version_compare(GLPI_VERSION,'0.83', 'ge')) {
+      echo 'This plugin requires GLPI >= 0.80 and GLPI < 0.83';
+      return false;
+   }
+   return true;
 }
 
 // Uninstall process for plugin : need to return true if succeeded : may display messages or add to message after redirect
