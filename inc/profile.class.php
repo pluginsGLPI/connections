@@ -45,11 +45,11 @@ class PluginConnectionsProfile extends CommonDBTM {
    }
    
    function canCreate() {
-      return haveRight('profile', 'w');
+      return Session::haveRight('profile', 'w');
    }
 
    function canView() {
-      return haveRight('profile', 'r');
+      return Session::haveRight('profile', 'r');
    }
    
 	//if profile deleted
@@ -107,7 +107,7 @@ class PluginConnectionsProfile extends CommonDBTM {
    }
    
    static function changeProfile() {
-      
+      //Should we use Session::changeProfile() instead (available since GLPI v0.83)?
       $prof = new self();
       if ($prof->getFromDBByProfile($_SESSION['glpiactiveprofile']['id']))
          $_SESSION["glpi_plugin_connections_profile"]=$prof->fields;
@@ -118,7 +118,7 @@ class PluginConnectionsProfile extends CommonDBTM {
 	function showForm ($ID, $options=array()) {
 		global $LANG;
 
-		if (!haveRight("profile","r")) return false;
+		if (!Session::haveRight("profile","r")) return false;
 
 		$prof = new Profile();
 		if ($ID) {

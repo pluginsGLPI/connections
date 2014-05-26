@@ -58,7 +58,7 @@ function plugin_init_connections() {
 		'notificationtemplates_types' => true
 	));
    
-	if (getLoginUserID()) {
+	if (Session::getLoginUserID()) {
 		
 		if ((isset($_SESSION["glpi_plugin_environment_installed"]) && $_SESSION["glpi_plugin_environment_installed"]==1)) {
 			
@@ -112,19 +112,20 @@ function plugin_version_connections() {
 
 	return array (
 		'name' => $LANG['plugin_connections']['title'][1],
-		'version' => '1.6.1',
+		'version' => '1.6.2',
+		'license' => 'GPLv2+',
 		'oldname' => 'connection',
 		'author'=>'Xavier Caillaud, Jean Marc GRISARD',
 		'homepage'=>'https://forge.indepnet.net/projects/connections',
-		'minGlpiVersion' => '0.80',// For compatibility / no install in version < 0.80
+		'minGlpiVersion' => '0.83',// For compatibility / no install in version < 0.83
 	);
 
 }
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_connections_check_prerequisites() {
-   if (version_compare(GLPI_VERSION,'0.80', 'lt') || version_compare(GLPI_VERSION,'0.83', 'ge')) {
-      echo 'This plugin requires GLPI >= 0.80 and GLPI < 0.83';
+   if (version_compare(GLPI_VERSION,'0.83', 'lt') || version_compare(GLPI_VERSION,'0.84', 'ge')) {
+      echo 'This plugin requires GLPI >= 0.83 and GLPI < 0.84';
       return false;
    }
    return true;
