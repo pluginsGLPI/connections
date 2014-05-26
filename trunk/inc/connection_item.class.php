@@ -28,7 +28,7 @@
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.2 - GLPI 0.83
+// Purpose of file: plugin connections v1.6.3 - GLPI 0.83.3
 // ----------------------------------------------------------------------
  */
 
@@ -247,7 +247,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
 
             echo "</table></div>";
          }
-         echo "</form>";
+         echo Html::closeForm(false);
       }
    }
 
@@ -326,7 +326,11 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
          echo "<td class='center'>".Dropdown::getDropdownName("glpi_plugin_connections_connectionratesguaranteed",$data["plugin_connections_connectionratesguaranteed_id"])."</td>";
 
          if ($this->canCreate()) {
-            if ($withtemplate<2) echo "<td class='tab_bg_2 center'><a href='".$CFG_GLPI["root_doc"]."/plugins/connections/front/connection.form.php?deleteconnections=deleteconnections&amp;id=".$data["items_id"]."'><b>".$LANG['buttons'][6]."</b></a></td>";
+            if ($withtemplate<2) {
+               echo "<td class='tab_bg_2 center'>";
+               Html::showSimpleForm($CFG_GLPI['root_doc'].'/plugins/connections/front/connection.form.php', 'deleteconnections', $LANG['buttons'][6], array('id'=>$data["items_id"]), $CFG_GLPI['root_doc'].'/pics/delete.png');
+               echo "</td>";
+            }
          }
          echo "</tr>";
       }
@@ -367,7 +371,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
          echo "<tr class='tab_bg_1'><td colspan='".(8+$colsup)."' class='right'><a href='".$CFG_GLPI["root_doc"]."/plugins/connections/front/connection.form.php'>".$LANG['plugin_connections'][1]."</a></td></tr>";
          
       echo "</table></div>";
-      echo "</form>";
+      echo Html::closeForm(false);
    }
   
    function showPluginFromSupplier($itemtype,$ID,$withtemplate='') {
@@ -434,7 +438,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
       }
 
    echo "</table></div>";
-   echo "</form>";
+   echo Html::closeForm(false);
    }
 }
 
