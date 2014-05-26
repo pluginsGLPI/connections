@@ -143,6 +143,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       $tab[8]['name']=$LANG['plugin_connections'][6];
       //datainjection
       $tab[8]['injectable']  = false;
+      $tab[8]['massiveaction'] = false;
       
       $tab[9]['table']=$this->getTable();
       $tab[9]['field']='others';
@@ -198,6 +199,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       $tab[30]['name']=$LANG['common'][2];
       //datainjection
       $tab[30]['injectable']  = false;
+      $tab[30]['massiveaction'] = false;
       
       $tab[80]['table']='glpi_entities';
       $tab[80]['field']='completename';
@@ -299,7 +301,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       
       echo "<td>".$LANG['plugin_connections']['setup'][3].": </td>";
       echo "<td>";
-      Dropdown::show('PluginConnectionsConnectionRates', array('name' => "plugin_connections_connectionrates_id",'value' => $this->fields["plugin_connections_connectionrates_id"], 'entity' => $this->fields["entities_id"]));
+      Dropdown::show('PluginConnectionsConnectionRate', array('name' => "plugin_connections_connectionrates_id",'value' => $this->fields["plugin_connections_connectionrates_id"], 'entity' => $this->fields["entities_id"]));
       echo "</td>";
       
       echo "</tr>";

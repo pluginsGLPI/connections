@@ -38,6 +38,8 @@ function plugin_connections_install() {
    include_once (GLPI_ROOT."/plugins/connections/inc/profile.class.php");
    $update=false;
    
+   //TODO: Use "Migration" class instead (available since GLPI v0.80)
+   
    if (!TableExists("glpi_plugin_connection") && !TableExists("glpi_plugin_connections_connections")) {
       
       $DB->runFile(GLPI_ROOT ."/plugins/connections/sql/empty-1.6.0.sql");
@@ -174,7 +176,7 @@ function plugin_connections_getDropdown() {
 
 	if ($plugin->isActivated("connections"))
 		return array('PluginConnectionsConnectionType'=>$LANG['plugin_connections']['setup'][2],
-					'PluginConnectionsConnectionRates'=>$LANG['plugin_connections']['setup'][3],
+					'PluginConnectionsConnectionRate'=>$LANG['plugin_connections']['setup'][3],
 					'PluginConnectionsConnectionRatesGuaranteed'=>$LANG['plugin_connections']['setup'][4]);
 	else
 		return array();

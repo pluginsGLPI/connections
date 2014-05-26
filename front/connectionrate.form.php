@@ -32,46 +32,10 @@
 // ----------------------------------------------------------------------
  */
 
-if (!defined('GLPI_ROOT')) {
-	die("Sorry. You can't access directly to this file");
-}
+define('GLPI_ROOT', '../../..');
+include (GLPI_ROOT . "/inc/includes.php");
 
-// Class for a Dropdown
-class PluginConnectionsConnectionRates extends CommonDropdown {
-   
-   static function getTypeName() {
-      global $LANG;
-
-      return $LANG['plugin_connections']['setup'][3];
-   }
-   
-   function canCreate() {
-      return plugin_connections_haveRight('connections', 'w');
-   }
-
-   function canView() {
-      return plugin_connections_haveRight('connections', 'r');
-   }
-   
-   static function transfer($ID, $entity) {
-      global $DB;
-
-      $temp = new self();
-      if ($ID<=0 || !$temp->getFromDB($ID)) {
-         return 0;
-      }
-      $query = "SELECT `id`
-                FROM `".$temp->getTable()."`
-                WHERE `entities_id` = '$entity'
-                  AND `name` = '".addslashes($temp->fields['name'])."'";
-      foreach ($DB->request($query) as $data) {
-         return $data['id'];
-      }
-      $input = $temp->fields;
-      $input['entities_id'] = $entity;
-      unset($input['id']);
-      return $temp->add($input);
-   }
-}
+$dropdown = new PluginConnectionsConnectionRate();
+include (GLPI_ROOT . "/front/dropdown.common.form.php");
 
 ?>
