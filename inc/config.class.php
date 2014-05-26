@@ -28,7 +28,7 @@
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.3 - GLPI 0.83.3
+// Purpose of file: plugin connections v1.6.4 - GLPI 0.84
 // ----------------------------------------------------------------------
  */
 
@@ -61,7 +61,7 @@ class PluginConnectionsConfig extends CommonDBTM {
 
       echo "<tr><th>";
       echo "<input type='hidden' name='id' value='".$ID."'>";
-      echo "<div align='center'><input type='submit' name='update' value=\"".$LANG['buttons'][2]."\" class='submit' ></div></th></tr>";
+      echo "<div align='center'><input type='submit' name='update' value=\"".__('Post')."\" class='submit' ></div></th></tr>";
       echo "</table>";
       echo Html::closeForm(false), "</div>";
    }

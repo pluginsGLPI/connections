@@ -28,7 +28,7 @@
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.3 - GLPI 0.83.3
+// Purpose of file: plugin connections v1.6.4 - GLPI 0.84
 // ----------------------------------------------------------------------
  */
  
@@ -59,7 +59,9 @@ function plugin_init_connections() {
 		'helpdesk_visible_types' => true,
 		'notificationtemplates_types' => true
 	));
-   
+	Plugin::registerClass('PluginConnectionsProfile', array('addtabon' => 'Profile'));
+	Plugin::registerClass('PluginConnectionsConnection_Item', array('addtabon' => 'NetworkEquipment'));
+	
 	if (Session::getLoginUserID()) {
 		
 		if ((isset($_SESSION["glpi_plugin_environment_installed"]) && $_SESSION["glpi_plugin_environment_installed"]==1)) {
@@ -72,8 +74,6 @@ function plugin_init_connections() {
 				$PLUGIN_HOOKS['submenu_entry']['environment']['options']['connections']['title'] = $LANG['plugin_connections']['title'][1];
 				$PLUGIN_HOOKS['submenu_entry']['environment']['options']['connections']['page'] = '/plugins/connections/front/connection.php';
 				$PLUGIN_HOOKS['submenu_entry']['environment']['options']['connections']['links']['search'] = '/plugins/connections/front/connection.php';
-				$PLUGIN_HOOKS['headings']['connections'] = 'plugin_get_headings_connections';
-				$PLUGIN_HOOKS['headings_action']['connections'] = 'plugin_headings_actions_connections';
 			}
 			
 			  if (plugin_connections_haveRight("connections","w")) {
@@ -87,8 +87,6 @@ function plugin_init_connections() {
 			if (plugin_connections_haveRight("connections","r")) {
 				$PLUGIN_HOOKS['menu_entry']['connections'] = 'front/connection.php';
 				$PLUGIN_HOOKS['submenu_entry']['connections']['search'] = 'front/connection.php';
-				$PLUGIN_HOOKS['headings']['connections'] = 'plugin_get_headings_connections';
-				$PLUGIN_HOOKS['headings_action']['connections'] = 'plugin_headings_actions_connections';
 			}
 			
 			if (plugin_connections_haveRight("connections","w")) {
@@ -114,20 +112,20 @@ function plugin_version_connections() {
 
 	return array (
 		'name' => $LANG['plugin_connections']['title'][1],
-		'version' => '1.6.3',
+		'version' => '1.6.4',
 		'license' => 'GPLv2+',
 		'oldname' => 'connection',
 		'author'=>'Xavier Caillaud, Jean Marc GRISARD',
 		'homepage'=>'https://forge.indepnet.net/projects/connections',
-		'minGlpiVersion' => '0.83.3',// For compatibility / no install in version < 0.83.3
+		'minGlpiVersion' => '0.84',// For compatibility / no install in version < 0.84
 	);
 
 }
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_connections_check_prerequisites() {
-   if (version_compare(GLPI_VERSION,'0.83.3', 'lt') || version_compare(GLPI_VERSION,'0.84', 'ge')) {
-      echo 'This plugin requires GLPI >= 0.83.3 and GLPI < 0.84';
+   if (version_compare(GLPI_VERSION,'0.84', 'lt') || version_compare(GLPI_VERSION,'0.85', 'ge')) {
+      echo 'This plugin requires GLPI >= 0.84 and GLPI < 0.85';
       return false;
    }
    return true;

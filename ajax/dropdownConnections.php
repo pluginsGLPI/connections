@@ -28,15 +28,14 @@
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.3 - GLPI 0.83.3
+// Purpose of file: plugin connections v1.6.4 - GLPI 0.84
 // ----------------------------------------------------------------------
  */
 
 // Direct access to file
 if (strpos($_SERVER['PHP_SELF'],"dropdownConnections.php")) {
-	define('GLPI_ROOT', '../../..');
 	$AJAX_INCLUDE=1;
-	include (GLPI_ROOT."/inc/includes.php");
+	include ('../../../inc/includes.php');
 	header("Content-Type: text/html; charset=UTF-8");
 	Html::header_nocache();
 }
@@ -55,16 +54,16 @@ if (isset($_POST["entity_restrict"])&&$_POST["entity_restrict"]>=0) {
 	$where.=getEntitiesRestrictRequest("AND","glpi_plugin_connections_connections",'','',true);
 }
 
+$used = array();
 if (isset($_POST['used'])) {
-	$where .=" AND `id` NOT IN (0";
-	if (is_array($_POST['used'])) {
-			$used=$_POST['used'];
-		} else {
-			$used=unserialize(stripslashes($_POST['used']));
-		}
-	foreach($used as $val)
-		$where .= ",$val";
-	$where .= ") ";
+   if (is_array($_POST['used'])) {
+      $used = $_POST['used'];
+   } else {
+      $used = Toolbox::decodeArrayFromInput($_POST['used']);
+   }
+}
+if (!empty($used)) {
+   $where .= ' AND `id` NOT IN (' . implode(', ', $used) . ') ';
 }
 
 if ($_POST['searchText']!=$CFG_GLPI["ajax_wildcard"])

@@ -28,14 +28,13 @@
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.3 - GLPI 0.83.3
+// Purpose of file: plugin connections v1.6.4 - GLPI 0.84
 // ----------------------------------------------------------------------
  */
 
-define('GLPI_ROOT', '../../..');
-include (GLPI_ROOT . "/inc/includes.php");
+include ('../../../inc/includes.php');
 
 $dropdown = new PluginConnectionsConnectionRate();
-include (GLPI_ROOT . "/front/dropdown.common.form.php");
+include ('../../../front/dropdown.common.form.php');
 
 ?>
