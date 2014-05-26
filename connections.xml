@@ -14,12 +14,16 @@
          <en><![CDATA[This plugin allows you to create connections (ADSL, SDSL, ...).]]></en>
       </long>
    </description>
-   <homepage>https://forge.indepnet.net/projects/show/connections</homepage>
-   <download>https://forge.indepnet.net/projects/list_files/connections</download>
+   <homepage>https://forge.indepnet.net/projects/connections</homepage>
+   <download>https://forge.indepnet.net/projects/connections/files</download>
    <authors>
       <author>Damien BARON</author>
    </authors>
    <versions>
+      <version>
+          <num>1.6.0</num>
+          <compatibility>0.78</compatibility>
+      </version>
       <version>
           <num>1.5.0</num>
           <compatibility>0.72</compatibility>
@@ -32,7 +36,7 @@
    <tags>
          <fr>
             <tag>Réseau</tag>
-            <tag>connections</tag>
+            <tag>connexions</tag>
          </fr>
          <en>
             <tag>Network</tag>
