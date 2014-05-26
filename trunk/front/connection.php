@@ -37,13 +37,13 @@ include (GLPI_ROOT."/inc/includes.php");
 
 $plugin = new Plugin();
 if ($plugin->isActivated("environment"))
-	commonHeader($LANG['plugin_connections']['title'][1],'',"plugins","environment","connections");
+	Html::header($LANG['plugin_connections']['title'][1],'',"plugins","environment","connections");
 else
-	commonHeader($LANG['plugin_connections']['title'][1],'',"plugins","connections");
+	Html::header($LANG['plugin_connections']['title'][1],'',"plugins","connections");
 
 $PluginConnectionsConnection = new PluginConnectionsConnection();
 
-if ($PluginConnectionsConnection->canView() || haveRight("config","w")) {
+if ($PluginConnectionsConnection->canView() || Session::haveRight("config","w")) {
 		
 	Search::show("PluginConnectionsConnection");	
 
@@ -52,6 +52,6 @@ if ($PluginConnectionsConnection->canView() || haveRight("config","w")) {
 	echo "<b>".$LANG['login'][5]."</b></div>";
 }
 
-commonFooter();
+Html::footer();
 
 ?>

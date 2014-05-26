@@ -35,7 +35,7 @@
 define('GLPI_ROOT', '../../..');
 include (GLPI_ROOT . "/inc/includes.php");
 header("Content-Type: text/html; charset=UTF-8");
-header_nocache();
+Html::header_nocache();
 
 if (!isset($_POST["id"])) {
 	exit();
@@ -60,27 +60,15 @@ if ($_POST["id"]>0 && $PluginConnectionsConnection->can($_POST["id"],'r')) {
 		
 			case -1 :
 				$PluginConnectionsConnection_Item->showItemFromPlugin($_POST["id"]);
-				Ticket::showListForItem('PluginConnectionsConnection',$_POST["id"]);
+				Ticket::showListForItem($PluginConnectionsConnection);
 				Document::showAssociated($PluginConnectionsConnection);
 				Plugin::displayAction($PluginConnectionsConnection,$_REQUEST['glpi_tab']);
 				break;
-			case 6:
-				Ticket::showListForItem('PluginConnectionsConnection',$_POST["id"]);
-				break;
 			case 8 :
 				Contract::showAssociated($PluginConnectionsConnection);
-            break;
-			case 9 :
-				Document::showAssociated($PluginConnectionsConnection);
-				break;
-			case 10 :
-				showNotesForm($_POST['target'],'PluginConnectionsConnection',$_POST["id"]);
-				break;
-			case 12 :
-				Log::showForItem($PluginConnectionsConnection);
-				break;		
+            break;	
 			default :
-				if (!Plugin::displayAction($PluginConnectionsConnection,$_REQUEST['glpi_tab'])) {
+				if (!CommonGLPI::displayStandardTab($PluginConnectionsConnection, $_REQUEST['glpi_tab'])) {
 					$PluginConnectionsConnection_Item->showItemFromPlugin($_POST["id"]);
 				}
 				break;
@@ -88,6 +76,6 @@ if ($_POST["id"]>0 && $PluginConnectionsConnection->can($_POST["id"],'r')) {
 	}
 }
 
-ajaxFooter();
+Html::ajaxFooter();
 
 ?>

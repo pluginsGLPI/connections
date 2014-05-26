@@ -37,10 +37,10 @@ if (strpos($_SERVER['PHP_SELF'],"dropdownTypeConnections.php")) {
 	$AJAX_INCLUDE=1;
 	include (GLPI_ROOT."/inc/includes.php");
 	header("Content-Type: text/html; charset=UTF-8");
-	header_nocache();
+	Html::header_nocache();
 }
 
-checkCentralAccess();
+Session::checkCentralAccess();
 
 // Make a select box
 
@@ -64,8 +64,8 @@ if (isset($_POST["plugin_connections_connectiontypes_id"])) {
 			'used'=>$_POST['used']
 			);
 	
-	$default="<select name='".$_POST["myname"]."'><option value='0'>".DROPDOWN_EMPTY_VALUE."</option></select>";
-	ajaxDropdown($use_ajax,"/plugins/connections/ajax/dropdownConnections.php",$params,$default,$rand);
+	$default="<select name='".$_POST["myname"]."'><option value='0'>".Dropdown::EMPTY_VALUE."</option></select>";
+	Ajax::dropdown($use_ajax,"/plugins/connections/ajax/dropdownConnections.php",$params,$default,$rand);
 
 }
 

@@ -38,13 +38,13 @@ if (strpos($_SERVER['PHP_SELF'],"dropdownConnections.php")) {
 	$AJAX_INCLUDE=1;
 	include (GLPI_ROOT."/inc/includes.php");
 	header("Content-Type: text/html; charset=UTF-8");
-	header_nocache();
+	Html::header_nocache();
 }
 if (!defined('GLPI_ROOT')) {
    die("Can not acces directly to this file");
 }
 
-checkCentralAccess();
+Session::checkCentralAccess();
 // Make a select box with all glpi users
 
 $where=" WHERE  (`glpi_plugin_connections_connections`.`plugin_connections_connectiontypes_id` = '".$_POST['plugin_connections_connectiontypes_id']."')  AND `glpi_plugin_connections_connections`.`is_deleted` = '0'";
@@ -68,7 +68,7 @@ if (isset($_POST['used'])) {
 }
 
 if ($_POST['searchText']!=$CFG_GLPI["ajax_wildcard"])
-	$where.=" AND `glpi_plugin_connections_connections`.`name` ".makeTextSearch($_POST['searchText']);
+	$where.=" AND `glpi_plugin_connections_connections`.`name` ".Search::makeTextSearch($_POST['searchText']);
 
 $NBMAX=$CFG_GLPI["dropdown_max"];
 $LIMIT="LIMIT 0,$NBMAX";
@@ -83,7 +83,7 @@ $result = $DB->query($query);
 
 echo "<select name=\"".$_POST['myname']."\">";
 
-echo "<option value=\"0\">".DROPDOWN_EMPTY_VALUE."</option>";
+echo "<option value=\"0\">".Dropdown::EMPTY_VALUE."</option>";
 
 if ($DB->numrows($result)) {
 	$prev=-1;

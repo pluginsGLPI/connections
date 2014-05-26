@@ -44,31 +44,31 @@ $PluginConnectionsConnection_Item=new PluginConnectionsConnection_Item();
 if (isset($_POST["add"])) {
 	$PluginConnectionsConnection->check(-1,'w',$_POST);
    $newID=$PluginConnectionsConnection->add($_POST);
-	glpi_header($_SERVER['HTTP_REFERER']);
+	Html::back();
 	
 } else if (isset($_POST["delete"])) {
 
 	$PluginConnectionsConnection->check($_POST['id'],'w');
    $PluginConnectionsConnection->delete($_POST);
-	glpi_header(getItemTypeSearchURL('PluginConnectionsConnection'));
+	Html::redirect(Toolbox::getItemTypeSearchURL('PluginConnectionsConnection'));
 	
 } else if (isset($_POST["restore"])) {
 
 	$PluginConnectionsConnection->check($_POST['id'],'w');
    $PluginConnectionsConnection->restore($_POST);
-	glpi_header(getItemTypeSearchURL('PluginConnectionsConnection'));
+	Html::redirect(Toolbox::getItemTypeSearchURL('PluginConnectionsConnection'));
 	
 } else if (isset($_POST["purge"])) {
 
 	$PluginConnectionsConnection->check($_POST['id'],'w');
    $PluginConnectionsConnection->delete($_POST,1);
-	glpi_header(getItemTypeSearchURL('PluginConnectionsConnection'));
+	Html::redirect(Toolbox::getItemTypeSearchURL('PluginConnectionsConnection'));
 	
 } else if (isset($_POST["update"])) {
 
 	$PluginConnectionsConnection->check($_POST['id'],'w');
    $PluginConnectionsConnection->update($_POST);
-	glpi_header($_SERVER['HTTP_REFERER']);
+	Html::back();
 	
 } else if (isset($_POST["additem"])) {
 
@@ -76,7 +76,7 @@ if (isset($_POST["add"])) {
       $PluginConnectionsConnection_Item->check(-1,'w',$_POST);
 		$PluginConnectionsConnection_Item->addItem($_POST["plugin_connections_connections_id"],$_POST['items_id'],$_POST['itemtype']);
 	}
-	glpi_header($_SERVER['HTTP_REFERER']);
+	Html::back();
 	
 } else if (isset($_POST["deleteitem"])) {
    
@@ -88,14 +88,14 @@ if (isset($_POST["add"])) {
       }
    }
 
-	glpi_header($_SERVER['HTTP_REFERER']);
+	Html::back();
 	
 } else if (isset($_GET["deleteconnections"])) {
 
 	$input = array('id' => $_GET["id"]);
    $PluginConnectionsConnection_Item->check($_GET["id"],'w');
 	$PluginConnectionsConnection_Item->delete($input);
-	glpi_header($_SERVER['HTTP_REFERER']);
+	Html::back();
 	
 } else {
 
@@ -104,18 +104,18 @@ if (isset($_POST["add"])) {
 	if (!isset($_SESSION['glpi_tab'])) $_SESSION['glpi_tab']=1;
 	if (isset($_GET['onglet'])) {
 		$_SESSION['glpi_tab']=$_GET['onglet'];
-		//		glpi_header($_SERVER['HTTP_REFERER']);
+		//		Html::back();
 	}
 	
 	$plugin = new Plugin();
 	if ($plugin->isActivated("environment"))
-		commonHeader($LANG['plugin_connections']['title'][1],'',"plugins","environment","connections");
+		Html::header($LANG['plugin_connections']['title'][1],'',"plugins","environment","connections");
 	else
-		commonHeader($LANG['plugin_connections']['title'][1],'',"plugins","connections");
+		Html::header($LANG['plugin_connections']['title'][1],'',"plugins","connections");
 
 	$PluginConnectionsConnection->showForm($_GET["id"]);
 
-	commonFooter();
+	Html::footer();
 }
 
 ?>

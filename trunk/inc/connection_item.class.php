@@ -147,7 +147,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
          $result = $DB->query($query);
          $number = $DB->numrows($result);
          
-         if (isMultiEntitiesMode()) {
+         if (Session::isMultiEntitiesMode()) {
             $colsup=1;
          } else {
             $colsup=0;
@@ -162,7 +162,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
          }
          echo "<th>".$LANG['common'][17]."</th>";
          echo "<th>".$LANG['common'][16]."</th>";
-         if (isMultiEntitiesMode())
+         if (Session::isMultiEntitiesMode())
             echo "<th>".$LANG['entity'][0]."</th>";
          echo "<th>".$LANG['common'][19]."</th>";
          echo "<th>".$LANG['common'][20]."</th>";
@@ -193,15 +193,15 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
 
                if ($result_linked=$DB->query($query))
                   if ($DB->numrows($result_linked)) {
-                     initNavigateListItems($type,$LANG['plugin_connections']['title'][1]." = ".$PluginConnectionsConnection->fields['name']);
+                     Session::initNavigateListItems($type,$LANG['plugin_connections']['title'][1]." = ".$PluginConnectionsConnection->fields['name']);
 
                      while ($data=$DB->fetch_assoc($result_linked)) {
                         $item->getFromDB($data["id"]);
                         
-                        addToNavigateListItems($type,$data["id"]);
+                        Session::addToNavigateListItems($type,$data["id"]);
                         $ID="";
                         if ($_SESSION["glpiis_ids_visible"]||empty($data["name"])) $ID= " (".$data["id"].")";
-                        $link=getItemTypeFormURL($type);
+                        $link=Toolbox::getItemTypeFormURL($type);
                         $name= "<a href=\"".$link."?id=".$data["id"]."\">"
                         .$data["name"]."$ID</a>";
 
@@ -217,7 +217,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
                         echo "<td class='center'>".$item->getTypeName()."</td>";
 
                         echo "<td class='center' ".(isset($data['is_deleted'])&&$data['is_deleted']?"class='tab_bg_2_2'":"").">".$name."</td>";
-                        if (isMultiEntitiesMode())
+                        if (Session::isMultiEntitiesMode())
                            echo "<td class='center'>".Dropdown::getDropdownName("glpi_entities",$data['entity'])."</td>";
                         else
                         echo "<td class='center'>-</td>";
@@ -240,8 +240,8 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
             echo "</td></tr>";
             echo "</table></div>" ;
             
-            openArrowMassive("connections_form$rand");
-            closeArrowMassive('deleteitem', $LANG['buttons'][6]);
+            Html::openArrowMassives("connections_form$rand");
+            Html::closeArrowMassives(array('deleteitem' => $LANG['buttons'][6]));
 
          } else {
 
@@ -274,7 +274,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
       $result = $DB->query($query);
       $number = $DB->numrows($result);
 
-      if (isMultiEntitiesMode()) {
+      if (Session::isMultiEntitiesMode()) {
          $colsup=1;
       } else {
          $colsup=0;
@@ -284,7 +284,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
       echo "<div align='center'><table class='tab_cadre_fixe'>";
       echo "<tr><th colspan='".(8+$colsup)."'>".$LANG['plugin_connections'][8].":</th></tr>";
       echo "<tr><th>".$LANG['plugin_connections'][7]."</th>";
-      if (isMultiEntitiesMode())
+      if (Session::isMultiEntitiesMode())
          echo "<th>".$LANG['entity'][0]."</th>";
       echo "<th>".$LANG['common'][35]."</th>";
       echo "<th>".$LANG['plugin_connections'][2]."</th>";
@@ -310,7 +310,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
             if ($_SESSION["glpiis_ids_visible"]) echo " (".$data["id"].")";
             echo "</td>";
          }
-         if (isMultiEntitiesMode())
+         if (Session::isMultiEntitiesMode())
             echo "<td class='center'>".Dropdown::getDropdownName("glpi_entities",$data['entities_id'])."</td>";
          echo "<td class='center'>".Dropdown::getDropdownName("glpi_groups",$data["groups_id"])."</td>";
          echo "<td>";
@@ -389,7 +389,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
       $result = $DB->query($query);
       $number = $DB->numrows($result);
 
-      if (isMultiEntitiesMode()) {
+      if (Session::isMultiEntitiesMode()) {
          $colsup=1;
       } else {
          $colsup=0;
@@ -399,7 +399,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
       echo "<div align='center'><table class='tab_cadre_fixe'>";
       echo "<tr><th colspan='".(5+$colsup)."'>".$LANG['plugin_connections'][8].":</th></tr>";
       echo "<tr><th>".$LANG['plugin_connections'][7]."</th>";
-      if (isMultiEntitiesMode())
+      if (Session::isMultiEntitiesMode())
          echo "<th>".$LANG['entity'][0]."</th>";
       echo "<th>".$LANG['plugin_connections'][18]."</th>";
       echo "<th>".$LANG['plugin_connections'][12]."</th>";
@@ -419,17 +419,17 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
             if ($_SESSION["glpiis_ids_visible"]) echo " (".$data["id"].")";
             echo "</td>";
          }
-         if (isMultiEntitiesMode())
+         if (Session::isMultiEntitiesMode())
             echo "<td class='center'>".Dropdown::getDropdownName("glpi_entities",$data['entities_id'])."</td>";
          echo "<td class='center'>".getUsername($data["users_id"])."</td>";
          echo "<td class='center'>".Dropdown::getDropdownName("glpi_plugin_connections_connectiontypes",$data["plugin_connections_connectiontypes_id"])."</td>";
-         echo "<td class='center'>".convdate($data["date_creation"])."</td>";
+         echo "<td class='center'>".Html::convDate($data["date_creation"])."</td>";
          if ($data["date_expiration"] <= date('Y-m-d') && !empty($data["date_expiration"]))
-            echo "<td class='center'><span class='plugin_connections_date_color'>".convdate($data["date_expiration"])."</span></td>";
+            echo "<td class='center'><span class='plugin_connections_date_color'>".Html::convDate($data["date_expiration"])."</span></td>";
          else if (empty($data["date_expiration"]))
             echo "<td class='center'>".$LANG['plugin_connections'][14]."</td>";
          else
-            echo "<td class='center'>".convdate($data["date_expiration"])."</td>";
+            echo "<td class='center'>".Html::convDate($data["date_expiration"])."</td>";
          echo "</tr>";
       }
 

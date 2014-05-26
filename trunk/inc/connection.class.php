@@ -214,19 +214,13 @@ class PluginConnectionsConnection extends CommonDBTM {
 	function defineTabs($options=array()) {
 		global $LANG;
 		
-		$ong[1]=$LANG['title'][26];
+		$ong[1] = self::getTypeName();
 		if ($this->fields['id'] > 0) {
-			if (haveRight("show_all_ticket","1")) {
-				$ong[6]=$LANG['title'][28];
-			}
-			if (haveRight("contract","r")) {
-				$ong[8]=$LANG['Menu'][26];
-			}
-			if (haveRight("document","r"))
-				$ong[9]=$LANG['Menu'][27];
-			if (haveRight("notes","r"))
-				$ong[10]=$LANG['title'][37];
-			$ong[12]=$LANG['title'][38];
+			$this->addStandardTab('Ticket', $ong, $options);
+			$this->addStandardTab('Contract_Item', $ong, $options);
+			$this->addStandardTab('Document', $ong, $options);
+			$this->addStandardTab('Note', $ong, $options);
+			$this->addStandardTab('Log', $ong, $options);
 		}
 		return $ong;
 	}
@@ -282,12 +276,12 @@ class PluginConnectionsConnection extends CommonDBTM {
       
       echo "<td>".$LANG['plugin_connections'][7].": </td>";
       echo "<td>";
-      autocompletionTextField($this,"name");
+      Html::autocompletionTextField($this,"name");
       echo "</td>";
       
       echo "<td>".$LANG['plugin_connections'][16].":	</td>";
       echo "<td>";
-      autocompletionTextField($this,"others");	
+      Html::autocompletionTextField($this,"others");	
       echo "</td>";
       
       echo "</tr>";
@@ -338,7 +332,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       echo "</td>";
       
       echo "<td>".$LANG['common'][26].": </td>";
-      $date = convDateTime($this->fields["date_mod"]);
+      $date = Html::convDateTime($this->fields["date_mod"]);
       echo "<td>".$date;
       echo "</td>";
       
@@ -389,7 +383,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       $result=$DB->query($query);
 
       echo "<select name='_type' id='plugin_connections_connectiontypes_id'>\n";
-      echo "<option value='0'>".DROPDOWN_EMPTY_VALUE."</option>\n";
+      echo "<option value='0'>".Dropdown::EMPTY_VALUE."</option>\n";
       while ($data=$DB->fetch_assoc($result)) {
          echo "<option value='".$data['id']."'>".$data['name']."</option>\n";
       }
@@ -402,7 +396,7 @@ class PluginConnectionsConnection extends CommonDBTM {
         'used'=>$used
         );
 
-      ajaxUpdateItemOnSelectEvent("plugin_connections_connectiontypes_id","show_$myname$rand",$CFG_GLPI["root_doc"]."/plugins/connections/ajax/dropdownTypeConnections.php",$params);
+      Ajax::updateItemOnSelectEvent("plugin_connections_connectiontypes_id","show_$myname$rand",$CFG_GLPI["root_doc"]."/plugins/connections/ajax/dropdownTypeConnections.php",$params);
 
       echo "<span id='show_$myname$rand'>";
       $_POST["entity_restrict"]=$entity_restrict;
@@ -490,7 +484,7 @@ class PluginConnectionsConnection extends CommonDBTM {
          foreach ($DB->request($query) as $data) {
             $entity = $data['entities_id'];
             $message = $data["name"].": ".
-                        convdate($data["date_expiration"])."<br>\n";
+                        Html::convDate($data["date_expiration"])."<br>\n";
             $domain_infos[$type][$entity][] = $data;
 
             if (!isset($connections_infos[$type][$entity])) {
@@ -516,7 +510,7 @@ class PluginConnectionsConnection extends CommonDBTM {
                                                        $entity).":  $message\n");
                   //$task->addVolume(1);
                } else {
-                  addMessageAfterRedirect(Dropdown::getDropdownName("glpi_entities",
+                  Session::addMessageAfterRedirect(Dropdown::getDropdownName("glpi_entities",
                                                                     $entity).":  $message");
                }
 
@@ -525,7 +519,7 @@ class PluginConnectionsConnection extends CommonDBTM {
                   $task->log(Dropdown::getDropdownName("glpi_entities",$entity).
                              ":  Send connections alert failed\n");
                } else {
-                  addMessageAfterRedirect(Dropdown::getDropdownName("glpi_entities",$entity).
+                  Session::addMessageAfterRedirect(Dropdown::getDropdownName("glpi_entities",$entity).
                                           ":  Send connections alert failed",false,ERROR);
                }
             }

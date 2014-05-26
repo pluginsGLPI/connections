@@ -56,8 +56,8 @@ class PluginConnectionsConfig extends CommonDBTM {
       $date_next=date("Y-m-d",$delay_stamp_next);
       
       echo "<tr class='tab_bg_1'><td><div align='left'>";
-      echo $LANG['plugin_connections']['mailing'][4]." <input type='text' size='5' name='delay_expired' value=\"$delay_expired\"> ".$LANG['plugin_connections']['setup'][12]." ( >".convdate($date_first).")<br>";
-      echo $LANG['plugin_connections']['mailing'][5]." <input type='text' size='5' name='delay_whichexpire' value=\"$delay_whichexpire\"> ".$LANG['plugin_connections']['setup'][12]." ( <".convdate($date_next).")";
+      echo $LANG['plugin_connections']['mailing'][4]." <input type='text' size='5' name='delay_expired' value=\"$delay_expired\"> ".$LANG['plugin_connections']['setup'][12]." ( >".Html::convDate($date_first).")<br>";
+      echo $LANG['plugin_connections']['mailing'][5]." <input type='text' size='5' name='delay_whichexpire' value=\"$delay_whichexpire\"> ".$LANG['plugin_connections']['setup'][12]." ( <".Html::convDate($date_next).")";
 
       echo "<tr><th>";
       echo "<input type='hidden' name='id' value='".$ID."'>";

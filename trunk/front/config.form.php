@@ -37,14 +37,14 @@
 define('GLPI_ROOT', '../../..');
 include (GLPI_ROOT . "/inc/includes.php");
 
-checkRight("config", "w");
+Session::checkRight("config", "w");
 
 $PluginConnectionsConfig=new PluginConnectionsConfig();
 
 if (isset($_POST["update"])) {
 
 	$PluginConnectionsConfig->update($_POST);
-	glpi_header($_SERVER['HTTP_REFERER']);
+	Html::back();
 
 }
 

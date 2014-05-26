@@ -48,33 +48,33 @@ if (isset($_POST["add"]))
 {
 	if( plugin_connections_HaveRight("connections","w"))
 		$newID=$plugin_connections->add($_POST);
-	glpi_header($_SERVER['HTTP_REFERER']);
+	Html::back();
 } 
 else if (isset($_POST["delete"]))
 {
 
 	if( plugin_connections_HaveRight("connections","w"))
 		$plugin_connections->delete($_POST);
-	glpi_header($CFG_GLPI["root_doc"]."/plugins/connections/index.php");
+	Html::redirect($CFG_GLPI["root_doc"]."/plugins/connections/index.php");
 }
 else if (isset($_POST["restore"]))
 {
 
 	if( plugin_connections_HaveRight("connections","w"))
 		$plugin_connections->restore($_POST);
-	glpi_header($CFG_GLPI["root_doc"]."/plugins/connections/index.php");
+	Html::redirect($CFG_GLPI["root_doc"]."/plugins/connections/index.php");
 }
 else if (isset($_POST["purge"]))
 {
 	if( plugin_connections_HaveRight("connections","w"))
 		$plugin_connections->delete($_POST,1);
-	glpi_header($CFG_GLPI["root_doc"]."/plugins/connections/index.php");
+	Html::redirect($CFG_GLPI["root_doc"]."/plugins/connections/index.php");
 }
 else if (isset($_POST["update"]))
 {
 	if( plugin_connections_HaveRight("connections","w"))
 		$plugin_connections->update($_POST);
-	glpi_header($_SERVER['HTTP_REFERER']);
+	Html::back();
 } 
 else if (isset($_POST["additem"])){
 
@@ -83,7 +83,7 @@ else if (isset($_POST["additem"])){
 		if(plugin_connections_HaveRight("connections","w"))
 			plugin_connections_addDevice($_POST["conID"],$_POST['item'],$_POST['type']);
 	}
-	glpi_header($_SERVER['HTTP_REFERER']);
+	Html::back();
 }
 else if (isset($_POST["deleteitem"])){
 
@@ -94,12 +94,12 @@ else if (isset($_POST["deleteitem"])){
 			}
 		}
 
-	glpi_header($_SERVER['HTTP_REFERER']);
+	Html::back();
 }else if (isset($_GET["deleteconnections"])){
 
 	if(plugin_connections_HaveRight("connections","w"))
 		plugin_connections_deleteDevice($_GET["ID"]);
-	glpi_header($_SERVER['HTTP_REFERER']);
+	Html::back();
 } else {
 
 	plugin_connections_checkRight("connections","r");
@@ -111,13 +111,13 @@ else if (isset($_POST["deleteitem"])){
 	}
 	$plugin = new Plugin();
 	if ($plugin->isActivated("environment"))
-		commonHeader($LANG['plugin_connections'][1],$_SERVER['PHP_SELF'],"plugins","environment","connections");
+		Html::header($LANG['plugin_connections'][1],$_SERVER['PHP_SELF'],"plugins","environment","connections");
 	else
-		commonHeader($LANG['plugin_connections'][1],$_SERVER["PHP_SELF"],"plugins","connections");
+		Html::header($LANG['plugin_connections'][1],$_SERVER["PHP_SELF"],"plugins","connections");
 
 	$plugin_connections->showForm($_SERVER["PHP_SELF"],$_GET["ID"]);
 
-	commonFooter();
+	Html::footer();
 }
 
 ?>
