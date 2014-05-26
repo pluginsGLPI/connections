@@ -28,7 +28,7 @@
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.3 - GLPI 0.83.3
+// Purpose of file: plugin connections v1.6.4 - GLPI 0.84
 // ----------------------------------------------------------------------
  */
 
@@ -38,17 +38,17 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginConnectionsProfile extends CommonDBTM {
    
-	static function getTypeName() {
+   static function getTypeName($nb=0) {
       global $LANG;
 
       return $LANG['plugin_connections']['profile'][0];
    }
    
-   function canCreate() {
+   static function canCreate() {
       return Session::haveRight('profile', 'w');
    }
 
-   function canView() {
+   static function canView() {
       return Session::haveRight('profile', 'r');
    }
    
@@ -135,16 +135,16 @@ class PluginConnectionsProfile extends CommonDBTM {
       echo "</tr>";
 		echo "<tr class='tab_bg_2'>";
 		
-		echo "<td>".$LANG['plugin_connections']['profile'][1].":</td><td>";
+		echo "<td>".$LANG['plugin_connections']['title'][1].":</td><td>";
 
 		if ($prof->fields['interface']!='helpdesk') {
 			Profile::dropdownNoneReadWrite("connections",$this->fields["connections"],1,1,1);
 		} else {
-			echo $LANG['profiles'][12]; // No access;
+			echo __('No Access');
 		}
 		echo "</td>";
 
-		echo "<td>" . $LANG['setup'][352] . " - " . $LANG['plugin_connections']['title'][1] . ":</td><td>";
+		echo "<td>" . __('Linkable items to a ticket') . " - " . $LANG['plugin_connections']['title'][1] . ":</td><td>";
 		if ($prof->fields['create_ticket']) {
 			Dropdown::showYesNo("open_ticket",$this->fields["open_ticket"]);
 		} else {
@@ -158,6 +158,39 @@ class PluginConnectionsProfile extends CommonDBTM {
 		$options['candel'] = false;
       $this->showFormButtons($options);
 	}
+
+   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+      global $LANG;
+
+      if ($item->getType()=='Profile') {
+         return $LANG['plugin_connections']['title'][1];
+      }
+      return '';
+   }
+
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+      global $CFG_GLPI;
+
+      $PluginConnectionsProfile=new self();
+      $PluginConnectionsConnection_Item=new PluginConnectionsConnection_Item();
+
+      switch ($item->getType()) {
+         case 'Profile':
+            if (!$PluginConnectionsProfile->getFromDBByProfile($item->getField('id')))
+               $PluginConnectionsProfile->createAccess($item->getField('id'));
+            $PluginConnectionsProfile->showForm($item->getField('id'), array('target' => $CFG_GLPI["root_doc"]."/plugins/connections/front/profile.form.php"));
+            break;
+         case 'Supplier':
+            $PluginConnectionsConnection_Item->showPluginFromSupplier($item->getType(),$item->getField('id'));
+            break;
+         default:
+            if (in_array($item->getType(), PluginConnectionsConnection_Item::getClasses(true))) {
+               $PluginConnectionsConnection_Item->showPluginFromItems($item->getType(),$item->getField('id'));
+            }
+            break;
+      }
+      return true;
+   }
 }
 
 ?>

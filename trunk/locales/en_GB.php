@@ -28,7 +28,7 @@
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.3 - GLPI 0.83.3
+// Purpose of file: plugin connections v1.6.4 - GLPI 0.84
 // ----------------------------------------------------------------------
  */
 
@@ -50,10 +50,12 @@ $LANG['plugin_connections'][16] = "Others";
 $LANG['plugin_connections'][17] = "Creation date";
 $LANG['plugin_connections'][18] = "Technical reference";
 
+$LANG['plugin_connections']['profile'][0] = 'Rights management';
+
 $LANG['plugin_connections']['setup'][1] = "Plugin Setup";
 $LANG['plugin_connections']['setup'][2]  = "Type of ".$title."";
 $LANG['plugin_connections']['setup'][3]  = "Rates";
-$LANG['plugin_connections']['setup'][4]  = "Rates Guaranteed";
+$LANG['plugin_connections']['setup'][4]  = "Guaranteed Rates";
 $LANG['plugin_connections']['setup'][9]  = "Link";
 $LANG['plugin_connections']['setup'][10] = "Unlik";
 $LANG['plugin_connections']['setup'][12] = "days";

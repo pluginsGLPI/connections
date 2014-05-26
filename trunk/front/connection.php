@@ -28,12 +28,11 @@
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.3 - GLPI 0.83.3
+// Purpose of file: plugin connections v1.6.4 - GLPI 0.84
 // ----------------------------------------------------------------------
  */
 
-define('GLPI_ROOT', '../../..');
-include (GLPI_ROOT."/inc/includes.php");
+include ('../../../inc/includes.php');
 
 $plugin = new Plugin();
 if ($plugin->isActivated("environment"))
@@ -49,7 +48,7 @@ if ($PluginConnectionsConnection->canView() || Session::haveRight("config","w"))
 
 } else {
 	echo "<div align='center'><br><br><img src=\"".$CFG_GLPI["root_doc"]."/pics/warning.png\" alt=\"warning\"><br><br>";
-	echo "<b>".$LANG['login'][5]."</b></div>";
+	echo "<b>".__('Access Denied')."</b></div>";
 }
 
 Html::footer();

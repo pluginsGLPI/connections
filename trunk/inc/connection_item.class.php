@@ -28,7 +28,7 @@
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.3 - GLPI 0.83.3
+// Purpose of file: plugin connections v1.6.4 - GLPI 0.84
 // ----------------------------------------------------------------------
  */
 
@@ -58,11 +58,11 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
       }
    }
    
-   function canCreate() {
+   static function canCreate() {
       return plugin_connections_haveRight('connections', 'w');
    }
 
-   function canView() {
+   static function canView() {
       return plugin_connections_haveRight('connections', 'r');
    }
    
@@ -160,12 +160,12 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
          if ($canedit) {
             echo "<th>&nbsp;</th>";
          }
-         echo "<th>".$LANG['common'][17]."</th>";
-         echo "<th>".$LANG['common'][16]."</th>";
+         echo "<th>".__('Type')."</th>";
+         echo "<th>".__('Name')."</th>";
          if (Session::isMultiEntitiesMode())
-            echo "<th>".$LANG['entity'][0]."</th>";
-         echo "<th>".$LANG['common'][19]."</th>";
-         echo "<th>".$LANG['common'][20]."</th>";
+            echo "<th>".__('Entity')."</th>";
+         echo "<th>".__('Serial Number')."</th>";
+         echo "<th>".__('Inventory number')."</th>";
          echo "</tr>";
 
          for ($i=0 ; $i < $number ; $i++) {
@@ -236,12 +236,12 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
             Dropdown::showAllItems("items_id",0,0,($PluginConnectionsConnection->fields['is_recursive']?-1:$PluginConnectionsConnection->fields['entities_id']),$this->getClasses());
             echo "</td>";
             echo "<td colspan='2' class='center' class='tab_bg_2'>";
-            echo "<input type='submit' name='additem' value=\"".$LANG['buttons'][8]."\" class='submit'>";
+            echo "<input type='submit' name='additem' value=\"".__('Add')."\" class='submit'>";
             echo "</td></tr>";
             echo "</table></div>" ;
             
             Html::openArrowMassives("connections_form$rand");
-            Html::closeArrowMassives(array('deleteitem' => $LANG['buttons'][6]));
+            Html::closeArrowMassives(array('deleteitem' => __('Delete')));
 
          } else {
 
@@ -285,8 +285,8 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
       echo "<tr><th colspan='".(8+$colsup)."'>".$LANG['plugin_connections'][8].":</th></tr>";
       echo "<tr><th>".$LANG['plugin_connections'][7]."</th>";
       if (Session::isMultiEntitiesMode())
-         echo "<th>".$LANG['entity'][0]."</th>";
-      echo "<th>".$LANG['common'][35]."</th>";
+         echo "<th>".__('Entity')."</th>";
+      echo "<th>".__('Group')."</th>";
       echo "<th>".$LANG['plugin_connections'][2]."</th>";
       echo "<th>".$LANG['plugin_connections'][18]."</th>";
       echo "<th>".$LANG['plugin_connections'][12]."</th>";
@@ -323,12 +323,12 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
          echo "<td class='center'>".Dropdown::getDropdownName("glpi_plugin_connections_connectiontypes",$data["plugin_connections_connectiontypes_id"])."</td>";
 		 echo "<td>&nbsp;</td>";
          //echo "<td class='center'>".Dropdown::getDropdownName("glpi_plugin_connections_connectionrates",$data["plugin_connections_connectionrates_id"])."</td>";
-         echo "<td class='center'>".Dropdown::getDropdownName("glpi_plugin_connections_connectionratesguaranteed",$data["plugin_connections_connectionratesguaranteed_id"])."</td>";
+         echo "<td class='center'>".Dropdown::getDropdownName("glpi_plugin_connections_guaranteedconnectionrates",$data["plugin_connections_guaranteedconnectionrates_id"])."</td>";
 
          if ($this->canCreate()) {
             if ($withtemplate<2) {
                echo "<td class='tab_bg_2 center'>";
-               Html::showSimpleForm($CFG_GLPI['root_doc'].'/plugins/connections/front/connection.form.php', 'deleteconnections', $LANG['buttons'][6], array('id'=>$data["items_id"]), $CFG_GLPI['root_doc'].'/pics/delete.png');
+               Html::showSimpleForm($CFG_GLPI['root_doc'].'/plugins/connections/front/connection.form.php', 'deleteconnections', __('Delete'), array('id'=>$data["items_id"]), $CFG_GLPI['root_doc'].'/pics/delete.png');
                echo "</td>";
             }
          }
@@ -358,9 +358,9 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
                echo "<tr class='tab_bg_1'><td colspan='".(7+$colsup)."' class='right'>";
                echo "<input type='hidden' name='items_id' value='$ID'><input type='hidden' name='itemtype' value='$itemtype'>";
                $PluginConnectionsConnection = new PluginConnectionsConnection();
-               $PluginConnectionsConnection->dropdownConnections("connections_id",$entities,$used);
+               $PluginConnectionsConnection->dropdownConnections('plugin_connections_connections_id',$entities,$used);
                echo "</td><td class='center'>";
-               echo "<input type='submit' name='additem' value=\"".$LANG['buttons'][8]."\" class='submit'>";
+               echo "<input type='submit' name='additem' value=\"".__('Add')."\" class='submit'>";
                echo "</td>";
                echo "</tr>";
             }
@@ -404,7 +404,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
       echo "<tr><th colspan='".(5+$colsup)."'>".$LANG['plugin_connections'][8].":</th></tr>";
       echo "<tr><th>".$LANG['plugin_connections'][7]."</th>";
       if (Session::isMultiEntitiesMode())
-         echo "<th>".$LANG['entity'][0]."</th>";
+         echo "<th>".__('Entity')."</th>";
       echo "<th>".$LANG['plugin_connections'][18]."</th>";
       echo "<th>".$LANG['plugin_connections'][12]."</th>";
       echo "<th>".$LANG['plugin_connections'][17]."</th>";
@@ -439,6 +439,27 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
 
    echo "</table></div>";
    echo Html::closeForm(false);
+   }
+   
+   function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
+      if (!$withtemplate) {
+         if ($item->getType() == 'PluginConnectionsConnection' && count(self::getClasses(false))) {
+            return __('Associated item');
+         } else if (in_array($item->getType(), self::getClasses(true))) {
+            return PluginConnectionsConnection::getTypeName(2);
+         }
+      }
+      return '';
+   }
+   
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
+      $PluginConnectionsConnection_Item = new self();
+      if ($item->getType() == 'PluginConnectionsConnection') {
+         $PluginConnectionsConnection_Item->showItemFromPlugin($item->getID());
+      } else if (in_array($item->getType(), self::getClasses(true))) {
+         $PluginConnectionsConnection_Item->showPluginFromItems($item->getType(), $item->getID());
+      }
+      return true;
    }
 }
 

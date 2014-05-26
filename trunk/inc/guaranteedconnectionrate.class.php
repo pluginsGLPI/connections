@@ -28,7 +28,7 @@
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.3 - GLPI 0.83.3
+// Purpose of file: plugin connections v1.6.4 - GLPI 0.84
 // ----------------------------------------------------------------------
  */
 
@@ -37,19 +37,19 @@ if (!defined('GLPI_ROOT')) {
 }
 
 // Class for a Dropdown
-class PluginConnectionsConnectionRatesGuaranteed extends CommonDropdown {
+class PluginConnectionsGuaranteedConnectionRate extends CommonDropdown {
    
-   static function getTypeName() {
+   static function getTypeName($nb=0) {
       global $LANG;
 
       return $LANG['plugin_connections']['setup'][4];
    }
    
-   function canCreate() {
+   static function canCreate() {
       return plugin_connections_haveRight('connections', 'w');
    }
 
-   function canView() {
+   static function canView() {
       return plugin_connections_haveRight('connections', 'r');
    }
    

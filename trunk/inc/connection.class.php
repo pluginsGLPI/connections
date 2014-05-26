@@ -28,7 +28,7 @@
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.3 - GLPI 0.83.3
+// Purpose of file: plugin connections v1.6.4 - GLPI 0.84
 // ----------------------------------------------------------------------
  */
 
@@ -40,17 +40,17 @@ class PluginConnectionsConnection extends CommonDBTM {
 	
    public $dohistory=true;
    
-   static function getTypeName() {
+   static function getTypeName($nb=0) {
       global $LANG;
 
       return $LANG['plugin_connections']['title'][1];
    }
    
-   function canCreate() {
+   static function canCreate() {
       return plugin_connections_haveRight('connections', 'w');
    }
 
-   function canView() {
+   static function canView() {
       return plugin_connections_haveRight('connections', 'r');
    }
 	
@@ -118,9 +118,9 @@ class PluginConnectionsConnection extends CommonDBTM {
       $tab[5]['checktype']  = 'text';
       $tab[5]['injectable']  = true;
       
-      $tab[6]['table']='glpi_plugin_connections_connectionratesguaranteed';
+      $tab[6]['table']='glpi_plugin_connections_guaranteedconnectionrates';
       $tab[6]['field']='name';
-      $tab[6]['linkfield']='plugin_connections_connectionratesguaranteed_id';
+      $tab[6]['linkfield']='plugin_connections_guaranteedconnectionrates_id';
       $tab[6]['name']=$LANG['plugin_connections']['setup'][4];
       //datainjection
       $tab[6]['displaytype']  = 'dropdown';
@@ -157,7 +157,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       $tab[10]['table']='glpi_groups';
       $tab[10]['field']='name';
       $tab[10]['linkfield']='groups_id';
-      $tab[10]['name']=$LANG['common'][35];
+      $tab[10]['name']=__('Group');
       //datainjection
       $tab[10]['displaytype']  = 'dropdown';
       $tab[10]['checktype']  = 'text';
@@ -166,7 +166,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       $tab[11]['table']=$this->getTable();
       $tab[11]['field']='is_helpdesk_visible';
       $tab[11]['linkfield']='is_helpdesk_visible';
-      $tab[11]['name']=$LANG['software'][46];
+      $tab[11]['name']=__('Associable to a ticket');
       $tab[11]['datatype']='bool';
       //datainjection
       $tab[11]['displaytype']  = 'bool';
@@ -176,7 +176,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       $tab[12]['table']=$this->getTable();
       $tab[12]['field']='date_mod';
       $tab[12]['linkfield']='date_mod';
-      $tab[12]['name']=$LANG['common'][26];
+      $tab[12]['name']=__('Last update');
       $tab[12]['datatype']='datetime';
       //datainjection
       $tab[12]['displaytype']  = 'date';
@@ -186,7 +186,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       $tab[18]['table']=$this->getTable();
       $tab[18]['field']='is_recursive';
       $tab[18]['linkfield']='is_recursive';
-      $tab[18]['name']=$LANG['entity'][9];
+      $tab[18]['name']=__('Child entities');
       $tab[18]['datatype']='bool';
       //datainjection
       $tab[18]['displaytype']  = 'bool';
@@ -196,7 +196,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       $tab[30]['table']=$this->getTable();
       $tab[30]['field']='id';
       $tab[30]['linkfield']='';
-      $tab[30]['name']=$LANG['common'][2];
+      $tab[30]['name']=__('ID');
       //datainjection
       $tab[30]['injectable']  = false;
       $tab[30]['massiveaction'] = false;
@@ -204,7 +204,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       $tab[80]['table']='glpi_entities';
       $tab[80]['field']='completename';
       $tab[80]['linkfield']='entities_id';
-      $tab[80]['name']=$LANG['entity'][0];
+      $tab[80]['name']=__('Entity');
       //datainjection
       $tab[80]['injectable']  = false;
 		
@@ -214,11 +214,12 @@ class PluginConnectionsConnection extends CommonDBTM {
 	function defineTabs($options=array()) {
 		global $LANG;
 		
-		$ong[1] = self::getTypeName();
+		$ong = array();
+		$this->addStandardTab('PluginConnectionsConnection_Item', $ong, $options);
 		if ($this->fields['id'] > 0) {
 			$this->addStandardTab('Ticket', $ong, $options);
 			$this->addStandardTab('Contract_Item', $ong, $options);
-			$this->addStandardTab('Document', $ong, $options);
+			$this->addStandardTab('Document_Item', $ong, $options);
 			$this->addStandardTab('Note', $ong, $options);
 			$this->addStandardTab('Log', $ong, $options);
 		}
@@ -290,12 +291,12 @@ class PluginConnectionsConnection extends CommonDBTM {
       
       echo "<td>".$LANG['plugin_connections'][2].": </td>";
       echo "<td>";
-      Dropdown::show('Supplier', array('name' => "suppliers_id",'value' => $this->fields["suppliers_id"], 'entity' => $this->fields["entities_id"]));
+      Supplier::dropdown(array('name' => "suppliers_id",'value' => $this->fields["suppliers_id"], 'entity' => $this->fields["entities_id"]));
       echo "</td>";
       
       echo "<td>".$LANG['plugin_connections']['setup'][3].": </td>";
       echo "<td>";
-      Dropdown::show('PluginConnectionsConnectionRate', array('name' => "plugin_connections_connectionrates_id",'value' => $this->fields["plugin_connections_connectionrates_id"], 'entity' => $this->fields["entities_id"]));
+      PluginConnectionsConnectionRate::dropdown(array('name' => "plugin_connections_connectionrates_id",'value' => $this->fields["plugin_connections_connectionrates_id"], 'entity' => $this->fields["entities_id"]));
       echo "</td>";
       
       echo "</tr>";
@@ -303,12 +304,12 @@ class PluginConnectionsConnection extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
       
       echo "<td>".$LANG['plugin_connections'][12].": </td><td>";
-      Dropdown::show('PluginConnectionsConnectionType', array('name' => "plugin_connections_connectiontypes_id",'value' => $this->fields["plugin_connections_connectiontypes_id"], 'entity' => $this->fields["entities_id"]));
+      PluginConnectionsConnectionType::dropdown(array('name' => "plugin_connections_connectiontypes_id",'value' => $this->fields["plugin_connections_connectiontypes_id"], 'entity' => $this->fields["entities_id"]));
       echo "</td>";
       
       echo "<td>".$LANG['plugin_connections']['setup'][4].": </td>";
       echo "<td>";
-      Dropdown::show('PluginConnectionsConnectionRatesGuaranteed', array('name' => "plugin_connections_connectionratesguaranteed_id",'value' => $this->fields["plugin_connections_connectionratesguaranteed_id"], 'entity' => $this->fields["entities_id"]));
+      PluginConnectionsGuaranteedConnectionRate::dropdown(array('name' => "plugin_connections_guaranteedconnectionrates_id",'value' => $this->fields["plugin_connections_guaranteedconnectionrates_id"], 'entity' => $this->fields["entities_id"]));
       echo "</td>";
       
       echo "</tr>";
@@ -319,7 +320,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       User::dropdown(array('value' => $this->fields["users_id"],'entity' => $this->fields["entities_id"],'right' => 'all'));
       echo "</td>";
       
-      echo "<td>" . $LANG['software'][46] . ":</td><td>";
+      echo "<td>" . __('Associable to a ticket') . ":</td><td>";
       Dropdown::showYesNo('is_helpdesk_visible',$this->fields['is_helpdesk_visible']);
       echo "</td>";
       
@@ -327,11 +328,11 @@ class PluginConnectionsConnection extends CommonDBTM {
       
       echo "<tr class='tab_bg_1'>";
       
-      echo "<td>".$LANG['common'][35].": </td><td>";
-      Dropdown::show('Group', array('name' => "groups_id",'value' => $this->fields["groups_id"], 'entity' => $this->fields["entities_id"]));
+      echo "<td>".__('Group').": </td><td>";
+      Group::dropdown(array('name' => "groups_id",'value' => $this->fields["groups_id"], 'entity' => $this->fields["entities_id"]));
       echo "</td>";
       
-      echo "<td>".$LANG['common'][26].": </td>";
+      echo "<td>".__('Last update').": </td>";
       $date = Html::convDateTime($this->fields["date_mod"]);
       echo "<td>".$date;
       echo "</td>";

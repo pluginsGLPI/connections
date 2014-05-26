@@ -35,8 +35,7 @@
 
 
 $NEEDED_ITEMS=array("profile");
-define('GLPI_ROOT', '../../..'); 
-include (GLPI_ROOT."/inc/includes.php");
+include ('../../../inc/includes.php');
 
 Session::checkRight("profile","r");
 
