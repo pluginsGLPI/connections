@@ -28,7 +28,7 @@
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.0 - GLPI 0.78
+// Purpose of file: plugin connections v1.6.2 - GLPI 0.83
 // ----------------------------------------------------------------------
  */
 
