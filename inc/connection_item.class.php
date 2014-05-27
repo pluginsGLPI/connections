@@ -219,8 +219,6 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
                         echo "<td class='center' ".(isset($data['is_deleted'])&&$data['is_deleted']?"class='tab_bg_2_2'":"").">".$name."</td>";
                         if (Session::isMultiEntitiesMode())
                            echo "<td class='center'>".Dropdown::getDropdownName("glpi_entities",$data['entity'])."</td>";
-                        else
-                        echo "<td class='center'>-</td>";
                         echo "<td class='center'>".(isset($data["serial"])? "".$data["serial"]."" :"-")."</td>";
                         echo "<td class='center'>".(isset($data["otherserial"])? "".$data["otherserial"]."" :"-")."</td>";
 
