@@ -319,8 +319,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
          echo "</a></td>";
          echo "<td class='center'>".getUsername($data["users_id"])."</td>";
          echo "<td class='center'>".Dropdown::getDropdownName("glpi_plugin_connections_connectiontypes",$data["plugin_connections_connectiontypes_id"])."</td>";
-		 echo "<td>&nbsp;</td>";
-         //echo "<td class='center'>".Dropdown::getDropdownName("glpi_plugin_connections_connectionrates",$data["plugin_connections_connectionrates_id"])."</td>";
+         echo "<td class='center'>".Dropdown::getDropdownName("glpi_plugin_connections_connectionrates",$data["plugin_connections_connectionrates_id"])."</td>";
          echo "<td class='center'>".Dropdown::getDropdownName("glpi_plugin_connections_guaranteedconnectionrates",$data["plugin_connections_guaranteedconnectionrates_id"])."</td>";
 
          if ($this->canCreate()) {
