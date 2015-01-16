@@ -218,7 +218,9 @@ class PluginConnectionsConnection extends CommonDBTM {
 		$this->addStandardTab('PluginConnectionsConnection_Item', $ong, $options);
 		if ($this->fields['id'] > 0) {
 			$this->addStandardTab('Ticket', $ong, $options);
-			$this->addStandardTab('Contract_Item', $ong, $options);
+		    $this->addStandardTab('Item_Problem', $ong, $options);
+		    $this->addStandardTab('Infocom', $ong, $options);
+ 			$this->addStandardTab('Contract_Item', $ong, $options);
 			$this->addStandardTab('Document_Item', $ong, $options);
 			$this->addStandardTab('Note', $ong, $options);
 			$this->addStandardTab('Log', $ong, $options);
