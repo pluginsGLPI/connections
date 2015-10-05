@@ -1,0 +1,61 @@
+<root>
+   <name>Connections</name>
+   <key>connections</key>
+   <state>stable</state>
+   <logo>https://raw.githubusercontent.com/pluginsGLPI/connections/master/pics/icon.png</logo>
+   <description>
+      <short>
+         <en>This plugin allows you to manage the connections of your network and associate them with elements of the inventory.</en>
+         <fr>Ce plugin vous permet de gérer les liaisons de votre réseau et de les associer à des éléments de l'inventaire.</fr>
+      </short>
+      <long>
+         <en>This plugin allows you to manage the connections of your network and associate them with elements of the inventory.</en>
+         <fr>Ce plugin vous permet de gérer les liaisons de votre réseau et de les associer à des éléments de l'inventaire.</fr>
+      </long>
+   </description>
+   <homepage>https://github.com/pluginsGLPI/connections</homepage>
+   <download>https://github.com/pluginsGLPI/connections/releases</download>
+   <issues>https://github.com/pluginsGLPI/connections/issues</issues>
+   <readme>https://github.com/pluginsGLPI/connections/blob/master/README.md</readme>
+   <authors>
+      <author>Jean Marc GRISARD</author>
+      <author>Xavier CAILLAUD</author>
+      <author>Damien BARON</author>
+      <author>Emmanuel Haguet</author>
+      <author>Jérémy Moreau</author>
+   </authors>
+   <versions>
+      <version>
+         <num>1.6.4</num>
+         <compatibility>0.84</compatibility>
+      </version>
+      <version>
+         <num>0.90-1.6.5</num>
+         <compatibility>0.85</compatibility>
+         <compatibility>0.90</compatibility>
+      </version>
+   </versions>
+   <langs>
+      <lang>en_GB</lang>
+      <lang>fr_FR</lang>
+   </langs>
+   <license>GPL v2+</license>
+   <tags>
+      <en>
+         <tag>Network</tag>
+         <tag>Inventory</tag>
+         <tag>Link</tag>
+         <tag>Connections</tag>
+      </en>
+      <lang>
+         <tag>Réseaux</tag>
+         <tag>Inventaire</tag>
+         <tag>Liaison</tag>
+         <tag>Connexions</tag>
+      </lang>
+   </tags>
+   <screenshots>
+      <screenshot>https://github.com/pluginsGLPI/connections/raw/master/pics/config.png</screenshot>
+      <screenshot>https://github.com/pluginsGLPI/connections/raw/master/pics/inventory.png</screenshot>
+   </screenshots>
+</root>
