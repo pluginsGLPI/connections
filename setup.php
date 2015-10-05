@@ -28,7 +28,7 @@
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.4 - GLPI 0.84
+// Purpose of file: plugin connections v1.6.5 - GLPI 0.85 / 0.90
 // ----------------------------------------------------------------------
  */
  
@@ -120,11 +120,10 @@ function plugin_init_connections() {
 // Get the name and the version of the plugin - Needed
 function plugin_version_connections() {
 	return array('name' 	=> __('Connections', 'connections'),
-		'version'			=> '1.7.0',
-		'license'			=> 'GPLv2+', //Note : Fichier Licence non présent
+		'version'			=> '0.90-1.6.5',
+		'license'			=> 'GPLv2+',
 		'author'				=> 'Xavier Caillaud, Jean Marc GRISARD',
-		//Note : update URL again ? https://github.com/pluginsGLPI/connections
-		'homepage'			=> 'https://forge.glpi-project.org/projects/connections',
+		'homepage'			=> 'https://github.com/pluginsGLPI/connections',
 		'minGlpiVersion' 	=> '0.85');
 }
 
