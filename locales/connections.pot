@@ -1,66 +1,65 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE CONNECTIONS'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the CONNECTIONS package.
-# 
-# Translators:
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: GLPI Plugin - Connections\n"
+"Project-Id-Version: ESCALADE 2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-07-30 09:41+0200\n"
-"PO-Revision-Date: 2015-10-05 11:08+0000\n"
-"Last-Translator: Jérémy MOREAU <jmoreau.dev@gmail.com>\n"
-"Language-Team: English (United Kingdom) (http://www.transifex.com/teclib/glpi-plugin-connections/language/en_GB/)\n"
+"PO-Revision-Date: 2015-10-02 16:20+0100\n"
+"Language-Team: TECLIB <contact@teclib.com>\n"
+"Last-Translator: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: en_GB\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language-Team: \n"
 "X-Generator: Poedit 1.7.5\n"
+"Language: en_GB\n"
 
 #: hook.php:219
 msgid "Connections"
-msgstr "Connections"
+msgstr ""
 
 msgid "Create a new connection"
-msgstr "Create a new connection"
+msgstr ""
 
 msgid "Linked elements"
-msgstr "Linked elements"
+msgstr ""
 
 msgid "Connections linked"
-msgstr "Connections linked"
+msgstr ""
 
 msgid "Never expires"
-msgstr "Never expires"
+msgstr ""
 
 msgid "Creation date"
-msgstr "Creation date"
+msgstr ""
 
 msgid "Technical reference"
-msgstr "Technical reference"
+msgstr ""
 
 msgid "Rights management"
-msgstr "Rights management"
+msgstr ""
 
 # setup
 msgid "Plugin Setup"
-msgstr "Plugin Setup"
+msgstr ""
 
 msgid "Type of Connections"
-msgstr "Type of Connections"
+msgstr ""
 
 msgid "Rates"
-msgstr "Rates"
+msgstr ""
 
 msgid "Guaranteed Rates"
-msgstr "Guaranteed Rates"
+msgstr ""
 
 msgid "Link"
-msgstr "Link"
+msgstr ""
 
 msgid "days"
-msgstr "days"
+msgstr ""
 
 msgid "Link to connections"
-msgstr "Link to connections"
+msgstr ""
