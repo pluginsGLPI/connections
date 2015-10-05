@@ -36,5 +36,3 @@ include ('../../../inc/includes.php');
 
 $dropdown = new PluginConnectionsConnectionType();
 include ('../../../front/dropdown.common.form.php');
-
-?>

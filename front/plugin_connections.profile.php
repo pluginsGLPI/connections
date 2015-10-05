@@ -33,17 +33,14 @@
 // Purpose of file:
 // ----------------------------------------------------------------------
 
-
-$NEEDED_ITEMS=array("profile");
 include ('../../../inc/includes.php');
 
-Session::checkRight("profile","r");
+Session::checkRight("profile", READ);
 
-$prof=new plugin_connections_Profile();
+$prof = new PluginConnectionsProfile();
+
 //Save profile
-if (isset ($_POST['update_user_profile'])) {
+if (isset($_POST['update_user_profile'])) {
 	$prof->update($_POST);
 	Html::back();
 }
-
-?>

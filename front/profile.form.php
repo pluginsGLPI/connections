@@ -34,14 +34,12 @@
 
 include ('../../../inc/includes.php');
 
-Session::checkRight("profile","r");
+Session::checkRight("profile", READ);
 
-$prof=new PluginConnectionsProfile();
+$prof = new PluginConnectionsProfile();
 
 //Save profile
 if (isset ($_POST['update'])) {
 	$prof->update($_POST);
 	Html::back();
 }
-
-?>

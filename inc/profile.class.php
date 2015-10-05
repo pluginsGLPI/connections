@@ -31,25 +31,24 @@
 // Purpose of file: plugin connections v1.6.4 - GLPI 0.84
 // ----------------------------------------------------------------------
  */
-
 if (!defined('GLPI_ROOT')) {
 	die("Sorry. You can't access directly to this file");
 }
 
 class PluginConnectionsProfile extends CommonDBTM {
+
+   static $rightname = 'profile';
    
    static function getTypeName($nb=0) {
-      global $LANG;
-
-      return $LANG['plugin_connections']['profile'][0];
+      return __('Rights management', 'connections');
    }
    
    static function canCreate() {
-      return Session::haveRight('profile', 'w');
+      return Session::haveRight('profile', UPDATE);
    }
 
    static function canView() {
-      return Session::haveRight('profile', 'r');
+      return Session::haveRight('profile', READ);
    }
    
 	//if profile deleted
@@ -61,8 +60,7 @@ class PluginConnectionsProfile extends CommonDBTM {
 	function cleanProfiles($id) {
       global $DB;
       
-		$query = "DELETE 
-				FROM `".$this->getTable()."`
+		$query = "DELETE FROM `".$this->getTable()."`
 				WHERE `profiles_id` = '".$id."' ";
 		
 		$DB->query($query);
@@ -80,8 +78,6 @@ class PluginConnectionsProfile extends CommonDBTM {
 			$this->fields = $DB->fetch_assoc($result);
 			if (is_array($this->fields) && count($this->fields)) {
 				return true;
-			} else {
-				return false;
 			}
 		}
 		return false;
@@ -96,29 +92,29 @@ class PluginConnectionsProfile extends CommonDBTM {
             'profiles_id' => $ID,
             'connections' => 'w',
             'open_ticket' => '1'));
-            
       }
    }
 	
 	function createAccess($ID) {
-
-      $this->add(array(
-      'profiles_id' => $ID));
+      $this->add(array('profiles_id' => $ID));
    }
    
    static function changeProfile() {
+
       //Should we use Session::changeProfile() instead (available since GLPI v0.83)?
-      $prof = new self();
-      if ($prof->getFromDBByProfile($_SESSION['glpiactiveprofile']['id']))
-         $_SESSION["glpi_plugin_connections_profile"]=$prof->fields;
-      else
+      $profil = new self();
+      if ($profil->getFromDBByProfile($_SESSION['glpiactiveprofile']['id'])) {
+         $_SESSION["glpi_plugin_connections_profile"] = $profil->fields;
+      } else {
          unset($_SESSION["glpi_plugin_connections_profile"]);
+      }
    }
 
-	function showForm ($ID, $options=array()) {
-		global $LANG;
+	function showForm($ID, $options = array()) {
 
-		if (!Session::haveRight("profile","r")) return false;
+		if (!Session::haveRight("profile", READ)) { //useless because "static $rightname = 'profile';" existed ?
+         return false;
+      }
 
 		$prof = new Profile();
 		if ($ID) {
@@ -129,27 +125,28 @@ class PluginConnectionsProfile extends CommonDBTM {
       $this->showFormHeader($options);
 
 		echo "<tr class='tab_bg_2'>";
-		
-		echo "<th colspan='4'>".$LANG['plugin_connections']['profile'][0]." ".$prof->fields["name"]."</th>";
-      
+		echo "<th colspan='4'>".__('Rights management', 'connections')." ".$prof->fields["name"]."</th>";
       echo "</tr>";
-		echo "<tr class='tab_bg_2'>";
-		
-		echo "<td>".$LANG['plugin_connections']['title'][1].":</td><td>";
 
-		if ($prof->fields['interface']!='helpdesk') {
-			Profile::dropdownNoneReadWrite("connections",$this->fields["connections"],1,1,1);
+		echo "<tr class='tab_bg_2'>";
+		echo "<td>".__("Connections", 'connections').":</td>";
+      echo "<td>";
+
+		if ($prof->fields['interface'] == 'helpdesk') {
+         echo __('No access');
 		} else {
-			echo __('No Access');
+         Profile::dropdownNoneReadWrite("connections",$this->fields["connections"],1,1,1);
 		}
 		echo "</td>";
 
-		echo "<td>" . __('Linkable items to a ticket') . " - " . $LANG['plugin_connections']['title'][1] . ":</td><td>";
-		if ($prof->fields['create_ticket']) {
-			Dropdown::showYesNo("open_ticket",$this->fields["open_ticket"]);
-		} else {
-			echo Dropdown::getYesNo(0);
-		}
+		echo "<td>" . __('Linkable items to a ticket') . " - " . __("Connections", 'connections') . ":</td>"; //TODO : __('Linkable items to a ticket')
+      echo "<td>";
+      //TODO : PHP Notice: Undefined index: create_ticket
+		//if ($prof->fields['create_ticket']) {
+			Dropdown::showYesNo("open_ticket", $this->fields["open_ticket"]);
+		//} else {
+		//	echo Dropdown::getYesNo(0);
+		//}
 		echo "</td>";
 		echo "</tr>";
 
@@ -157,40 +154,38 @@ class PluginConnectionsProfile extends CommonDBTM {
       
 		$options['candel'] = false;
       $this->showFormButtons($options);
+      Html::closeForm();
 	}
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
-      global $LANG;
-
-      if ($item->getType()=='Profile') {
-         return $LANG['plugin_connections']['title'][1];
+      if ($item->getType() == 'Profile') {
+         return __("Connections", 'connections');
       }
       return '';
    }
 
    static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
-      global $CFG_GLPI;
 
-      $PluginConnectionsProfile=new self();
-      $PluginConnectionsConnection_Item=new PluginConnectionsConnection_Item();
+      $ID = $item->getField('id');
 
       switch ($item->getType()) {
          case 'Profile':
-            if (!$PluginConnectionsProfile->getFromDBByProfile($item->getField('id')))
-               $PluginConnectionsProfile->createAccess($item->getField('id'));
-            $PluginConnectionsProfile->showForm($item->getField('id'), array('target' => $CFG_GLPI["root_doc"]."/plugins/connections/front/profile.form.php"));
+            $PluginConnectionsProfile = new self();
+            if (!$PluginConnectionsProfile->getFromDBByProfile($ID)) {
+               $PluginConnectionsProfile->createAccess($ID);
+            }
+            $PluginConnectionsProfile->showForm($ID); // array('target' => self::getFormURL())
             break;
-         case 'Supplier':
-            $PluginConnectionsConnection_Item->showPluginFromSupplier($item->getType(),$item->getField('id'));
+         case 'Supplier': //Note : NOT USED
+            PluginConnectionsConnection_Item::showPluginFromSupplier($item->getType(), $ID);
             break;
          default:
+            $PluginConnectionsConnection_Item = new PluginConnectionsConnection_Item();
             if (in_array($item->getType(), PluginConnectionsConnection_Item::getClasses(true))) {
-               $PluginConnectionsConnection_Item->showPluginFromItems($item->getType(),$item->getField('id'));
+               $PluginConnectionsConnection_Item->showPluginFromItems($item->getType(), $ID);
             }
             break;
       }
       return true;
    }
 }
-
-?>

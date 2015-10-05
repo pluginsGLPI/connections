@@ -1,0 +1,64 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE CONNECTIONS'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the CONNECTIONS package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: ESCALADE 2.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2014-01-29 10:27+0100\n"
+"PO-Revision-Date: 2015-10-02 16:19+0100\n"
+"Last-Translator: Emmanuel Haguet <ehaguet@teclib.com>\n"
+"Language-Team: TECLIB <contact@teclib.com>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.7.5\n"
+
+#: hook.php:219
+msgid "Connections"
+msgstr "Connections"
+
+msgid "Create a new connection"
+msgstr "Créer une nouvelle connection"
+
+msgid "Linked elements"
+msgstr "Elément(s) associé(s)"
+
+msgid "Connections linked"
+msgstr "Connections(s) associée(s)"
+
+msgid "Never expires"
+msgstr "N'existe pas"
+
+msgid "Creation date"
+msgstr "Date de création"
+
+msgid "Technical reference"
+msgstr "Responsable technique"
+
+msgid "Rights management"
+msgstr "Gestion des droits"
+
+# setup
+msgid "Plugin Setup"
+msgstr "Configuration du plugin"
+
+msgid "Type of Connections"
+msgstr "Type de connections"
+
+msgid "Rates"
+msgstr "Débits"
+
+msgid "Guaranteed Rates"
+msgstr "Débits garantis"
+
+msgid "Link"
+msgstr "Associer"
+
+msgid "days"
+msgstr "jours"
+
+msgid "Link to connections"
+msgstr "Associer à la connection"

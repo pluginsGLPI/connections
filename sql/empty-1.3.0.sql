@@ -9,7 +9,6 @@ CREATE TABLE `glpi_plugin_connections` (
 	`comments` text collate utf8_unicode_ci,
 	`notes` longtext collate utf8_unicode_ci,
 	`deleted` smallint(6) NOT NULL default '0',
-	`bytes` varchar(255) collate utf8_unicode_ci NOT NULL default '',
 	PRIMARY KEY  (`ID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

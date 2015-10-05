@@ -32,33 +32,7 @@
 // ----------------------------------------------------------------------
  */
 
-$title = "Connections";
+include ('../../../inc/includes.php');
 
-$LANG['plugin_connections']['title'][1]	= "".$title."";
-
-$LANG['plugin_connections'][1] = "Crate a new connection";
-$LANG['plugin_connections'][2]  = "Supplier";
-$LANG['plugin_connections'][6]  = "Linked elements";
-$LANG['plugin_connections'][7]  = "Name";
-$LANG['plugin_connections'][8]  = "".$title." linked";
-$LANG['plugin_connections'][10] = "Comments";
-$LANG['plugin_connections'][12] = "Type";
-$LANG['plugin_connections'][13] = "Expire date";
-$LANG['plugin_connections'][14] = "Never expires";
-$LANG['plugin_connections'][15] = "Reset for infinite";
-$LANG['plugin_connections'][16] = "Others";
-$LANG['plugin_connections'][17] = "Creation date";
-$LANG['plugin_connections'][18] = "Technical reference";
-
-$LANG['plugin_connections']['profile'][0] = 'Rights management';
-
-$LANG['plugin_connections']['setup'][1] = "Plugin Setup";
-$LANG['plugin_connections']['setup'][2]  = "Type of ".$title."";
-$LANG['plugin_connections']['setup'][3]  = "Rates";
-$LANG['plugin_connections']['setup'][4]  = "Guaranteed Rates";
-$LANG['plugin_connections']['setup'][9]  = "Link";
-$LANG['plugin_connections']['setup'][10] = "Unlik";
-$LANG['plugin_connections']['setup'][12] = "days";
-$LANG['plugin_connections']['setup'][18] = "Link to connections";
-
-?>
+$dropdown = new PluginConnectionsGuaranteedConnectionRate();
+include ('../../../front/dropdown.common.php');

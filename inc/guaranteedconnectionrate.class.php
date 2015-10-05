@@ -39,10 +39,8 @@ if (!defined('GLPI_ROOT')) {
 // Class for a Dropdown
 class PluginConnectionsGuaranteedConnectionRate extends CommonDropdown {
    
-   static function getTypeName($nb=0) {
-      global $LANG;
-
-      return $LANG['plugin_connections']['setup'][4];
+   static function getTypeName($nb = 0) {
+      return __("Guaranteed Rates", 'connections');
    }
    
    static function canCreate() {
@@ -57,14 +55,14 @@ class PluginConnectionsGuaranteedConnectionRate extends CommonDropdown {
       global $DB;
 
       $temp = new self();
-      if ($ID<=0 || !$temp->getFromDB($ID)) {
+      if ($ID <= 0 || !$temp->getFromDB($ID)) {
          return 0;
       }
       $query = "SELECT `id`
                 FROM `".$temp->getTable()."`
                 WHERE `entities_id` = '$entity'
                   AND `name` = '".addslashes($temp->fields['name'])."'";
-      foreach ($DB->request($query) as $data) {
+      foreach ($DB->request($query) as $data) { //WTF
          return $data['id'];
       }
       $input = $temp->fields;
@@ -73,5 +71,3 @@ class PluginConnectionsGuaranteedConnectionRate extends CommonDropdown {
       return $temp->add($input);
    }
 }
-
-?>

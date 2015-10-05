@@ -5,7 +5,6 @@ CREATE TABLE `glpi_plugin_connections` (
 	`recursive` tinyint(1) NOT NULL default '0',
 	`name` varchar(255) collate utf8_unicode_ci NOT NULL default '',
 	`type` INT(4) NOT NULL DEFAULT '0',
-	`bytes` varchar(255) collate utf8_unicode_ci NOT NULL default '',
 	`location` INT(4) NOT NULL DEFAULT '0',
 	`state` tinyint(4) NOT NULL default '0',
 	`comments` text collate utf8_unicode_ci,
