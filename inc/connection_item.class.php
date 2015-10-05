@@ -142,7 +142,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
 
       $rand = mt_rand();
 
-      $canedit = true: //$PluginConnectionsConnection->can($instID,'w'); //TODO : à porter
+      $canedit = true; //$PluginConnectionsConnection->can($instID,'w'); //TODO : à porter
 
       $query = "SELECT DISTINCT `itemtype`
           FROM `".$this->getTable()."`
