@@ -31,7 +31,10 @@
 // Purpose of file: plugin connections v1.6.4 - GLPI 0.84
 // ----------------------------------------------------------------------
  */
+
 include ('../../../inc/includes.php');
 
 $dropdown = new PluginConnectionsGuaranteedConnectionRate();
 include ('../../../front/dropdown.common.form.php');
+
+?>

@@ -41,23 +41,31 @@ if (strpos($_SERVER['PHP_SELF'],"dropdownRatesConnections.php")) {
 
 Session::checkCentralAccess();
 
-if (! isset($_POST["plugin_connections_connectionrates_id"])) {
-	return ;
+// Make a select box
+
+if (isset($_POST["plugin_connections_connectionrates_id"])) {
+
+	$rand=$_POST['rand'];
+
+	$use_ajax=false;
+	if ($CFG_GLPI["use_ajax"] && 
+		countElementsInTable('glpi_plugin_connections_connections',"glpi_plugin_connections_connections.plugin_connections_connectionrates_id='".$_POST["plugin_connections_connectionrates_id"]."' ".getEntitiesRestrictRequest("AND", "glpi_plugin_connections_connections","",$_POST["entity_restrict"],true) )>$CFG_GLPI["ajax_limit_count"]
+	) {
+		$use_ajax=true;
+	}
+
+
+	$params=array('searchText'=>'__VALUE__',
+			'plugin_connections_connectionrates_id'=>$_POST["plugin_connections_connectionrates_id"],
+			'entity_restrict'=>$_POST["entity_restrict"],
+			'rand'=>$_POST['rand'],
+			'myname'=>$_POST['myname'],
+			'used'=>$_POST['used']
+			);
+	
+	$default="<select name='".$_POST["myname"]."'><option value='0'>".Dropdown::EMPTY_VALUE."</option></select>";
+	Ajax::dropdown($use_ajax,"/plugins/connections/ajax/dropdownRatesConnections.php",$params,$default,$rand);
+
 }
 
-$nb_elements = countElementsInTable('glpi_plugin_connections_connections',"glpi_plugin_connections_connections.plugin_connections_connectionrates_id='".$_POST["plugin_connections_connectionrates_id"]."' ".getEntitiesRestrictRequest("AND", "glpi_plugin_connections_connections","",$_POST["entity_restrict"],true) );
-
-$use_ajax = ($CFG_GLPI["use_ajax_autocompletion"] && $nb_elements > $CFG_GLPI["ajax_limit_count"]);
-
-$params=array('searchText'=>'__VALUE__',
-		'plugin_connections_connectionrates_id'=>$_POST["plugin_connections_connectionrates_id"],
-		'entity_restrict'=>$_POST["entity_restrict"],
-		'rand'=>$_POST['rand'],
-		'myname'=>$_POST['myname'],
-		'used'=>$_POST['used']
-		);
-
-$default="<select name='".$_POST["myname"]."'><option value='0'>".Dropdown::EMPTY_VALUE."</option></select>";
-
-$url = "/plugins/connections/ajax/dropdownRatesConnections.php";
-Ajax::dropdown($use_ajax,$url,$params,$default,$_POST['rand']); //TODO : Aussi à porter en 0.85 ?!
+?>

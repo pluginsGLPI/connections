@@ -36,11 +36,15 @@
 
 include ('../../../inc/includes.php');
 
-Session::checkRight("config", UPDATE);
+Session::checkRight("config", "w");
 
-$PluginConnectionsConfig = new PluginConnectionsConfig();
+$PluginConnectionsConfig=new PluginConnectionsConfig();
 
 if (isset($_POST["update"])) {
+
 	$PluginConnectionsConfig->update($_POST);
 	Html::back();
+
 }
+
+?>

@@ -39,8 +39,10 @@ if (!defined('GLPI_ROOT')) {
 // Class for a Dropdown
 class PluginConnectionsConnectionRate extends CommonDropdown {
    
-   static function getTypeName($nb = 0) {
-      return __('Rates', 'connections');
+   static function getTypeName($nb=0) {
+      global $LANG;
+
+      return $LANG['plugin_connections']['setup'][3];
    }
    
    static function canCreate() {
@@ -54,22 +56,22 @@ class PluginConnectionsConnectionRate extends CommonDropdown {
    static function transfer($ID, $entity) {
       global $DB;
 
-      $rate = new self();
-      if ($ID <= 0 || !$rate->getFromDB($ID)) {
+      $temp = new self();
+      if ($ID<=0 || !$temp->getFromDB($ID)) {
          return 0;
       }
-      
       $query = "SELECT `id`
-                FROM `".$rate->getTable()."`
+                FROM `".$temp->getTable()."`
                 WHERE `entities_id` = '$entity'
-                  AND `name` = '".addslashes($rate->fields['name'])."'";
-      foreach ($DB->request($query) as $data) { //WTF
+                  AND `name` = '".addslashes($temp->fields['name'])."'";
+      foreach ($DB->request($query) as $data) {
          return $data['id'];
       }
-
-      // Add a new item
-      $rate->fields['entities_id'] = $entity;
-      unset($rate->fields['id']);
-      return $rate->add($rate->fields);
+      $input = $temp->fields;
+      $input['entities_id'] = $entity;
+      unset($input['id']);
+      return $temp->add($input);
    }
 }
+
+?>

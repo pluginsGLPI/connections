@@ -31,26 +31,26 @@
 // Purpose of file: plugin connections v1.6.4 - GLPI 0.84
 // ----------------------------------------------------------------------
  */
+
 include ('../../../inc/includes.php');
 
 $plugin = new Plugin();
-if ($plugin->isActivated("environment")) {
-	Html::header(__('Connections', 'connections'),'',"plugins","environment","connections");
-} else {
-   //TODO : à porter en 0.85
-	Html::header(__('Connections', 'connections'),'',"plugins","connections");
-}
+if ($plugin->isActivated("environment"))
+	Html::header($LANG['plugin_connections']['title'][1],'',"plugins","environment","connections");
+else
+	Html::header($LANG['plugin_connections']['title'][1],'',"plugins","connections");
 
 $PluginConnectionsConnection = new PluginConnectionsConnection();
 
-if ($PluginConnectionsConnection->canView() || Session::haveRight("config", READ)) {
-	Search::show("PluginConnectionsConnection");
+if ($PluginConnectionsConnection->canView() || Session::haveRight("config","w")) {
+		
+	Search::show("PluginConnectionsConnection");	
+
 } else {
-	//Note : a GLPI function exist for that
-	echo "<div align='center'>";
-   echo "<br><br><img src=\"".$CFG_GLPI["root_doc"]."/pics/warning.png\" alt=\"warning\"><br><br>";
-	echo "<b>".__('Access Denied')."</b>";
-   echo "</div>";
+	echo "<div align='center'><br><br><img src=\"".$CFG_GLPI["root_doc"]."/pics/warning.png\" alt=\"warning\"><br><br>";
+	echo "<b>".__('Access Denied')."</b></div>";
 }
 
 Html::footer();
+
+?>

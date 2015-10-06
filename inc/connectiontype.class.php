@@ -36,10 +36,13 @@ if (!defined('GLPI_ROOT')) {
 	die("Sorry. You can't access directly to this file");
 }
 
+// Class for a Dropdown
 class PluginConnectionsConnectionType extends CommonDropdown {
    
-   static function getTypeName($nb = 0) {
-      return __('Type of Connections', 'connections');
+   static function getTypeName($nb=0) {
+      global $LANG;
+
+      return $LANG['plugin_connections']['setup'][2];
    }
    
    static function canCreate() {
@@ -53,23 +56,22 @@ class PluginConnectionsConnectionType extends CommonDropdown {
    static function transfer($ID, $entity) {
       global $DB;
 
-      $type = new self();
-      if ($ID <= 0 || !$type->getFromDB($ID)) {
+      $temp = new self();
+      if ($ID<=0 || !$temp->getFromDB($ID)) {
          return 0;
       }
       $query = "SELECT `id`
-                FROM `".$type->getTable()."`
+                FROM `".$temp->getTable()."`
                 WHERE `entities_id` = '$entity'
-                  AND `name` = '".addslashes($type->fields['name'])."'";
-      foreach ($DB->request($query) as $data) { //WTF
+                  AND `name` = '".addslashes($temp->fields['name'])."'";
+      foreach ($DB->request($query) as $data) {
          return $data['id'];
       }
-
-      // Add a new item
-      $input = $type->fields;
+      $input = $temp->fields;
       $input['entities_id'] = $entity;
       unset($input['id']);
-
-      return $type->add($input);
+      return $temp->add($input);
    }
 }
+
+?>

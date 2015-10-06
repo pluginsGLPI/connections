@@ -7,6 +7,7 @@ CREATE TABLE `glpi_plugin_connections_connections` (
 	`plugin_connections_connectiontypes_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_plugin_connections_connectiontypes (id)',
 	`plugin_connections_connectionrates_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_plugin_connections_connectionrates (id)',
 	`plugin_connections_connectionratesguaranteed_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_plugin_connections_connectionratesguaranteed (id)',
+	`bytes` varchar(255) collate utf8_unicode_ci NOT NULL default '',
 	`users_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_users (id)',
 	`groups_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_groups (id)',
 	`suppliers_id` int(11) NOT NULL default '0' COMMENT 'RELATION to glpi_suppliers (id)',
