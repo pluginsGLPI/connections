@@ -32,11 +32,13 @@
 // ----------------------------------------------------------------------
  */
 
-if (strpos($_SERVER['PHP_SELF'],"dropdownTypeConnections.php")) {
-	$AJAX_INCLUDE=1;
-	include ('../../../inc/includes.php');
-	header("Content-Type: text/html; charset=UTF-8");
-	Html::header_nocache();
+if (strpos($_SERVER['PHP_SELF'], "dropdownTypeConnections.php")) {
+   $AJAX_INCLUDE = 1;
+
+   include ('../../../inc/includes.php');
+
+   header("Content-Type: text/html; charset=UTF-8");
+   Html::header_nocache();
 }
 
 Session::checkCentralAccess();
@@ -45,27 +47,44 @@ Session::checkCentralAccess();
 
 if (isset($_POST["plugin_connections_connectiontypes_id"])) {
 
-	$rand=$_POST['rand'];
+   $rand     = $_POST['rand'];
+   $use_ajax = false;
 
-	$use_ajax=false;
-	if ($CFG_GLPI["use_ajax"] && 
-		countElementsInTable('glpi_plugin_connections_connections',"glpi_plugin_connections_connections.plugin_connections_connectiontypes_id='".$_POST["plugin_connections_connectiontypes_id"]."' ".getEntitiesRestrictRequest("AND", "glpi_plugin_connections_connections","",$_POST["entity_restrict"],true) )>$CFG_GLPI["ajax_limit_count"]
-	) {
-		$use_ajax=true;
-	}
+   if ($CFG_GLPI["use_ajax"] &&
+      countElementsInTable(
+         'glpi_plugin_connections_connections',
+         "glpi_plugin_connections_connections.plugin_connections_connectiontypes_id='"
+            . $_POST["plugin_connections_connectiontypes_id"] . "' "
+            . getEntitiesRestrictRequest(
+               "AND",
+               "glpi_plugin_connections_connections",
+               "",
+               $_POST["entity_restrict"],
+               true
+            )
+      ) > $CFG_GLPI["ajax_limit_count"]
+   ) {
+      $use_ajax = true;
+   }
 
 
-	$params=array('searchText'=>'__VALUE__',
-			'plugin_connections_connectiontypes_id'=>$_POST["plugin_connections_connectiontypes_id"],
-			'entity_restrict'=>$_POST["entity_restrict"],
-			'rand'=>$_POST['rand'],
-			'myname'=>$_POST['myname'],
-			'used'=>$_POST['used']
-			);
-	
-	$default="<select name='".$_POST["myname"]."'><option value='0'>".Dropdown::EMPTY_VALUE."</option></select>";
-	Ajax::dropdown($use_ajax,"/plugins/connections/ajax/dropdownConnections.php",$params,$default,$rand);
+   $params = array(
+      'searchText'                            => '__VALUE__',
+      'plugin_connections_connectiontypes_id' => $_POST["plugin_connections_connectiontypes_id"],
+      'entity_restrict'                       => $_POST["entity_restrict"],
+      'rand'                                  => $_POST['rand'],
+      'myname'                                => $_POST['myname'],
+      'used'                                  => $_POST['used']
+   );
 
+   $default = "<select name='" . $_POST["myname"] . "'>
+                  <option value='0'>" . Dropdown::EMPTY_VALUE . "</option>
+               </select>";
+   Ajax::dropdown(
+      $use_ajax,
+      "/plugins/connections/ajax/dropdownConnections.php",
+      $params,
+      $default,
+      $rand
+   );
 }
-
-?>

@@ -36,35 +36,45 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-class PluginConnectionsConfig extends CommonDBTM {
+class PluginConnectionsConfig extends CommonDBTM
+{
 
-	function showForm($target,$ID) {
+   public function showForm($target,$ID) {
       global $LANG;
-    
+
       $this->getFromDB($ID);
-      $delay_expired=$this->fields["delay_expired"];
-      $delay_whichexpire=$this->fields["delay_whichexpire"];
+      $delay_expired     = $this->fields["delay_expired"];
+      $delay_whichexpire = $this->fields["delay_whichexpire"];
+
       echo "<div align='center'>";
       echo "<form method='post' action=\"$target\">";
-      echo "<table class='tab_cadre' cellpadding='5'><tr><th>";
-      echo $LANG['plugin_connections']['setup'][11]." : </th></tr>";
+      echo "<table class='tab_cadre' cellpadding='5'>";
+
+      echo "<tr><th>" . $LANG['plugin_connections']['setup'][11] . " : </th></tr>";
+
       echo "<tr class='tab_bg_1'><td><div align='center'>";
 
-      $delay_stamp_first= mktime(0, 0, 0, date("m"), date("d")-$delay_expired, date("y"));
-      $delay_stamp_next= mktime(0, 0, 0, date("m"), date("d")+$delay_whichexpire, date("y"));
-      $date_first=date("Y-m-d",$delay_stamp_first);
-      $date_next=date("Y-m-d",$delay_stamp_next);
-      
-      echo "<tr class='tab_bg_1'><td><div align='left'>";
-      echo $LANG['plugin_connections']['mailing'][4]." <input type='text' size='5' name='delay_expired' value=\"$delay_expired\"> ".$LANG['plugin_connections']['setup'][12]." ( >".Html::convDate($date_first).")<br>";
-      echo $LANG['plugin_connections']['mailing'][5]." <input type='text' size='5' name='delay_whichexpire' value=\"$delay_whichexpire\"> ".$LANG['plugin_connections']['setup'][12]." ( <".Html::convDate($date_next).")";
+      $delay_stamp_first = mktime(0, 0, 0, date("m"), date("d") - $delay_expired, date("y"));
+      $delay_stamp_next  = mktime(0, 0, 0, date("m"), date("d") + $delay_whichexpire, date("y"));
+      $date_first        = date("Y-m-d", $delay_stamp_first);
+      $date_next         = date("Y-m-d", $delay_stamp_next);
 
-      echo "<tr><th>";
-      echo "<input type='hidden' name='id' value='".$ID."'>";
-      echo "<div align='center'><input type='submit' name='update' value=\"".__('Post')."\" class='submit' ></div></th></tr>";
-      echo "</table>";
+      echo "<tr class='tab_bg_1'><td>";
+
+      echo $LANG['plugin_connections']['mailing'][4];
+      echo " <input type='text' size='5' name='delay_expired' value=\"$delay_expired\"> ";
+      echo $LANG['plugin_connections']['setup'][12] . " ( >" . Html::convDate($date_first) . ")<br>";
+
+      echo $LANG['plugin_connections']['mailing'][5];
+      echo " <input type='text' size='5' name='delay_whichexpire' value=\"$delay_whichexpire\"> ";
+      echo $LANG['plugin_connections']['setup'][12] . " ( <" . Html::convDate($date_next) . ")";
+      echo '</td></tr>';
+
+      echo '<tr><th align="center">';
+      echo '<input type="hidden" name="id" value="' . $ID . '>';
+      echo '<input type="submit" name="update" value="' . __("Post") . '" class="submit" >';
+      echo '</th></tr>';
+      echo '</table>';
       echo Html::closeForm(false), "</div>";
    }
 }
-
-?>

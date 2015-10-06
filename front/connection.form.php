@@ -34,87 +34,80 @@
 
 include ('../../../inc/includes.php');
 
-if (!isset($_GET["id"])) $_GET["id"] = "";
-if (!isset($_GET["withtemplate"])) $_GET["withtemplate"] = "";
+if (!isset($_GET["id"]))            $_GET["id"]           = "";
+if (!isset($_GET["withtemplate"]))  $_GET["withtemplate"] = "";
 
-$PluginConnectionsConnection=new PluginConnectionsConnection();
-$PluginConnectionsConnection_Item=new PluginConnectionsConnection_Item();
+$PluginConnectionsConnection      = new PluginConnectionsConnection();
+$PluginConnectionsConnection_Item = new PluginConnectionsConnection_Item();
 
 if (isset($_POST["add"])) {
-	$PluginConnectionsConnection->check(-1,'w',$_POST);
+   $PluginConnectionsConnection->check(-1, 'w', $_POST);
    $newID=$PluginConnectionsConnection->add($_POST);
-	Html::back();
-	
-} else if (isset($_POST["delete"])) {
+   Html::back();
 
-	$PluginConnectionsConnection->check($_POST['id'],'w');
+} elseif (isset($_POST["delete"])) {
+   $PluginConnectionsConnection->check($_POST['id'], 'w');
    $PluginConnectionsConnection->delete($_POST);
-	Html::redirect(Toolbox::getItemTypeSearchURL('PluginConnectionsConnection'));
-	
-} else if (isset($_POST["restore"])) {
+   Html::redirect(Toolbox::getItemTypeSearchURL('PluginConnectionsConnection'));
 
-	$PluginConnectionsConnection->check($_POST['id'],'w');
+} elseif (isset($_POST["restore"])) {
+   $PluginConnectionsConnection->check($_POST['id'], 'w');
    $PluginConnectionsConnection->restore($_POST);
-	Html::redirect(Toolbox::getItemTypeSearchURL('PluginConnectionsConnection'));
-	
-} else if (isset($_POST["purge"])) {
+   Html::redirect(Toolbox::getItemTypeSearchURL('PluginConnectionsConnection'));
 
-	$PluginConnectionsConnection->check($_POST['id'],'w');
-   $PluginConnectionsConnection->delete($_POST,1);
-	Html::redirect(Toolbox::getItemTypeSearchURL('PluginConnectionsConnection'));
-	
-} else if (isset($_POST["update"])) {
+} elseif (isset($_POST["purge"])) {
+   $PluginConnectionsConnection->check($_POST['id'], 'w');
+   $PluginConnectionsConnection->delete($_POST, 1);
+   Html::redirect(Toolbox::getItemTypeSearchURL('PluginConnectionsConnection'));
 
-	$PluginConnectionsConnection->check($_POST['id'],'w');
+} elseif (isset($_POST["update"])) {
+   $PluginConnectionsConnection->check($_POST['id'], 'w');
    $PluginConnectionsConnection->update($_POST);
-	Html::back();
-	
-} else if (isset($_POST["additem"])) {
+   Html::back();
 
-	if (!empty($_POST['itemtype'])&&$_POST['items_id']>0) {
-      $PluginConnectionsConnection_Item->check(-1,'w',$_POST);
-		$PluginConnectionsConnection_Item->addItem($_POST["plugin_connections_connections_id"],$_POST['items_id'],$_POST['itemtype']);
-	}
-	Html::back();
-	
-} else if (isset($_POST["deleteitem"])) {
-   
+} elseif (isset($_POST["additem"])) {
+   if (!empty($_POST['itemtype']) && $_POST['items_id'] > 0) {
+      $PluginConnectionsConnection_Item->check(-1, 'w', $_POST);
+      $PluginConnectionsConnection_Item->addItem(
+         $_POST["plugin_connections_connections_id"],
+         $_POST['items_id'],
+         $_POST['itemtype']
+      );
+   }
+   Html::back();
+
+} elseif (isset($_POST["deleteitem"])) {
    foreach ($_POST["item"] as $key => $val) {
       $input = array('id' => $key);
-      if ($val==1) {
-         $PluginConnectionsConnection_Item->check($key,'w');
+      if ($val == 1) {
+         $PluginConnectionsConnection_Item->check($key, 'w');
          $PluginConnectionsConnection_Item->delete($input);
       }
    }
+   Html::back();
 
-	Html::back();
-	
-} else if (isset($_POST["deleteconnections"])) {
+} elseif (isset($_POST["deleteconnections"])) {
+   $input = array('id' => $_POST["id"]);
+   $PluginConnectionsConnection_Item->check($_POST["id"], 'w');
+   $PluginConnectionsConnection_Item->delete($input);
+   Html::back();
 
-	$input = array('id' => $_POST["id"]);
-   $PluginConnectionsConnection_Item->check($_POST["id"],'w');
-	$PluginConnectionsConnection_Item->delete($input);
-	Html::back();
-	
 } else {
+   $PluginConnectionsConnection->checkGlobal("r");
 
-	$PluginConnectionsConnection->checkGlobal("r");
+   if (!isset($_SESSION['glpi_tab'])) $_SESSION['glpi_tab']=1;
+   if (isset($_GET['onglet'])) {
+      $_SESSION['glpi_tab'] = $_GET['onglet'];
+   }
 
-	if (!isset($_SESSION['glpi_tab'])) $_SESSION['glpi_tab']=1;
-	if (isset($_GET['onglet'])) {
-		$_SESSION['glpi_tab']=$_GET['onglet'];
-		//		Html::back();
-	}
-	
-	$plugin = new Plugin();
-	if ($plugin->isActivated("environment"))
-		Html::header($LANG['plugin_connections']['title'][1],'',"plugins","environment","connections");
-	else
-		Html::header($LANG['plugin_connections']['title'][1],'',"plugins","connections");
+   $plugin = new Plugin();
+   if ($plugin->isActivated("environment")) {
+      Html::header($LANG['plugin_connections']['title'][1], '', "plugins", "environment", "connections");
+   } else {
+      Html::header($LANG['plugin_connections']['title'][1], '', "plugins", "connections");
+   }
 
-	$PluginConnectionsConnection->showForm($_GET["id"]);
+   $PluginConnectionsConnection->showForm($_GET["id"]);
 
-	Html::footer();
+   Html::footer();
 }
-
-?>

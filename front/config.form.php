@@ -1,6 +1,5 @@
 <?php
 
-
 /*
  * @version $Id: HEADER 1 2010-02-24 00:12 Tsmr $
  -------------------------------------------------------------------------
@@ -38,13 +37,9 @@ include ('../../../inc/includes.php');
 
 Session::checkRight("config", "w");
 
-$PluginConnectionsConfig=new PluginConnectionsConfig();
+$PluginConnectionsConfig = new PluginConnectionsConfig();
 
 if (isset($_POST["update"])) {
-
-	$PluginConnectionsConfig->update($_POST);
-	Html::back();
-
+   $PluginConnectionsConfig->update($_POST);
+   Html::back();
 }
-
-?>

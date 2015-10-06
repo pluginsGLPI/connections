@@ -35,22 +35,31 @@
 include ('../../../inc/includes.php');
 
 $plugin = new Plugin();
-if ($plugin->isActivated("environment"))
-	Html::header($LANG['plugin_connections']['title'][1],'',"plugins","environment","connections");
-else
-	Html::header($LANG['plugin_connections']['title'][1],'',"plugins","connections");
+if ($plugin->isActivated("environment")) {
+   Html::header(
+      $LANG['plugin_connections']['title'][1],
+      '',
+      "plugins",
+      "environment",
+      "connections"
+   );
+} else {
+   Html::header(
+      $LANG['plugin_connections']['title'][1],
+      '',
+      "plugins",
+      "connections"
+   );
+}
 
 $PluginConnectionsConnection = new PluginConnectionsConnection();
 
-if ($PluginConnectionsConnection->canView() || Session::haveRight("config","w")) {
-		
-	Search::show("PluginConnectionsConnection");	
+if ($PluginConnectionsConnection->canView() || Session::haveRight("config", "w")) {
+   Search::show("PluginConnectionsConnection");
 
 } else {
-	echo "<div align='center'><br><br><img src=\"".$CFG_GLPI["root_doc"]."/pics/warning.png\" alt=\"warning\"><br><br>";
-	echo "<b>".__('Access Denied')."</b></div>";
+   echo "<div align='center'><br><br><img src=\"" . $CFG_GLPI["root_doc"] . "/pics/warning.png\" alt=\"warning\"><br><br>";
+   echo "<b>" . __('Access Denied') . "</b></div>";
 }
 
 Html::footer();
-
-?>

@@ -38,23 +38,27 @@ if (!defined('GLPI_ROOT')){
 }
 
 /// Computer class
-class PluginConnectionsConnectionInjection extends PluginConnectionsConnection
-   implements PluginDatainjectionInjectionInterface {
+class PluginConnectionsConnectionInjection extends PluginConnectionsConnection implements PluginDatainjectionInjectionInterface
+{
 
-   function __construct() {
+   public function __construct()
+   {
       //Needed for getSearchOptions !
       $this->table = getTableForItemType('PluginConnectionsConnection');
    }
 
-   function isPrimaryType() {
+   public function isPrimaryType()
+   {
       return true;
    }
 
-   function connectedTo() {
+   public function connectedTo()
+   {
       return array();
    }
 
-   function getOptions($primary_type = '') {
+   public function getOptions($primary_type = '')
+   {
       $tab = parent::getSearchOptions();
 
       //Specific to location
@@ -62,23 +66,28 @@ class PluginConnectionsConnectionInjection extends PluginConnectionsConnection
 
       //Add linkfield for theses fields : no massive action is allowed in the core, but they can be
       //imported using the commonlib
-      $add_linkfield = array('comment' => 'comment', 'notepad' => 'notepad');
+      $add_linkfield = array(
+         'comment' => 'comment',
+         'notepad' => 'notepad',
+      );
+
       foreach ($tab as $id => $tmp) {
          if (in_array($tmp['field'],$add_linkfield)) {
             $tab[$id]['linkfield'] = $add_linkfield[$tmp['field']];
          }
+
          if (!isset($tmp['linkfield'])) {
             $tab[$id]['injectable'] = PluginDatainjectionCommonInjectionLib::FIELD_VIRTUAL;
-         }
-         else {
+         } else {
             $tab[$id]['injectable'] = PluginDatainjectionCommonInjectionLib::FIELD_INJECTABLE;
          }
+
          if (isset($tmp['linkfield']) && !isset($tmp['displaytype'])) {
             $tab[$id]['displaytype'] = 'text';
-          }
-          if (isset($tmp['linkfield']) && !isset($tmp['checktype'])) {
-             $tab[$id]['checktype'] = 'text';
-          }
+         }
+         if (isset($tmp['linkfield']) && !isset($tmp['checktype'])) {
+            $tab[$id]['checktype'] = 'text';
+         }
       }
 
       return $tab;
@@ -90,9 +99,11 @@ class PluginConnectionsConnectionInjection extends PluginConnectionsConnection
     * @param fields fields to add into glpi
     * @param options options used during creation
     */
-   function deleteObject($values=array(), $options=array()) {
+   public function deleteObject($values = array(), $options = array())
+   {
       $lib = new PluginDatainjectionCommonInjectionLib($this,$values,$options);
       $lib->deleteObject();
+
       return $lib->getInjectionResults();
    }
 
@@ -103,13 +114,12 @@ class PluginConnectionsConnectionInjection extends PluginConnectionsConnection
     * @param options options used during creation
     * @return an array of IDs of newly created objects : for example array(Computer=>1, Networkport=>10)
     */
-   function addOrUpdateObject($values=array(), $options=array()) {
+   public function addOrUpdateObject($values = array(), $options = array())
+   {
       global $LANG;
       $lib = new PluginDatainjectionCommonInjectionLib($this,$values,$options);
       $lib->processAddOrUpdate();
+
       return $lib->getInjectionResults();
    }
-
 }
-
-?>

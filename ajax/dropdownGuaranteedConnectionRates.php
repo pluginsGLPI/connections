@@ -33,39 +33,55 @@
  */
 
 if (strpos($_SERVER['PHP_SELF'],"dropdownGuaranteedConnectionRates.php")) {
-	$AJAX_INCLUDE=1;
-	include ('../../../inc/includes.php');
-	header("Content-Type: text/html; charset=UTF-8");
-	Html::header_nocache();
+   $AJAX_INCLUDE = 1;
+
+   include ('../../../inc/includes.php');
+
+   header("Content-Type: text/html; charset=UTF-8");
+   Html::header_nocache();
 }
 
 Session::checkCentralAccess();
 
 // Make a select box
-
 if (isset($_POST["plugin_connections_guaranteedconnectionrates_id"])) {
+   $rand     = $_POST['rand'];
+   $use_ajax = false;
 
-	$rand=$_POST['rand'];
+   if ($CFG_GLPI["use_ajax"] &&
+      countElementsInTable(
+         'glpi_plugin_connections_connections',
+         "glpi_plugin_connections_connections.plugin_connections_guaranteedconnectionrates_id='"
+            . $_POST["plugin_connections_guaranteedconnectionrates_id"] . "' "
+            . getEntitiesRestrictRequest(
+               "AND",
+               "glpi_plugin_connections_connections",
+               "",
+               $_POST["entity_restrict"],
+               true)
+            ) > $CFG_GLPI["ajax_limit_count"]
+   ) {
+      $use_ajax = true;
+   }
 
-	$use_ajax=false;
-	if ($CFG_GLPI["use_ajax"] && 
-		countElementsInTable('glpi_plugin_connections_connections',"glpi_plugin_connections_connections.plugin_connections_guaranteedconnectionrates_id='".$_POST["plugin_connections_guaranteedconnectionrates_id"]."' ".getEntitiesRestrictRequest("AND", "glpi_plugin_connections_connections","",$_POST["entity_restrict"],true) )>$CFG_GLPI["ajax_limit_count"]
-	) {
-		$use_ajax=true;
-	}
 
+   $params = array(
+      'searchText'                                      => '__VALUE__',
+      'plugin_connections_guaranteedconnectionrates_id' => $_POST["plugin_connections_guaranteedconnectionrates_id"],
+      'entity_restrict'                                 => $_POST["entity_restrict"],
+      'rand'                                            => $_POST['rand'],
+      'myname'                                          => $_POST['myname'],
+      'used'                                            => $_POST['used'],
+   );
 
-	$params=array('searchText'=>'__VALUE__',
-			'plugin_connections_guaranteedconnectionrates_id'=>$_POST["plugin_connections_guaranteedconnectionrates_id"],
-			'entity_restrict'=>$_POST["entity_restrict"],
-			'rand'=>$_POST['rand'],
-			'myname'=>$_POST['myname'],
-			'used'=>$_POST['used']
-			);
-	
-	$default="<select name='".$_POST["myname"]."'><option value='0'>".Dropdown::EMPTY_VALUE."</option></select>";
-	Ajax::dropdown($use_ajax,"/plugins/connections/ajax/dropdownGuaranteedConnectionRates.php",$params,$default,$rand);
-
+   $default = "<select name='" . $_POST["myname"] . "'>
+                  <option value='0'>" . Dropdown::EMPTY_VALUE . "</option>
+               </select>";
+   Ajax::dropdown(
+      $use_ajax,
+      "/plugins/connections/ajax/dropdownGuaranteedConnectionRates.php",
+      $params,
+      $default,
+      $rand
+   );
 }
-
-?>

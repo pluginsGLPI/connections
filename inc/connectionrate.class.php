@@ -33,45 +33,49 @@
  */
 
 if (!defined('GLPI_ROOT')) {
-	die("Sorry. You can't access directly to this file");
+   die("Sorry. You can't access directly to this file");
 }
 
 // Class for a Dropdown
-class PluginConnectionsConnectionRate extends CommonDropdown {
-   
-   static function getTypeName($nb=0) {
+class PluginConnectionsConnectionRate extends CommonDropdown
+{
+
+   public static function getTypeName($nb = 0)
+   {
       global $LANG;
 
       return $LANG['plugin_connections']['setup'][3];
    }
-   
-   static function canCreate() {
+
+   public static function canCreate()
+   {
       return plugin_connections_haveRight('connections', 'w');
    }
 
-   static function canView() {
+   public static function canView()
+   {
       return plugin_connections_haveRight('connections', 'r');
    }
-   
-   static function transfer($ID, $entity) {
+
+   public static function transfer($ID, $entity)
+   {
       global $DB;
 
       $temp = new self();
-      if ($ID<=0 || !$temp->getFromDB($ID)) {
+      if ($ID <= 0 || !$temp->getFromDB($ID)) {
          return 0;
       }
       $query = "SELECT `id`
-                FROM `".$temp->getTable()."`
+                FROM `" . $temp->getTable() . "`
                 WHERE `entities_id` = '$entity'
-                  AND `name` = '".addslashes($temp->fields['name'])."'";
+                AND `name` = '" . addslashes($temp->fields['name']) . "'";
       foreach ($DB->request($query) as $data) {
          return $data['id'];
       }
-      $input = $temp->fields;
+      $input                = $temp->fields;
       $input['entities_id'] = $entity;
       unset($input['id']);
+
       return $temp->add($input);
    }
 }
-
-?>

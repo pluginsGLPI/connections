@@ -35,6 +35,5 @@
 include ('../../../inc/includes.php');
 
 $dropdown = new PluginConnectionsGuaranteedConnectionRate();
-include ('../../../front/dropdown.common.form.php');
 
-?>
+include ('../../../front/dropdown.common.form.php');

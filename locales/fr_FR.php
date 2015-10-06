@@ -32,31 +32,29 @@
 // ----------------------------------------------------------------------
  */
 
-$title = "Connections";
+$title                                    = "Connections";
 
-$LANG['plugin_connections']['title'][1]	= "".$title."";
+$LANG['plugin_connections']['title'][1]   = "" . $title . "";
 
-$LANG['plugin_connections'][1] = "Créer une nouvelle connection";
-$LANG['plugin_connections'][2] = "Fournisseur";
-$LANG['plugin_connections'][6] = "Elément(s) associé(s)";
-$LANG['plugin_connections'][7] = "Nom";
-$LANG['plugin_connections'][8] = "".$title."(s) associé(s)";
-$LANG['plugin_connections'][10] = "Commentaires";
-$LANG['plugin_connections'][12] = "Type";
-$LANG['plugin_connections'][14] = "N'expire pas";
-$LANG['plugin_connections'][16] = "Autres";
-$LANG['plugin_connections'][17] = "Date de création";
-$LANG['plugin_connections'][18] = "Responsable technique";
+$LANG['plugin_connections'][1]            = "Créer une nouvelle connection";
+$LANG['plugin_connections'][2]            = "Fournisseur";
+$LANG['plugin_connections'][6]            = "Elément(s) associé(s)";
+$LANG['plugin_connections'][7]            = "Nom";
+$LANG['plugin_connections'][8]            = "" . $title . "(s) associé(s)";
+$LANG['plugin_connections'][10]           = "Commentaires";
+$LANG['plugin_connections'][12]           = "Type";
+$LANG['plugin_connections'][14]           = "N'expire pas";
+$LANG['plugin_connections'][16]           = "Autres";
+$LANG['plugin_connections'][17]           = "Date de création";
+$LANG['plugin_connections'][18]           = "Responsable technique";
 
 $LANG['plugin_connections']['profile'][0] = 'Gestion des droits';
 
-$LANG['plugin_connections']['setup'][1] = "Configuration du plugin";
-$LANG['plugin_connections']['setup'][2] = "Type de ".$title."";
-$LANG['plugin_connections']['setup'][3] = "Débits";
-$LANG['plugin_connections']['setup'][4] = "Débits garantis";
-$LANG['plugin_connections']['setup'][9] = "Associer";
-$LANG['plugin_connections']['setup'][10] = "Dissocier";
-$LANG['plugin_connections']['setup'][12] = "jours";
-$LANG['plugin_connections']['setup'][18] = "Associer a la connection";
-
-?>
+$LANG['plugin_connections']['setup'][1]   = "Configuration du plugin";
+$LANG['plugin_connections']['setup'][2]   = "Type de " . $title . "";
+$LANG['plugin_connections']['setup'][3]   = "Débits";
+$LANG['plugin_connections']['setup'][4]   = "Débits garantis";
+$LANG['plugin_connections']['setup'][9]   = "Associer";
+$LANG['plugin_connections']['setup'][10]  = "Dissocier";
+$LANG['plugin_connections']['setup'][12]  = "jours";
+$LANG['plugin_connections']['setup'][18]  = "Associer a la connection";
