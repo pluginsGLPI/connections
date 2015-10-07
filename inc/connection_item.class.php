@@ -299,14 +299,14 @@ class PluginConnectionsConnection_Item extends CommonDBTM
          $PluginConnectionsConnection->maybeRecursive()
       );
 
-      $query = "SELECT t.`id` AS items_id, c.*
-                FROM `$table` t, `glpi_plugin_connections_connections` c
-                LEFT JOIN `glpi_entities` ON (`glpi_entities`.`id` = c.`entities_id`)
+      $query = "SELECT t.`id` AS items_id, `glpi_plugin_connections_connections`.*
+                FROM `$table` t, `glpi_plugin_connections_connections`
+                LEFT JOIN `glpi_entities` ON (`glpi_entities`.`id` = `glpi_plugin_connections_connections`.`entities_id`)
                 WHERE t.`items_id` = '$ID'
                 AND t.`itemtype` = '$itemtype'
-                AND t.`plugin_connections_connections_id` = c.`id`
+                AND t.`plugin_connections_connections_id` = `glpi_plugin_connections_connections`.`id`
                 $entitiesRestrict
-                ORDER BY c.`name` ";
+                ORDER BY `glpi_plugin_connections_connections`.`name` ";
       $result = $DB->query($query);
       $number = $DB->numrows($result);
 
