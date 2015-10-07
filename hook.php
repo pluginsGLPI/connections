@@ -47,7 +47,8 @@ function plugin_connections_install()
       $DB->runFile(GLPI_ROOT . '/plugins/connections/sql/empty-1.7.0.sql');
 
    // We're 1.6.0 update to 1.6.4
-   } elseif (TableExists('glpi_plugin_connections_connections') && !TableExists('glpi_plugin_connectiond_device')) {
+   } elseif (TableExists('glpi_plugin_connections_connectionratesguaranteed')
+         && !TableExists('glpi_plugin_connectiond_device')) {
       $DB->runFile(GLPI_ROOT . '/plugins/connections/sql/update-1.6.0-to-1.6.4.sql');
    } elseif (TableExists("glpi_plugin_connection") && !FieldExists("glpi_plugin_connection","recursive")) {
       $update = true;

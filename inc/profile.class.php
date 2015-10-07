@@ -56,12 +56,19 @@ class PluginConnectionsProfile extends CommonDBTM
 
    public static function createFirstAccess($ID)
    {
-      $myProf = new self();
-      if (!$myProf->getFromDBByProfile($ID)) {
-         $myProf->add(array(
-            'profiles_id' => $ID,
-            'connections' => ALLSTANDARDRIGHT
-         ));
+      $profileRight = new ProfileRight();
+      
+      foreach (self::getAllRights() as $right) {
+         if (!countElementsInTable('glpi_profilerights', "`profiles_id`='$ID' AND `name`='connections'")) {
+            $profileRight->add(array(
+               'profiles_id' => $ID,
+               'name'        => 'connections',
+               'rights'      => ALLSTANDARDRIGHT,
+            ));
+
+            //Add right to the current session
+            $_SESSION['glpiactiveprofile'][$right] = $value;
+         }
       }
    }
 
