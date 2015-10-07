@@ -246,7 +246,7 @@ class PluginConnectionsConnection extends CommonDBTM
               WHERE `plugin_connections_connections_id` = '" . $this->fields['id'] . "'";
    }
 
-   public function showForm ($ID, $options=array())
+   public function showForm ($ID, $options = array())
    {
       global $CFG_GLPI, $LANG;
 
@@ -260,7 +260,7 @@ class PluginConnectionsConnection extends CommonDBTM
          $this->getEmpty();
       }
 
-      $this->showTabs($options);
+      $this->initForm($ID, $options);
       $this->showFormHeader($options);
 
       echo "<tr class='tab_bg_1'>";
@@ -353,18 +353,14 @@ class PluginConnectionsConnection extends CommonDBTM
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td>&nbsp;</td>";
-      echo "<td>&nbsp;</td>";
-
       echo "<td>" . $LANG['plugin_connections'][10] . ": </td>";
-      echo "<td class='center'>";
+      echo "<td class='center' colspan='3'>";
       echo "<textarea cols='35' rows='4' name='comment' >" . $this->fields["comment"] . "</textarea>";
       echo "</td>";
 
       echo "</tr>";
 
       $this->showFormButtons($options);
-      $this->addDivForTabs();
 
       return true;
    }

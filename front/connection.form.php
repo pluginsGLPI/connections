@@ -107,7 +107,7 @@ if (isset($_POST["add"])) {
       Html::header($LANG['plugin_connections']['title'][1], '', "plugins", "connections");
    }
 
-   $PluginConnectionsConnection->showForm($_GET["id"]);
+   $PluginConnectionsConnection->display($_GET);
 
    Html::footer();
 }
