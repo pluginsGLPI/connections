@@ -39,22 +39,13 @@ if (!defined('GLPI_ROOT')) {
 // Class for a Dropdown
 class PluginConnectionsGuaranteedConnectionRate extends CommonDropdown
 {
+   static $rightname = 'connections';
 
    public static function getTypeName($nb = 0)
    {
       global $LANG;
 
       return $LANG['plugin_connections']['setup'][4];
-   }
-
-   public static function canCreate()
-   {
-      return plugin_connections_haveRight('connections', 'w');
-   }
-
-   public static function canView()
-   {
-      return plugin_connections_haveRight('connections', 'r');
    }
 
    public static function transfer($ID, $entity)

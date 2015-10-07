@@ -68,7 +68,7 @@ function plugin_init_connections() {
          $_SESSION["glpi_plugin_environment_connections"] = 1;
 
          // Display a menu entry ?
-         if (plugin_connections_haveRight("connections", "r")) {
+         if (Session::haveRight("connections", READ)) {
             $PLUGIN_HOOKS['menu_entry']['connections']                              = false;
             $PLUGIN_HOOKS['submenu_entry']['environment']['options']['connections'] = array(
                'title' => $LANG['plugin_connections']['title'][1],
@@ -77,7 +77,7 @@ function plugin_init_connections() {
             );
          }
 
-         if (plugin_connections_haveRight("connections", "w")) {
+         if (Session::haveRight("connections", UPDATE)) {
             $PLUGIN_HOOKS['submenu_entry']['environment']['options']['connections']['links']['add'] = '/plugins/connections/front/connection.form.php';
             $PLUGIN_HOOKS['use_massive_action']['connections'] = 1;
 
@@ -85,12 +85,12 @@ function plugin_init_connections() {
       } else {
 
          // Display a menu entry ?
-         if (plugin_connections_haveRight("connections", "r")) {
+         if (Session::haveRight("connections", READ)) {
             $PLUGIN_HOOKS['menu_entry']['connections']              = 'front/connection.php';
             $PLUGIN_HOOKS['submenu_entry']['connections']['search'] = 'front/connection.php';
          }
 
-         if (plugin_connections_haveRight("connections", "w")) {
+         if (Session::haveRight("connections", UPDATE)) {
             $PLUGIN_HOOKS['submenu_entry']['connections']['add'] = 'front/connection.form.php?new=1';
             $PLUGIN_HOOKS['use_massive_action']['connections']   = 1;
 
@@ -137,18 +137,17 @@ function plugin_connections_check_config() {
 }
 
 function plugin_connections_haveRight($module, $right) {
-   $matches = array(
-         ""  => array("", "r", "w"), // ne doit pas arriver normalement
-         "r" => array("r", "w"),
-         "w" => array("w"),
-         "1" => array("1"),
-         "0" => array("0", "1"), // ne doit pas arriver non plus
-            );
-   if (isset($_SESSION["glpi_plugin_connections_profile"][$module]) && in_array($_SESSION["glpi_plugin_connections_profile"][$module], $matches[$right])) {
-      return true;
+	$matches = array(
+      ""  => array("", "r", "w"), // ne doit pas arriver normalement
+      "r" => array("r", "w"),
+      "w" => array("w"),
+      "1" => array("1"),
+      "0" => array("0", "1"), // ne doit pas arriver non plus
+   );
+	if (isset($_SESSION["glpi_plugin_connections_profile"][$module]) && in_array($_SESSION["glpi_plugin_connections_profile"][$module],$matches[$right])){
+		return true;
    }
-
-   return false;
+	return false;
 }
 
 function plugin_datainjection_migratetypes_connections($types) {

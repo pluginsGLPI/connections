@@ -229,7 +229,7 @@ function plugin_connections_getAddSearchOptions($itemtype)
    $title = $LANG['plugin_connections']['title'][1];
 
    if (in_array($itemtype, PluginConnectionsConnection_Item::getClasses(true))) {
-      if (plugin_connections_haveRight("connections", "r")) {
+      if (Session::haveRight("connections", READ)) {
          $sopt[4410]['table']         = 'glpi_plugin_connections_connections';
          $sopt[4410]['field']         = 'name';
          $sopt[4410]['linkfield']     = '';
@@ -463,7 +463,7 @@ function plugin_connections_MassiveActionsProcess($data)
                   'items_id'                          => $key,
                   'itemtype'                          => $data['itemtype'],
                );
-               if ($PluginConnectionsConnection_Item->can(-1, 'w', $input)) {
+               if ($PluginConnectionsConnection_Item->can(-1, UPDATE, $input)) {
                   $PluginConnectionsConnection_Item->add($input);
                }
             }
@@ -478,7 +478,7 @@ function plugin_connections_MassiveActionsProcess($data)
                   'items_id'                          => $data["item_item"],
                   'itemtype'                          => $data['itemtype'],
                );
-               if ($PluginConnectionsConnection_Item->can(-1, 'w', $input)) {
+               if ($PluginConnectionsConnection_Item->can(-1, UPDATE, $input)) {
                   $PluginConnectionsConnection_Item->add($input);
                }
             }

@@ -54,7 +54,7 @@ if ($plugin->isActivated("environment")) {
 
 $PluginConnectionsConnection = new PluginConnectionsConnection();
 
-if ($PluginConnectionsConnection->canView() || Session::haveRight("config", "w")) {
+if ($PluginConnectionsConnection->canView() || Session::haveRight("config", UPDATE)) {
    Search::show("PluginConnectionsConnection");
 
 } else {

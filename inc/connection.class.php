@@ -38,7 +38,7 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginConnectionsConnection extends CommonDBTM
 {
-
+   static $rightname = 'connections';
    public $dohistory = true;
 
    public static function getTypeName($nb = 0)
@@ -46,16 +46,6 @@ class PluginConnectionsConnection extends CommonDBTM
       global $LANG;
 
       return $LANG['plugin_connections']['title'][1];
-   }
-
-   public static function canCreate()
-   {
-      return plugin_connections_haveRight('connections', 'w');
-   }
-
-   public static function canView()
-   {
-      return plugin_connections_haveRight('connections', 'r');
    }
 
    public function cleanDBonPurge()
@@ -258,15 +248,15 @@ class PluginConnectionsConnection extends CommonDBTM
 
    public function showForm ($ID, $options=array())
    {
-      global $CFG_GLPI,$LANG;
+      global $CFG_GLPI, $LANG;
 
       if (!$this->canView()) return false;
 
       if ($ID > 0) {
-         $this->check($ID, 'r');
+         $this->check($ID, READ);
       } else {
          // Create item
-         $this->check(-1, 'w');
+         $this->check(-1, UPDATE);
          $this->getEmpty();
       }
 
@@ -357,7 +347,7 @@ class PluginConnectionsConnection extends CommonDBTM
       echo "</td>";
 
       echo "<td>" . __('Last update') . ": </td>";
-      echo "<td>" . $Html::convDateTime($this->fields["date_mod"]) . "</td>";
+      echo "<td>" . Html::convDateTime($this->fields["date_mod"]) . "</td>";
 
       echo "</tr>";
 

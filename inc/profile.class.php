@@ -38,6 +38,7 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginConnectionsProfile extends CommonDBTM
 {
+   static $rightname = 'profile';
 
    public static function getTypeName($nb = 0)
    {
@@ -46,30 +47,11 @@ class PluginConnectionsProfile extends CommonDBTM
       return $LANG['plugin_connections']['profile'][0];
    }
 
-   public static function canCreate()
-   {
-      return Session::haveRight('profile', 'w');
-   }
-
-   public static function canView()
-   {
-      return Session::haveRight('profile', 'r');
-   }
-
    //if profile deleted
    public static function purgeProfiles(Profile $prof)
    {
       $plugprof = new self();
-      $plugprof->cleanProfiles($prof->getField("id"));
-   }
-
-   public function cleanProfiles($id)
-   {
-      global $DB;
-
-      $query = "DELETE FROM `" . $this->getTable() . "`
-                WHERE `profiles_id` = '" . (int) $id . "';";
-      $DB->query($query);
+      $plugprof->deleteByCriteria(array('profiles_id' => $prof->getField("id")));
    }
 
    public function getFromDBByProfile($profiles_id)
@@ -99,8 +81,7 @@ class PluginConnectionsProfile extends CommonDBTM
 
          $myProf->add(array(
             'profiles_id' => $ID,
-            'connections' => 'w',
-            'open_ticket' => '1',
+            'connections' => ALLSTANDARDRIGHT
          ));
       }
    }
@@ -114,57 +95,53 @@ class PluginConnectionsProfile extends CommonDBTM
 
    public static function changeProfile()
    {
-      $prof = new self();
-      if ($prof->getFromDBByProfile($_SESSION['glpiactiveprofile']['id'])) {
-         $_SESSION["glpi_plugin_connections_profile"] = $prof->fields;
+      $profile = new self();
+      if ($profile->getFromDBByProfile($_SESSION['glpiactiveprofile']['id'])) {
+         $_SESSION["glpiactiveprofile"]['connections']         = $profile->getField('connections');
       } else {
-         unset($_SESSION["glpi_plugin_connections_profile"]);
+         unset($_SESSION['glpiactiveprofile']['connections']);
       }
+   }
+
+   public static function getAllRights()
+   {
+      global $LANG;
+      
+      return array(
+         array(
+            'itemtype' => 'PluginConnectionsProfile',
+            'label'    =>  $LANG['plugin_connections']['title'][1],
+            'field'    => 'connections'
+         ),
+      );
    }
 
    public function showForm ($ID, $options=array())
    {
-      global $LANG;
+      $profile = new Profile();
+      $profile->getFromDB($ID);
 
-      if (!Session::haveRight("profile", "r")) return false;
-
-      $prof = new Profile();
-      if ($ID) {
-         $this->getFromDBByProfile($ID);
-         $prof->getFromDB($ID);
+      if ($canedit = Session::haveRightsOr(self::$rightname, array(CREATE, UPDATE, PURGE))) {
+         echo "<form action='" . $profile->getFormURL() . "' method='post'>";
       }
 
-      $this->showFormHeader($options);
+      $profile = new Profile();
+      $profile->getFromDB($ID);
 
-      echo "<tr class='tab_bg_2'>";
+      $rights = $this->getAllRights();
+      $profile->displayRightsChoiceMatrix($rights, array(
+         'canedit'       => $canedit,
+         'default_class' => 'tab_bg_2',
+         'title'         => $this->getTypeName(),
+      ));
 
-      echo "<th colspan='4'>" . $LANG['plugin_connections']['profile'][0] . " " . $prof->fields["name"] . "</th>";
-
-      echo "</tr>";
-      echo "<tr class='tab_bg_2'>";
-
-      echo "<td>" . $LANG['plugin_connections']['title'][1] . ":</td><td>";
-
-      if ($prof->fields['interface'] != 'helpdesk') {
-         Profile::dropdownNoneReadWrite("connections", $this->fields["connections"], 1, 1, 1);
-      } else {
-         echo __('No Access');
+      if ($canedit) {
+         echo "<div class='center'>";
+         echo Html::hidden('id', array('value' => $ID));
+         echo Html::submit(_sx('button', 'Save'), array('name' => 'update'));
+         echo "</div>\n";
+         Html::closeForm();
       }
-      echo "</td>";
-
-      echo "<td>" . __('Linkable items to a ticket') . " - " . $LANG['plugin_connections']['title'][1] . ":</td><td>";
-      if ($prof->fields['create_ticket']) {
-         Dropdown::showYesNo("open_ticket", $this->fields["open_ticket"]);
-      } else {
-         echo Dropdown::getYesNo(0);
-      }
-      echo "</td>";
-      echo "</tr>";
-
-      echo "<input type='hidden' name='id' value=" . $this->fields["id"] . ">";
-
-      $options['candel'] = false;
-      $this->showFormButtons($options);
    }
 
    public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)

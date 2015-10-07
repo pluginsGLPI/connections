@@ -38,6 +38,7 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginConnectionsConnection_Item extends CommonDBTM
 {
+   static $rightname = 'connections';
 
    // From CommonDBRelation
    public $itemtype_1 = "PluginConnectionsConnection";
@@ -59,17 +60,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM
          $this->delete($data);
       }
    }
-
-   public static function canCreate()
-   {
-      return plugin_connections_haveRight('connections', 'w');
-   }
-
-   public static function canView()
-   {
-      return plugin_connections_haveRight('connections', 'r');
-   }
-
+   
    public static function getClasses($all = false)
    {
 
@@ -139,7 +130,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM
       }
    }
 
-   public function showItemFromPlugin($instID,$search='')
+   public function showItemFromPlugin($instID, $search='')
    {
       global $DB, $CFG_GLPI, $LANG;
 
@@ -149,7 +140,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM
 
       $PluginConnectionsConnection = new PluginConnectionsConnection();
       if ($PluginConnectionsConnection->getFromDB($instID)) {
-         $canedit = $PluginConnectionsConnection->can($instID, 'w');
+         $canedit = $PluginConnectionsConnection->can($instID, UPDATE);
 
          $query = "SELECT DISTINCT `itemtype`
                    FROM `" . $this->getTable() . "`
@@ -192,18 +183,18 @@ class PluginConnectionsConnection_Item extends CommonDBTM
                $column           = "name";
                $table            = getTableForItemType($type);
                $itemTable        = $this->getTable();
-               $entitiesRestrict = getEntitiesRestrictRequest(" AND ",$table,'','',$item->maybeRecursive());
-               $mayBeTemplate    = ($item->maybeTemplate()) ? " AND `".$table."`.`is_template` = '0'" : '';
+               $entitiesRestrict = getEntitiesRestrictRequest(" AND ", $table, '', '', $item->maybeRecursive());
+               $mayBeTemplate    = ($item->maybeTemplate()) ? " AND t.`is_template` = '0'" : '';
 
                $query = "SELECT t.*, it.`id` AS items_id, `glpi_entities`.`ID` AS entity
-                         FROM `itemTable` it, `$table` t
+                         FROM `$itemTable` it, `$table` t
                          LEFT JOIN `glpi_entities` ON (`glpi_entities`.`id` = t.`entities_id`)
                          WHERE t.`id` = it.`items_id`
                          AND it.`itemtype` = '$type'
                          AND it.`plugin_connections_connections_id` = '$instID'
                          $entitiesRestrict
                          $mayBeTemplate
-                         ORDER BY `glpi_entities`.`completename`, t`$column`;";
+                         ORDER BY `glpi_entities`.`completename`, t.`$column`;";
                if ($result_linked=$DB->query($query))
                   if ($DB->numrows($result_linked)) {
                      Session::initNavigateListItems(
@@ -290,14 +281,14 @@ class PluginConnectionsConnection_Item extends CommonDBTM
 
    //from items
 
-   public function showPluginFromItems($itemtype,$ID,$withtemplate = '')
+   public function showPluginFromItems($itemtype, $ID, $withtemplate = '')
    {
       global $DB, $CFG_GLPI, $LANG;
-
+      
       $item    = new $itemtype();
-      $canread = $item->can($ID,'r');
-      $canedit = $item->can($ID,'w');
-      $table = $this->getTable();
+      $canread = $item->can($ID, READ);
+      $canedit = $item->can($ID, UPDATE);
+      $table   = $this->getTable();
 
       $PluginConnectionsConnection = new PluginConnectionsConnection();
       $entitiesRestrict = getEntitiesRestrictRequest(
@@ -309,7 +300,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM
       );
 
       $query = "SELECT t.`id` AS items_id, c.*
-                FROM `$table` t,`glpi_plugin_connections_connections` c
+                FROM `$table` t, `glpi_plugin_connections_connections` c
                 LEFT JOIN `glpi_entities` ON (`glpi_entities`.`id` = c.`entities_id`)
                 WHERE t.`items_id` = '$ID'
                 AND t.`itemtype` = '$itemtype'
@@ -474,8 +465,8 @@ class PluginConnectionsConnection_Item extends CommonDBTM
       global $DB, $CFG_GLPI, $LANG;
 
       $item                        = new $itemtype();
-      $canread                     = $item->can($ID,'r');
-      $canedit                     = $item->can($ID,'w');
+      $canread                     = $item->can($ID, READ);
+      $canedit                     = $item->can($ID, UPDATE);
 
       $PluginConnectionsConnection = new PluginConnectionsConnection();
       $entitiesRestrict            = getEntitiesRestrictRequest(
