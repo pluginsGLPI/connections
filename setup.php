@@ -113,7 +113,7 @@ function plugin_version_connections() {
 
    return array (
       'name'           => $LANG['plugin_connections']['title'][1],
-      'version'        => '0.90-1.6.5',
+      'version'        => '0.90-1.7.0',
       'license'        => 'GPLv2+',
       'oldname'        => 'connection',
       'author'         =>'Xavier Caillaud, Jean Marc GRISARD',

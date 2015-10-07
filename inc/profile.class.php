@@ -54,31 +54,10 @@ class PluginConnectionsProfile extends CommonDBTM
       $plugprof->deleteByCriteria(array('profiles_id' => $prof->getField("id")));
    }
 
-   public function getFromDBByProfile($profiles_id)
-   {
-      global $DB;
-
-      $query = "SELECT * FROM `" . $this->getTable() . "`
-                WHERE `profiles_id` = '" . (int) $profiles_id . "';";
-      if ($result = $DB->query($query)) {
-         if ($DB->numrows($result) != 1) {
-            return false;
-         }
-         $this->fields = $DB->fetch_assoc($result);
-         if (is_array($this->fields) && count($this->fields)) {
-            return true;
-         } else {
-            return false;
-         }
-      }
-      return false;
-   }
-
    public static function createFirstAccess($ID)
    {
       $myProf = new self();
       if (!$myProf->getFromDBByProfile($ID)) {
-
          $myProf->add(array(
             'profiles_id' => $ID,
             'connections' => ALLSTANDARDRIGHT
@@ -86,27 +65,10 @@ class PluginConnectionsProfile extends CommonDBTM
       }
    }
 
-   public function createAccess($ID)
-   {
-      $this->add(array(
-         'profiles_id' => $ID,
-      ));
-   }
-
-   public static function changeProfile()
-   {
-      $profile = new self();
-      if ($profile->getFromDBByProfile($_SESSION['glpiactiveprofile']['id'])) {
-         $_SESSION["glpiactiveprofile"]['connections']         = $profile->getField('connections');
-      } else {
-         unset($_SESSION['glpiactiveprofile']['connections']);
-      }
-   }
-
    public static function getAllRights()
    {
       global $LANG;
-      
+
       return array(
          array(
             'itemtype' => 'PluginConnectionsProfile',
@@ -189,5 +151,37 @@ class PluginConnectionsProfile extends CommonDBTM
             break;
       }
       return true;
+   }
+   
+   public static function migrateProfiles()
+   {
+      global $DB;
+
+      $profiles = getAllDatasFromTable('glpi_plugin_datainjection_profiles');
+      foreach ($profiles as $id => $profile) {
+         $query = "SELECT `id` FROM `glpi_profiles` WHERE `id`='".$profile['profiles_id']."'";
+         $result = $DB->query($query);
+         if ($DB->numrows($result) == 1) {
+            $id = $DB->result($result, 0, 'id');
+            switch ($profile['connections']) {
+               case 'r' :
+                  $value = READ;
+                  break;
+               case 'w':
+                  $value = ALLSTANDARDRIGHT;
+                  break;
+               case 0:
+               default:
+                  $value = 0;
+                  break;
+            }
+            self::addDefaultProfileInfos($id, array('connections' => $value));
+            if ($value > 0) {
+               self::addDefaultProfileInfos($id, array('connections' => READ));
+            } else {
+               self::addDefaultProfileInfos($id, array('connections' => 0));
+            }
+         }
+      }
    }
 }

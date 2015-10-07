@@ -42,10 +42,9 @@ function plugin_connections_install()
 
    //TODO: Use "Migration" class instead (available since GLPI v0.80)
 
-   // Go for 1.6.4
+   // Go for 1.7.0
    if (!TableExists('glpi_plugin_connection') && !TableExists('glpi_plugin_connections_connections')) { // Fresh install
-      $DB->runFile(GLPI_ROOT . '/plugins/connections/sql/empty-1.6.0.sql');
-      $DB->runFile(GLPI_ROOT . '/plugins/connections/sql/update-1.6.0-to-1.6.4.sql');
+      $DB->runFile(GLPI_ROOT . '/plugins/connections/sql/empty-1.7.0.sql');
 
    // We're 1.6.0 update to 1.6.4
    } elseif (TableExists('glpi_plugin_connections_connections') && !TableExists('glpi_plugin_connectiond_device')) {
@@ -101,6 +100,9 @@ function plugin_connections_install()
          ),
          array("glpi_plugin_connections_connections_items")
       );
+   }
+   if (TableExists("glpi_plugin_datainjection_profiles")) {
+      PluginConnectionsProfile::migrateProfiles();
    }
 
    PluginConnectionsProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
@@ -171,7 +173,7 @@ function plugin_connections_AssignToTicket($types)
 {
    global $LANG;
 
-   if (plugin_connections_haveRight("open_ticket","1")) {
+   if (in_array('PluginConnectionsConnection', $_SESSION['glpiactiveprofile']['helpdesk_item_type'])) {
       $types['PluginConnectionsConnection'] = $LANG['plugin_connections']['title'][1];
    }
    return $types;
@@ -314,13 +316,6 @@ function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfiel
 function plugin_connections_forceGroupBy($type)
 {
    return true;
-   // switch ($type) {
-   //    case 'PluginConnectionsConnection':
-   //       return true;
-   //       break;
-
-   // }
-   // return false;
 }
 
 function plugin_connections_giveItem($type,$ID,$data,$num)
