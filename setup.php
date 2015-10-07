@@ -63,38 +63,8 @@ function plugin_init_connections() {
 
    if (Session::getLoginUserID()) {
 
-      if ((isset($_SESSION["glpi_plugin_environment_installed"]) && $_SESSION["glpi_plugin_environment_installed"] == 1)) {
-
-         $_SESSION["glpi_plugin_environment_connections"] = 1;
-
-         // Display a menu entry ?
-         if (Session::haveRight("connections", READ)) {
-            $PLUGIN_HOOKS['menu_entry']['connections']                              = false;
-            $PLUGIN_HOOKS['submenu_entry']['environment']['options']['connections'] = array(
-               'title' => $LANG['plugin_connections']['title'][1],
-               'page'  => '/plugins/connections/front/connection.php',
-               'links' =>  array('search' => '/plugins/connections/front/connection.php'),
-            );
-         }
-
-         if (Session::haveRight("connections", UPDATE)) {
-            $PLUGIN_HOOKS['submenu_entry']['environment']['options']['connections']['links']['add'] = '/plugins/connections/front/connection.form.php';
-            $PLUGIN_HOOKS['use_massive_action']['connections'] = 1;
-
-         }
-      } else {
-
-         // Display a menu entry ?
-         if (Session::haveRight("connections", READ)) {
-            $PLUGIN_HOOKS['menu_entry']['connections']              = 'front/connection.php';
-            $PLUGIN_HOOKS['submenu_entry']['connections']['search'] = 'front/connection.php';
-         }
-
-         if (Session::haveRight("connections", UPDATE)) {
-            $PLUGIN_HOOKS['submenu_entry']['connections']['add'] = 'front/connection.form.php?new=1';
-            $PLUGIN_HOOKS['use_massive_action']['connections']   = 1;
-
-         }
+      if (Session::haveRight("connections", READ)) {
+         $PLUGIN_HOOKS["menu_toadd"]['connections'] = array('assets'  => 'PluginConnectionsMenu');
       }
 
       // Add specific files to add to the header : javascript or css

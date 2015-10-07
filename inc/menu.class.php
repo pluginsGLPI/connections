@@ -28,39 +28,41 @@
  --------------------------------------------------------------------------
 // ----------------------------------------------------------------------
 // Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.4 - GLPI 0.84
+// Purpose of file: plugin connections v1.6.5 - GLPI 0.85 / 0.90
 // ----------------------------------------------------------------------
  */
-
-include ('../../../inc/includes.php');
-
-$plugin = new Plugin();
-//if ($plugin->isActivated("environment")) {
-//   Html::header(
-//      $LANG['plugin_connections']['title'][1],
-//      '',
-//      "plugins",
-//      "environment",
-//      "connections"
-//   );
-//} else {
-      Html::header(
-         $LANG['plugin_connections']['title'][1],
-         $_SERVER["PHP_SELF"],
-         "assets",
-         "pluginconnectionsmenu",
-         ""
+class PluginConnectionsMenu extends CommonGLPI
+{
+   static $rightname = 'connections';
+   
+   static function getMenuName() {
+      global $LANG;
+      
+      return $LANG['plugin_connections']['title'][1];
+   }
+   
+   static function getMenuContent() {
+      global $CFG_GLPI;
+      
+      $menu          = array();
+      $menu['title'] = self::getMenuName();
+      $menu['page']  = '/plugins/connections/front/connection.php';
+      $menu['links'] = array(
+         'add'    => Toolbox::getItemTypeFormURL('PluginConnectionsConnection', false),
+         'search' => Toolbox::getItemTypeSearchURL('PluginConnectionsConnection', false),
       );
-//}
+      
+      if (Session::haveRight(static::$rightname, READ)) {
+         $menu['options']['connections'] = array(
+            'title' => self::getMenuName(),
+            'page'  => Toolbox::getItemTypeFormURL('PluginConnectionsConnection', false),
+            'links' => array(
+               'add'    => Toolbox::getItemTypeFormURL('PluginConnectionsConnection', false),
+               'search' => Toolbox::getItemTypeSearchURL('PluginConnectionsConnection', false),
+            ),
+         );
+      }
 
-$PluginConnectionsConnection = new PluginConnectionsConnection();
-
-if ($PluginConnectionsConnection->canView() || Session::haveRight("config", UPDATE)) {
-   Search::show("PluginConnectionsConnection");
-
-} else {
-   echo "<div align='center'><br><br><img src=\"" . $CFG_GLPI["root_doc"] . "/pics/warning.png\" alt=\"warning\"><br><br>";
-   echo "<b>" . __('Access Denied') . "</b></div>";
+      return $menu;
+   }
 }
-
-Html::footer();
