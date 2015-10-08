@@ -39,7 +39,7 @@ if (!defined('GLPI_ROOT')) {
 // Class for a Dropdown
 class PluginConnectionsConnectionRate extends CommonDropdown
 {
-   static $rightname = 'connections';
+   static $rightname = 'plugin_connections_connection';
 
    public static function getTypeName($nb = 0)
    {

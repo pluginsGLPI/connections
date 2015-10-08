@@ -93,7 +93,7 @@ if (isset($_POST["add"])) {
    Html::back();
 
 } else {
-   Session::checkRight('connections', READ);
+   Session::checkRight('plugin_connections_connection', READ);
 
    if (!isset($_SESSION['glpi_tab'])) $_SESSION['glpi_tab'] = 1;
    if (isset($_GET['onglet'])) {

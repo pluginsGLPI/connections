@@ -38,7 +38,7 @@ if (!defined('GLPI_ROOT')) {
 
 class PluginConnectionsConnection_Item extends CommonDBTM
 {
-   static $rightname = 'connections';
+   static $rightname = 'plugin_connections_connection';
 
    // From CommonDBRelation
    public $itemtype_1 = "PluginConnectionsConnection";
