@@ -33,7 +33,7 @@
  */
 class PluginConnectionsMenu extends CommonGLPI
 {
-   static $rightname = 'connections';
+   static $rightname = 'plugin_connections_connection';
    
    static function getMenuName() {
       global $LANG;

@@ -36,35 +36,72 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-class PluginConnectionsProfile extends CommonDBTM
-{
-   static $rightname = 'profile';
+class PluginConnectionsProfile extends Profile {
 
-   public static function getTypeName($nb = 0)
-   {
+   static $rightname = "profile";
+
+   static function getAllRights() {
       global $LANG;
 
-      return $LANG['plugin_connections']['profile'][0];
+      $rights = array(
+          array('itemtype'  => 'PluginConnectionsConnection',
+                'label'     => $LANG['plugin_connections']['title'][1],
+                'field'     => 'plugin_connections_connection'));
+      return $rights;
+   }
+   
+   /**
+    * Clean profiles_id from plugin's profile table
+    *
+    * @param $ID
+   **/
+   function cleanProfiles($ID) {
+      global $DB;
+      $query = "DELETE FROM `glpi_profiles` 
+                WHERE `profiles_id`='$ID' 
+                   AND `name` LIKE '%plugin_connections%'";
+      $DB->query($query);
    }
 
-   //if profile deleted
-   public static function purgeProfiles(Profile $prof)
-   {
-      $plugprof = new self();
-      $plugprof->deleteByCriteria(array('profiles_id' => $prof->getField("id")));
+   function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
+      global $LANG;
+
+      if ($item->getType() == 'Profile') {
+         if ($item->getField('interface') == 'central') {
+            return $LANG['plugin_connections']['title'][1];
+         }
+         return '';
+      }
+      return '';
    }
 
-   public static function createFirstAccess($ID)
-   {
+
+   static function displayTabContentForItem(CommonGLPI $item, $tabnum=1, $withtemplate=0) {
+
+      if ($item->getType() == 'Profile') {
+         $profile = new self();
+         $ID   = $item->getField('id');
+         //In case there's no right for this profile, create it
+         self::addDefaultProfileInfos($item->getID(), 
+                                      array('plugin_connections_connection' => 0));
+         $profile->showForm($ID);
+      }
+      return true;
+   }
+
+
+   /**
+    * @param $profile
+   **/
+   static function addDefaultProfileInfos($profiles_id, $rights) {
       $profileRight = new ProfileRight();
-      
-      foreach (self::getAllRights() as $right) {
-         if (!countElementsInTable('glpi_profilerights', "`profiles_id`='$ID' AND `name`='connections'")) {
-            $profileRight->add(array(
-               'profiles_id' => $ID,
-               'name'        => 'connections',
-               'rights'      => ALLSTANDARDRIGHT,
-            ));
+      foreach ($rights as $right => $value) {
+         if (!countElementsInTable('glpi_profilerights',
+                                   "`profiles_id`='$profiles_id' AND `name`='$right'")) {
+            $myright['profiles_id'] = $profiles_id;
+            $myright['name']        = $right;
+            $myright['rights']      = $value;
+            $profileRight->add($myright);
 
             //Add right to the current session
             $_SESSION['glpiactiveprofile'][$right] = $value;
@@ -72,105 +109,27 @@ class PluginConnectionsProfile extends CommonDBTM
       }
    }
 
-   public static function getAllRights()
-   {
-      global $LANG;
-
-      return array(
-         array(
-            'itemtype' => 'PluginConnectionsProfile',
-            'label'    =>  $LANG['plugin_connections']['title'][1],
-            'field'    => 'connections'
-         ),
-      );
-   }
-
-   public function showForm ($ID, $options=array())
-   {
-      $profile = new Profile();
-      $profile->getFromDB($ID);
-
-      if ($canedit = Session::haveRightsOr(self::$rightname, array(CREATE, UPDATE, PURGE))) {
-         echo "<form action='" . $profile->getFormURL() . "' method='post'>";
-      }
-
-      $profile = new Profile();
-      $profile->getFromDB($ID);
-
-      $rights = $this->getAllRights();
-      $profile->displayRightsChoiceMatrix($rights, array(
-         'canedit'       => $canedit,
-         'default_class' => 'tab_bg_2',
-         'title'         => $this->getTypeName(),
-      ));
-
-      if ($canedit) {
-         echo "<div class='center'>";
-         echo Html::hidden('id', array('value' => $ID));
-         echo Html::submit(_sx('button', 'Save'), array('name' => 'update'));
-         echo "</div>\n";
-         Html::closeForm();
+   /**
+    * @param $ID  integer
+    */
+   static function createFirstAccess($profiles_id) {
+      include_once(GLPI_ROOT."/plugins/connections/inc/profile.class.php");
+      foreach (self::getAllRights() as $right) {
+         self::addDefaultProfileInfos($profiles_id, 
+                                    array('plugin_connections_connection' => ALLSTANDARDRIGHT));
       }
    }
 
-   public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
-   {
-      global $LANG;
 
-      if ($item->getType() == 'Profile') {
-         return $LANG['plugin_connections']['title'][1];
-      }
-      return '';
-   }
-
-   public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
-   {
-      global $CFG_GLPI;
-
-      $PluginConnectionsProfile         = new self();
-      $PluginConnectionsConnection_Item = new PluginConnectionsConnection_Item();
-
-      switch ($item->getType()) {
-         case 'Profile':
-            if (!$PluginConnectionsProfile->getFromDBByProfile($item->getField('id'))) {
-               $PluginConnectionsProfile->createAccess($item->getField('id'));
-            }
-            $PluginConnectionsProfile->showForm(
-               $item->getField('id'),
-               array(
-                  'target' => $CFG_GLPI["root_doc"] . "/plugins/connections/front/profile.form.php"
-               )
-            );
-            break;
-         case 'Supplier':
-            $PluginConnectionsConnection_Item->showPluginFromSupplier(
-               $item->getType(),
-               $item->getField('id')
-            );
-            break;
-         default:
-            if (in_array($item->getType(), PluginConnectionsConnection_Item::getClasses(true))) {
-               $PluginConnectionsConnection_Item->showPluginFromItems(
-                  $item->getType(),
-                  $item->getField('id')
-               );
-            }
-            break;
-      }
-      return true;
-   }
-   
-   public static function migrateProfiles()
-   {
+   static function migrateProfiles() {
       global $DB;
-
-      $profiles = getAllDatasFromTable('glpi_plugin_datainjection_profiles');
+      $profiles = getAllDatasFromTable('glpi_plugin_connections_profiles');
       foreach ($profiles as $id => $profile) {
-         $query = "SELECT `id` FROM `glpi_profiles` WHERE `id`='".$profile['profiles_id']."'";
+         $query = "SELECT `id` FROM `glpi_profiles` WHERE `name`='".$profile['name']."'";
          $result = $DB->query($query);
          if ($DB->numrows($result) == 1) {
             $id = $DB->result($result, 0, 'id');
-            switch ($profile['connections']) {
+            switch ($profile['model']) {
                case 'r' :
                   $value = READ;
                   break;
@@ -182,13 +141,44 @@ class PluginConnectionsProfile extends CommonDBTM
                   $value = 0;
                   break;
             }
-            self::addDefaultProfileInfos($id, array('connections' => $value));
-            if ($value > 0) {
-               self::addDefaultProfileInfos($id, array('connections' => READ));
-            } else {
-               self::addDefaultProfileInfos($id, array('connections' => 0));
-            }
+            self::addDefaultProfileInfos($id, array('plugin_connections_connection' => $value));
          }
       }
+   }
+   
+    /**
+    * Show profile form
+    *
+    * @param $items_id integer id of the profile
+    * @param $target value url of target
+    *
+    * @return nothing
+    **/
+   function showForm($profiles_id=0, $openform=TRUE, $closeform=TRUE) {
+
+      echo "<div class='firstbloc'>";
+      if (($canedit = Session::haveRightsOr(self::$rightname, array(CREATE, UPDATE, PURGE)))
+          && $openform) {
+         $profile = new Profile();
+         echo "<form method='post' action='".$profile->getFormURL()."'>";
+      }
+
+      $profile = new Profile();
+      $profile->getFromDB($profiles_id);
+
+      $rights = self::getAllRights();
+      $profile->displayRightsChoiceMatrix(self::getAllRights(), 
+                                          array('canedit'       => $canedit,
+                                                'default_class' => 'tab_bg_2',
+                                                'title'         => __('General')));
+      if ($canedit
+          && $closeform) {
+         echo "<div class='center'>";
+         echo Html::hidden('id', array('value' => $profiles_id));
+         echo Html::submit(_sx('button', 'Save'), array('name' => 'update'));
+         echo "</div>\n";
+         Html::closeForm();
+      }
+      echo "</div>";
    }
 }

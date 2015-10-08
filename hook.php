@@ -102,7 +102,7 @@ function plugin_connections_install()
          array("glpi_plugin_connections_connections_items")
       );
    }
-   if (TableExists("glpi_plugin_datainjection_profiles")) {
+   if (TableExists("glpi_plugin_connections_profiles")) {
       PluginConnectionsProfile::migrateProfiles();
    }
 
@@ -232,7 +232,7 @@ function plugin_connections_getAddSearchOptions($itemtype)
    $title = $LANG['plugin_connections']['title'][1];
 
    if (in_array($itemtype, PluginConnectionsConnection_Item::getClasses(true))) {
-      if (Session::haveRight("connections", READ)) {
+      if (Session::haveRight("plugin_connections_connection", READ)) {
          $sopt[4410]['table']         = 'glpi_plugin_connections_connections';
          $sopt[4410]['field']         = 'name';
          $sopt[4410]['linkfield']     = '';

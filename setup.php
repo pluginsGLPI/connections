@@ -37,44 +37,47 @@ function plugin_init_connections() {
    global $PLUGIN_HOOKS, $CFG_GLPI, $LANG;
 
    $PLUGIN_HOOKS['csrf_compliant']['connections']   = true;
-   $PLUGIN_HOOKS['change_profile']['connections']   = array('PluginConnectionsProfile', 'changeProfile');
    $PLUGIN_HOOKS['assign_to_ticket']['connections'] = true;
 
-   if (class_exists('PluginConnectionsConnection_Item')) { // only if plugin activated
-      $PLUGIN_HOOKS['pre_item_purge']['connections']                = array('Profile' => array('PluginConnectionsProfile', 'purgeProfiles'));
-      $PLUGIN_HOOKS['plugin_datainjection_populate']['connections'] = 'plugin_datainjection_populate_connections';
-      $PLUGIN_HOOKS['item_purge']['connections']                    = array();
+   $plugin = new Plugin();
+   if ($plugin->isActivated("connections")) {
+
+      Plugin::registerClass('PluginConnectionsConnection', array(
+         'linkuser_types'              => true,
+         'linkgroup_types'             => true,
+         'document_types'              => true,
+         'contract_types'              => true,
+         'ticket_types'                => true,
+         'helpdesk_visible_types'      => true,
+         'notificationtemplates_types' => true,
+      ));
+
+      Plugin::registerClass('PluginConnectionsProfile', array(
+         'addtabon' => 'Profile'
+      ));
+
+      Plugin::registerClass('PluginConnectionsConnection_Item', array(
+         'addtabon' => 'NetworkEquipment'
+      ));
+
+      $PLUGIN_HOOKS['item_purge']['connections'] = array();
       foreach (PluginConnectionsConnection_Item::getClasses(true) as $type) {
          $PLUGIN_HOOKS['item_purge']['connections'][$type] = 'plugin_item_purge_connections';
       }
-   }
 
-   Plugin::registerClass('PluginConnectionsConnection', array(
-      'linkuser_types'              => true,
-      'linkgroup_types'             => true,
-      'document_types'              => true,
-      'contract_types'              => true,
-      'ticket_types'                => true,
-      'helpdesk_visible_types'      => true,
-      'notificationtemplates_types' => true,
-   ));
-   Plugin::registerClass('PluginConnectionsProfile', array('addtabon' => 'Profile'));
-   Plugin::registerClass('PluginConnectionsConnection_Item', array('addtabon' => 'NetworkEquipment'));
+      $PLUGIN_HOOKS['pre_item_purge']['connections'] = array(
+         'Profile' => array('PluginConnectionsProfile', 'purgeProfiles')
+      );
 
-   if (Session::getLoginUserID()) {
-
-      if (Session::haveRight("connections", READ)) {
+      if (Session::haveRight("plugin_connections_connection", READ)) {
          $PLUGIN_HOOKS["menu_toadd"]['connections'] = array('assets'  => 'PluginConnectionsMenu');
       }
 
-      // Add specific files to add to the header : javascript or css
-      //$PLUGIN_HOOKS['add_javascript']['example']="example.js";
       $PLUGIN_HOOKS['add_css']['connections'] = "connections.css";
-
-      // Import from Data_Injection plugin
       $PLUGIN_HOOKS['migratetypes']['connections'] = 'plugin_datainjection_migratetypes_connections';
-
+      $PLUGIN_HOOKS['plugin_datainjection_populate']['connections'] = 'plugin_datainjection_populate_connections';
    }
+   
 }
 
 // Get the name and the version of the plugin - Needed
@@ -86,7 +89,7 @@ function plugin_version_connections() {
       'version'        => '0.90-1.7.0',
       'license'        => 'GPLv2+',
       'oldname'        => 'connection',
-      'author'         =>'Xavier Caillaud, Jean Marc GRISARD',
+      'author'         =>'Xavier Caillaud, Jean Marc GRISARD, TECLIB\'',
       'homepage'       =>'https://forge.indepnet.net/projects/connections',
       'minGlpiVersion' => '0.85',
    );
@@ -104,20 +107,6 @@ function plugin_connections_check_prerequisites() {
 // Uninstall process for plugin : need to return true if succeeded : may display messages or add to message after redirect
 function plugin_connections_check_config() {
    return true;
-}
-
-function plugin_connections_haveRight($module, $right) {
-	$matches = array(
-      ""  => array("", "r", "w"), // ne doit pas arriver normalement
-      "r" => array("r", "w"),
-      "w" => array("w"),
-      "1" => array("1"),
-      "0" => array("0", "1"), // ne doit pas arriver non plus
-   );
-	if (isset($_SESSION["glpi_plugin_connections_profile"][$module]) && in_array($_SESSION["glpi_plugin_connections_profile"][$module],$matches[$right])){
-		return true;
-   }
-	return false;
 }
 
 function plugin_datainjection_migratetypes_connections($types) {
