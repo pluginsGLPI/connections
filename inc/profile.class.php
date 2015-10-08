@@ -129,7 +129,7 @@ class PluginConnectionsProfile extends Profile {
          $result = $DB->query($query);
          if ($DB->numrows($result) == 1) {
             $id = $DB->result($result, 0, 'id');
-            switch ($profile['model']) {
+            switch ($profile['connections']) {
                case 'r' :
                   $value = READ;
                   break;
