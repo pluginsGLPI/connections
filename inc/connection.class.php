@@ -185,7 +185,6 @@ class PluginConnectionsConnection extends CommonDBTM
 
       $tab[80]['table']         = 'glpi_entities';
       $tab[80]['field']         = 'completename';
-      $tab[80]['linkfield']     = 'entities_id';
       $tab[80]['name']          = __('Entity');
       $tab[80]['injectable']    = false;
 
@@ -197,6 +196,7 @@ class PluginConnectionsConnection extends CommonDBTM
       global $LANG;
 
       $ong = array();
+      $this->addDefaultFormTab($ong);
       $this->addStandardTab('PluginConnectionsConnection_Item', $ong, $options);
       if ($this->fields['id'] > 0) {
          $this->addStandardTab('Ticket', $ong, $options);
@@ -208,6 +208,58 @@ class PluginConnectionsConnection extends CommonDBTM
          $this->addStandardTab('Log', $ong, $options);
       }
       return $ong;
+   }
+
+   function getSpecificMassiveActions($checkitem=NULL) {
+
+      $actions = array();
+      if (Session::haveRight("plugin_connections_connection", UPDATE)) {
+         $actions[__CLASS__.MassiveAction::CLASS_ACTION_SEPARATOR.'transfert'] = __('Transfer');
+      }
+
+      return $actions;
+   }
+
+   static function showMassiveActionsSubForm(MassiveAction $ma) {
+
+      switch ($ma->getAction()) {
+         case 'transfert' :
+            Dropdown::show('Entity');
+            echo "<br><br>".Html::submit(__('Post'),
+                                         array('name' => 'massiveaction'));
+            return true;
+
+      }
+      return parent::showMassiveActionsSubForm($ma);
+   }
+
+   static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
+                                                       array $ids) {
+
+      $pfAgent = new self();
+
+      switch ($ma->getAction()) {
+
+         case 'transfert' :
+            foreach ($ids as $key) {
+               if ($pfAgent->getFromDB($key)) {
+                  $input = array();
+                  $input['id'] = $key;
+                  $input['entities_id'] = $_POST['entities_id'];
+                  if ($pfAgent->update($input)) {
+                     //set action massive ok for this item
+                     $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
+                  } else {
+                     // KO
+                     $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
+                  }
+               }
+            }
+            return;
+            break;
+      }
+
+      return;
    }
 
    public function prepareInputForAdd($input)

@@ -86,11 +86,11 @@ function plugin_version_connections() {
 
    return array (
       'name'           => $LANG['plugin_connections']['title'][1],
-      'version'        => '0.90-1.7.1',
+      'version'        => '0.90-1.7.2',
       'license'        => 'GPLv2+',
       'oldname'        => 'connection',
       'author'         =>'Xavier Caillaud, Jean Marc GRISARD, TECLIB\'',
-      'homepage'       =>'https://forge.indepnet.net/projects/connections',
+      'homepage'       =>'https://github.com/pluginsGLPI/connections',
       'minGlpiVersion' => '0.85',
    );
 }
