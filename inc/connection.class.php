@@ -43,9 +43,7 @@ class PluginConnectionsConnection extends CommonDBTM
 
    public static function getTypeName($nb = 0)
    {
-      global $LANG;
-
-      return $LANG['plugin_connections']['title'][1];
+      return __('Connections', 'connections');
    }
 
    public function cleanDBonPurge()
@@ -58,16 +56,15 @@ class PluginConnectionsConnection extends CommonDBTM
 
    public function getSearchOptions()
    {
-      global $LANG;
 
       $tab = array();
 
-      $tab['common'] = $LANG['plugin_connections']['title'][1];
+      $tab['common'] = __('Connections', 'connections');
 
       $tab[1]['table']          = $this->getTable();
       $tab[1]['field']          = 'name';
       $tab[1]['linkfield']      = 'name';
-      $tab[1]['name']           = $LANG['plugin_connections'][7];
+      $tab[1]['name']           = __('Name');
       $tab[1]['datatype']       = 'itemlink';
       $tab[1]['itemlink_type']  = $this->getType();
       $tab[1]['displaytype']    = 'text';
@@ -77,7 +74,7 @@ class PluginConnectionsConnection extends CommonDBTM
       $tab[2]['table']          = 'glpi_plugin_connections_connectiontypes';
       $tab[2]['field']          = 'name';
       $tab[2]['linkfield']      = 'plugin_connections_connectiontypes_id';
-      $tab[2]['name']           = $LANG['plugin_connections'][12];
+      $tab[2]['name']           = __('Type of Connections', 'connections');
       $tab[2]['displaytype']    = 'dropdown';
       $tab[2]['checktype']      = 'text';
       $tab[2]['injectable']     = true;
@@ -85,7 +82,7 @@ class PluginConnectionsConnection extends CommonDBTM
       $tab[3]['table']          = 'glpi_users';
       $tab[3]['field']          = 'name';
       $tab[3]['linkfield']      = 'users_id';
-      $tab[3]['name']           = $LANG['plugin_connections'][18];
+      $tab[3]['name']           = __('Technician in charge of the hardware');
       $tab[3]['displaytype']    = 'user';
       $tab[3]['checktype']      = 'text';
       $tab[3]['injectable']     = true;
@@ -93,7 +90,7 @@ class PluginConnectionsConnection extends CommonDBTM
       $tab[4]['table']          = 'glpi_suppliers';
       $tab[4]['field']          = 'name';
       $tab[4]['linkfield']      = 'suppliers_id';
-      $tab[4]['name']           = $LANG['plugin_connections'][2];
+      $tab[4]['name']           = __('Supplier');
       $tab[4]['datatype']       = 'itemlink';
       $tab[4]['itemlink_type']  = 'Supplier';
       $tab[4]['forcegroupby']   = true;
@@ -104,7 +101,7 @@ class PluginConnectionsConnection extends CommonDBTM
       $tab[5]['table']          = 'glpi_plugin_connections_connectionrates';
       $tab[5]['field']          = 'name';
       $tab[5]['linkfield']      = 'plugin_connections_connectionrates_id';
-      $tab[5]['name']           = $LANG['plugin_connections']['setup'][3];
+      $tab[5]['name']           = __('Rates', 'connections');
       $tab[5]['displaytype']    = 'dropdown';
       $tab[5]['checktype']      = 'text';
       $tab[5]['injectable']     = true;
@@ -112,7 +109,7 @@ class PluginConnectionsConnection extends CommonDBTM
       $tab[6]['table']          = 'glpi_plugin_connections_guaranteedconnectionrates';
       $tab[6]['field']          = 'name';
       $tab[6]['linkfield']      = 'plugin_connections_guaranteedconnectionrates_id';
-      $tab[6]['name']           = $LANG['plugin_connections']['setup'][4];
+      $tab[6]['name']           = __('Guaranteed Rates', 'connections');
       $tab[6]['displaytype']    = 'dropdown';
       $tab[6]['checktype']      = 'text';
       $tab[6]['injectable']     = true;
@@ -120,7 +117,7 @@ class PluginConnectionsConnection extends CommonDBTM
       $tab[7]['table']          = $this->getTable();
       $tab[7]['field']          = 'comment';
       $tab[7]['linkfield']      = 'comment';
-      $tab[7]['name']           = $LANG['plugin_connections'][10];
+      $tab[7]['name']           = _('Comments');
       $tab[7]['datatype']       = 'text';
       $tab[7]['datatype']       = 'text';
       $tab[7]['displaytype']    = 'multiline_text';
@@ -129,14 +126,14 @@ class PluginConnectionsConnection extends CommonDBTM
       $tab[8]['table']          = 'glpi_plugin_connections_connections_items';
       $tab[8]['field']          = 'items_id';
       $tab[8]['linkfield']      = '';
-      $tab[8]['name']           = $LANG['plugin_connections'][6];
+      $tab[8]['name']           = _('Associated element');
       $tab[8]['injectable']     = false;
       $tab[8]['massiveaction']  = false;
 
       $tab[9]['table']          = $this->getTable();
       $tab[9]['field']          = 'others';
       $tab[9]['linkfield']      = 'others';
-      $tab[9]['name']           = $LANG['plugin_connections'][16];
+      $tab[9]['name']           = _('Other');
       $tab[9]['displaytype']    = 'text';
       $tab[9]['checktype']      = 'text';
       $tab[9]['injectable']     = true;
@@ -191,9 +188,7 @@ class PluginConnectionsConnection extends CommonDBTM
       return $tab;
    }
 
-   public function defineTabs($options = array())
-   {
-      global $LANG;
+   public function defineTabs($options = array()) {
 
       $ong = array();
       $this->addDefaultFormTab($ong);
@@ -262,30 +257,6 @@ class PluginConnectionsConnection extends CommonDBTM
       return;
    }
 
-   public function prepareInputForAdd($input)
-   {
-      if (isset($input['date_creation']) && empty($input['date_creation'])) {
-         $input['date_creation'] = 'NULL';
-      }
-      if (isset($input['date_expiration']) && empty($input['date_expiration'])) {
-         $input['date_expiration'] = 'NULL';
-      }
-
-      return $input;
-   }
-
-   public function prepareInputForUpdate($input)
-   {
-      if (isset($input['date_creation']) && empty($input['date_creation'])) {
-         $input['date_creation'] = 'NULL';
-      }
-      if (isset($input['date_expiration']) && empty($input['date_expiration'])) {
-         $input['date_expiration'] = 'NULL';
-      }
-
-      return $input;
-   }
-
    /*
     * Return the SQL command to retrieve linked object
     *
@@ -300,7 +271,7 @@ class PluginConnectionsConnection extends CommonDBTM
 
    public function showForm ($ID, $options = array())
    {
-      global $CFG_GLPI, $LANG;
+      global $CFG_GLPI;
 
       if (!$this->canView()) return false;
 
@@ -317,12 +288,12 @@ class PluginConnectionsConnection extends CommonDBTM
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td>" . $LANG['plugin_connections'][7] . ": </td>";
+      echo "<td>" . __('Name') . " : </td>";
       echo "<td>";
       Html::autocompletionTextField($this,"name");
       echo "</td>";
 
-      echo "<td>" . $LANG['plugin_connections'][16] . ": </td>";
+      echo "<td>" . __('Other') . " : </td>";
       echo "<td>";
       Html::autocompletionTextField($this,"others");
       echo "</td>";
@@ -331,7 +302,7 @@ class PluginConnectionsConnection extends CommonDBTM
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td>" . $LANG['plugin_connections'][2] . ": </td>";
+      echo "<td>" . __('Supplier') . " : </td>";
       echo "<td>";
       Supplier::dropdown(array(
          'name'   => "suppliers_id",
@@ -340,7 +311,7 @@ class PluginConnectionsConnection extends CommonDBTM
       ));
       echo "</td>";
 
-      echo "<td>" . $LANG['plugin_connections']['setup'][3] . ": </td>";
+      echo "<td>" . __('Rates', 'connections') . " : </td>";
       echo "<td>";
       PluginConnectionsConnectionRate::dropdown(array(
          'name'   => "plugin_connections_connectionrates_id",
@@ -353,7 +324,7 @@ class PluginConnectionsConnection extends CommonDBTM
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td>" . $LANG['plugin_connections'][12] . ": </td><td>";
+      echo "<td>" . __('Type of Connections', 'connections') . " : </td><td>";
       PluginConnectionsConnectionType::dropdown(array(
          'name'   => "plugin_connections_connectiontypes_id",
          'value'  => $this->fields["plugin_connections_connectiontypes_id"],
@@ -361,7 +332,7 @@ class PluginConnectionsConnection extends CommonDBTM
       ));
       echo "</td>";
 
-      echo "<td>" . $LANG['plugin_connections']['setup'][4] . ": </td>";
+      echo "<td>" . __('Guaranteed Rates', 'connections') . " : </td>";
       echo "<td>";
       PluginConnectionsGuaranteedConnectionRate::dropdown(array(
          'name'   => "plugin_connections_guaranteedconnectionrates_id",
@@ -374,15 +345,15 @@ class PluginConnectionsConnection extends CommonDBTM
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td>" . $LANG['plugin_connections'][18] . ": </td><td>";
+      echo "<td>" . __('Technician in charge of the hardware') . " : </td><td>";
       User::dropdown(array(
          'value'  => $this->fields["users_id"],
          'entity' => $this->fields["entities_id"],
-         'right'  => 'all',
+         'right'  => 'all'
       ));
       echo "</td>";
 
-      echo "<td>" . __('Associable to a ticket') . ":</td><td>";
+      echo "<td>" . __('Associable to a ticket') . " :</td><td>";
       Dropdown::showYesNo('is_helpdesk_visible', $this->fields['is_helpdesk_visible']);
       echo "</td>";
 
@@ -390,7 +361,7 @@ class PluginConnectionsConnection extends CommonDBTM
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td>" . __('Group') . ": </td><td>";
+      echo "<td>" . __('Group') . " : </td><td>";
       Group::dropdown(array(
          'name'   => "groups_id",
          'value'  => $this->fields["groups_id"],
@@ -398,14 +369,14 @@ class PluginConnectionsConnection extends CommonDBTM
       ));
       echo "</td>";
 
-      echo "<td>" . __('Last update') . ": </td>";
+      echo "<td>" . __('Last update') . " : </td>";
       echo "<td>" . Html::convDateTime($this->fields["date_mod"]) . "</td>";
 
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td>" . $LANG['plugin_connections'][10] . ": </td>";
+      echo "<td>" . __('Comments') . " : </td>";
       echo "<td class='center' colspan='3'>";
       echo "<textarea cols='35' rows='4' name='comment' >" . $this->fields["comment"] . "</textarea>";
       echo "</td>";
@@ -419,7 +390,7 @@ class PluginConnectionsConnection extends CommonDBTM
 
    public function dropdownConnections($myname, $entity_restrict = '', $used = array())
    {
-      global $DB, $LANG, $CFG_GLPI;
+      global $DB, $CFG_GLPI;
 
       $rand             = mt_rand();
       $table            = $this->getTable();
@@ -480,137 +451,5 @@ class PluginConnectionsConnection extends CommonDBTM
 
       return $rand;
    }
-
-  // Cron action
-   public static function cronInfo($name)
-   {
-      global $LANG;
-
-      if ('ConnectionsAlert' == $name) {
-         return array('description' => $LANG['plugin_connections']['mailing'][3]);
-      }
-      return array();
-   }
-
-   public function queryExpiredConnections()
-   {
-      global $DB,$CFG_GLPI,$LANG;
-
-      $PluginConnectionsConfig = new PluginConnectionsConfig();
-      $PluginConnectionsConfig->getFromDB('1');
-
-      $delay = $PluginConnectionsConfig->fields["delay_expired"];
-
-      $query = "SELECT *
-                FROM `" . $this->getTable() . "`
-                WHERE `date_expiration` IS NOT NULL
-                AND `is_deleted` = '0'
-                AND DATEDIFF(CURDATE(), `date_expiration`) > $delay AND DATEDIFF(CURDATE(), `date_expiration`) > 0 ";
-      return $query;
-   }
-
-   public function queryConnectionsWhichExpire()
-   {
-      global $DB, $CFG_GLPI, $LANG;
-
-      $PluginConnectionsConfig = new PluginConnectionsConfig();
-      $PluginConnectionsConfig->getFromDB('1');
-
-      $delay = $PluginConnectionsConfig->fields["delay_whichexpire"];
-
-      $query = "SELECT *
-                FROM `" . $this->getTable() . "`
-                WHERE `date_expiration` IS NOT NULL
-                AND `is_deleted` = '0'
-                AND DATEDIFF(CURDATE(), `date_expiration`) > -$delay AND DATEDIFF(CURDATE(), `date_expiration`) < 0 ";
-      return $query;
-   }
-
-   /**
-    * Cron action on connections : ExpiredConnections or ConnectionsWhichExpire
-    *
-    * @param $task for log, if NULL display
-    **/
-   public static function cronConnectionsAlert($task = NULL)
-   {
-      global $DB,$CFG_GLPI,$LANG;
-
-      if (!$CFG_GLPI["use_mailing"]) return 0;
-
-      $message           = array();
-      $domain_infos      = array();
-      $domain_messages   = array();
-      $cron_status       = 0;
-
-      $Domain            = new self();
-      $query_whichexpire = $Domain->queryConnectionsWhichExpire();
-      $query_expired     = $Domain->queryExpiredConnections();
-
-      $querys            = array(
-         Alert::NOTICE => $query_whichexpire,
-         Alert::END    => $query_expired
-      );
-
-      foreach ($querys as $type => $query) {
-         $domain_infos[$type] = array();
-
-         foreach ($DB->request($query) as $data) {
-            $entity  = $data['entities_id'];
-            $message = $data["name"] . ": " .  Html::convDate($data["date_expiration"])."<br>\n";
-
-            $domain_infos[$type][$entity][] = $data;
-
-            if (!isset($connections_infos[$type][$entity])) {
-               $domain_messages[$type][$entity] = $LANG['plugin_connections']['mailing'][0] . "<br />";
-            }
-            $domain_messages[$type][$entity] .= $message;
-         }
-      }
-
-      foreach ($querys as $type => $query) {
-
-         foreach ($domain_infos[$type] as $entity => $connections) {
-            Plugin::loadLang('connections');
-            $type == Alert::NOTICE ? "ConnectionsWhichExpire" : "ExpiredConnections";
-
-            if (NotificationEvent::raiseEvent($type,
-                                              new PluginConnectionsConnection(),
-                                              array('entities_id' => $entity,
-                                                    'connections' => $connections))) {
-               $message     = $domain_messages[$type][$entity];
-               $cron_status = 1;
-
-               if ($task) {
-                  $task->log(Dropdown::getDropdownName("glpi_entities",
-                                                       $entity) . ":  $message\n");
-               } else {
-                  Session::addMessageAfterRedirect(
-                     Dropdown::getDropdownName("glpi_entities", $entity) . ":  $message"
-                  );
-               }
-
-            } else {
-               if ($task) {
-                  $task->log(Dropdown::getDropdownName(
-                     "glpi_entities",$entity) . ":  Send connections alert failed\n"
-                  );
-               } else {
-                  Session::addMessageAfterRedirect(
-                     Dropdown::getDropdownName("glpi_entities", $entity) . ":  Send connections alert failed",
-                     false,
-                     ERROR
-                  );
-               }
-            }
-         }
-      }
-
-      return $cron_status;
-   }
-
-   public static function configCron($target)
-   {
-      $PluginConnectionsConfig = new PluginConnectionsConfig();
-      $PluginConnectionsConfig->showForm($target, 1);
-   }
+   
 }

@@ -43,9 +43,7 @@ class PluginConnectionsGuaranteedConnectionRate extends CommonDropdown
 
    public static function getTypeName($nb = 0)
    {
-      global $LANG;
-
-      return $LANG['plugin_connections']['setup'][4];
+      return __('Guaranteed Rates', 'connections');
    }
 
    public static function transfer($ID, $entity)

@@ -20,47 +20,19 @@ msgstr ""
 
 #: hook.php:219
 msgid "Connections"
-msgstr "Connections"
+msgstr "Connexions"
 
 msgid "Create a new connection"
-msgstr "Créer une nouvelle connection"
-
-msgid "Linked elements"
-msgstr "Elément(s) associé(s)"
+msgstr "Créer une nouvelle connexion"
 
 msgid "Connections linked"
-msgstr "Connections(s) associée(s)"
-
-msgid "Never expires"
-msgstr "N'existe pas"
-
-msgid "Creation date"
-msgstr "Date de création"
-
-msgid "Technical reference"
-msgstr "Responsable technique"
-
-msgid "Rights management"
-msgstr "Gestion des droits"
-
-# setup
-msgid "Plugin Setup"
-msgstr "Configuration du plugin"
+msgstr "Connexion(s) associée(s)"
 
 msgid "Type of Connections"
-msgstr "Type de connections"
+msgstr "Type de connexion"
 
 msgid "Rates"
-msgstr "Débits"
+msgstr "Débit"
 
 msgid "Guaranteed Rates"
-msgstr "Débits garantis"
-
-msgid "Link"
-msgstr "Associer"
-
-msgid "days"
-msgstr "jours"
-
-msgid "Link to connections"
-msgstr "Associer à la connection"
+msgstr "Débit garanti"

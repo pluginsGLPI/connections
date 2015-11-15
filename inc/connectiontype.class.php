@@ -43,9 +43,7 @@ class PluginConnectionsConnectionType extends CommonDropdown
 
    public static function getTypeName($nb = 0)
    {
-      global $LANG;
-
-      return $LANG['plugin_connections']['setup'][2];
+      return __('Type of Connections', 'connections');
    }
 
    public static function transfer($ID, $entity)

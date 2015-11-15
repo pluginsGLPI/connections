@@ -34,7 +34,7 @@
 
 // Init the hooks of the plugins -Needed
 function plugin_init_connections() {
-   global $PLUGIN_HOOKS, $CFG_GLPI, $LANG;
+   global $PLUGIN_HOOKS, $CFG_GLPI;
 
    $PLUGIN_HOOKS['csrf_compliant']['connections']   = true;
    $PLUGIN_HOOKS['assign_to_ticket']['connections'] = true;
@@ -82,10 +82,9 @@ function plugin_init_connections() {
 
 // Get the name and the version of the plugin - Needed
 function plugin_version_connections() {
-   global $LANG;
-
+   
    return array (
-      'name'           => $LANG['plugin_connections']['title'][1],
+      'name'           => __('Connections', 'connection'),
       'version'        => '0.90-1.7.3',
       'license'        => 'GPLv2+',
       'oldname'        => 'connection',

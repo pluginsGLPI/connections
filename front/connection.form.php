@@ -101,17 +101,14 @@ if (isset($_POST["add"]) && !isset($_POST["additem"])) {
    }
 
    $plugin = new Plugin();
-//   if ($plugin->isActivated("environment")) {
-//      Html::header($LANG['plugin_connections']['title'][1], '', "plugins", "environment", "connections");
-//   } else {
-      Html::header(
-         $LANG['plugin_connections']['title'][1],
-         $_SERVER["PHP_SELF"],
-         "assets",
-         "pluginconnectionsmenu",
-         "connections"
-      );
-//   }
+
+   Html::header(
+      __('Connections'),
+      $_SERVER["PHP_SELF"],
+      "assets",
+      "pluginconnectionsmenu",
+      "connections"
+   );
 
    $PluginConnectionsConnection->display($_GET);
 

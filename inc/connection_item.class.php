@@ -130,9 +130,8 @@ class PluginConnectionsConnection_Item extends CommonDBTM
       }
    }
 
-   public function showItemFromPlugin($instID, $search='')
-   {
-      global $DB, $CFG_GLPI, $LANG;
+   public function showItemFromPlugin($instID, $search='') {
+      global $DB, $CFG_GLPI;
 
       if (!$this->canView()) return false;
 
@@ -159,7 +158,8 @@ class PluginConnectionsConnection_Item extends CommonDBTM
                   action=\"" . $CFG_GLPI["root_doc"] . "/plugins/connections/front/connection.form.php\">";
 
          echo "<div class='center'><table class='tab_cadrehov'>";
-         echo "<tr><th colspan='" . ($canedit ? (5 + $colsup) : (4 + $colsup)) . "'>" . $LANG['plugin_connections'][6] . ":</th></tr><tr>";
+         echo "<tr><th colspan='" . ($canedit ? (5 + $colsup) : (4 + $colsup)) . "'>" 
+                        . __('Associated element') . ":</th></tr><tr>";
          if ($canedit) {
             echo "<th>&nbsp;</th>";
          }
@@ -199,7 +199,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM
                   if ($DB->numrows($result_linked)) {
                      Session::initNavigateListItems(
                         $type,
-                        $LANG['plugin_connections']['title'][1] . " = " . $PluginConnectionsConnection->fields['name']
+                        __('Connections', 'connections') . " = " . $PluginConnectionsConnection->fields['name']
                      );
 
                      while ($data = $DB->fetch_assoc($result_linked)) {
@@ -281,9 +281,8 @@ class PluginConnectionsConnection_Item extends CommonDBTM
 
    //from items
 
-   public function showPluginFromItems($itemtype, $ID, $withtemplate = '')
-   {
-      global $DB, $CFG_GLPI, $LANG;
+   public function showPluginFromItems($itemtype, $ID, $withtemplate = '') {
+      global $DB, $CFG_GLPI;
       
       $item    = new $itemtype();
       $canread = $item->can($ID, READ);
@@ -361,7 +360,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM
       }
       $header_end .= "<th>".__('Entity')."</th>";
       $header_end .= "<th>".__('Name')."</th>";
-      $header_end .= "<th>".__('Type of Connections', 'connection')."</th>";
+      $header_end .= "<th>".__('Type of Connections', 'connections')."</th>";
       $header_end .= "<th>".__('Rates', 'connections')."</th>";
       $header_end .= "<th>".__('Guaranteed Rates', 'connections')."</th>";
       
@@ -422,9 +421,8 @@ class PluginConnectionsConnection_Item extends CommonDBTM
       echo "</div>";
    }
 
-   public function showPluginFromSupplier($itemtype, $ID, $withtemplate = '')
-   {
-      global $DB, $CFG_GLPI, $LANG;
+   public function showPluginFromSupplier($itemtype, $ID, $withtemplate = '') {
+      global $DB, $CFG_GLPI;
 
       $item                        = new $itemtype();
       $canread                     = $item->can($ID, READ);
@@ -456,21 +454,22 @@ class PluginConnectionsConnection_Item extends CommonDBTM
 
       echo "<form method='post' action=\"" . $CFG_GLPI["root_doc"] . "/plugins/connections/front/connection.form.php\">";
       echo "<div align='center'><table class='tab_cadre_fixe'>";
-      echo "<tr><th colspan='" . (5 + $colsup) . "'>" . $LANG['plugin_connections'][8] . ":</th></tr>";
-      echo "<tr><th>" . $LANG['plugin_connections'][7] . "</th>";
+      echo "<tr><th colspan='" . (5 + $colsup) . "'>" . __('Connections linked','connections') . ":</th></tr>";
+      echo "<tr><th>" . __('Name') . "</th>";
       if (Session::isMultiEntitiesMode()) {
          echo "<th>" . __('Entity') . "</th>";
       }
-      echo "<th>" . $LANG['plugin_connections'][18] . "</th>";
-      echo "<th>" . $LANG['plugin_connections'][12] . "</th>";
-      echo "<th>" . $LANG['plugin_connections'][17] . "</th>";
-      echo "<th>" . $LANG['plugin_connections'][13] . "</th>";
+      echo "<th>" . __('Technician in charge of the hardware') . "</th>";
+      echo "<th>" . __('Type of Connection', 'connections') . "</th>";
+      echo "<th>" . __('Last update'). "</th>";
       echo "</tr>";
 
       while ($data=$DB->fetch_array($result)) {
          echo "<tr class='tab_bg_1" . ($data["is_deleted"] == '1' ? "_2" : "") . "'>";
 
-         if ($withtemplate != 3 && $canread && (in_array($data['entities_id'], $_SESSION['glpiactiveentities']) || $data["is_recursive"])) {
+         if ($withtemplate != 3 && $canread 
+               && (in_array($data['entities_id'], $_SESSION['glpiactiveentities']) 
+                     || $data["is_recursive"])) {
             echo "<td class='center'>";
             echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/connections/front/connection.form.php?id=" . $data["id"] . "'>";
             echo $data["name"];
@@ -504,20 +503,9 @@ class PluginConnectionsConnection_Item extends CommonDBTM
          echo "</td>";
 
          echo "<td class='center'>";
-         echo Html::convDate($data["date_creation"]);
+         echo Html::convDate($data["date_mod"]);
          echo "</td>";
 
-         if ($data["date_expiration"] <= date('Y-m-d') && !empty($data["date_expiration"])) {
-            echo "<td class='center'>";
-            echo "<span class='plugin_connections_date_color'>";
-            echo Html::convDate($data["date_expiration"]);
-            echo "</span>";
-            echo "</td>";
-         } elseif (empty($data["date_expiration"])) {
-            echo "<td class='center'>" . $LANG['plugin_connections'][14] . "</td>";
-         } else {
-            echo "<td class='center'>" . Html::convDate($data["date_expiration"]) . "</td>";
-         }
          echo "</tr>";
       }
 

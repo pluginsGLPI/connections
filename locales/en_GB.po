@@ -25,27 +25,11 @@ msgstr "Connections"
 msgid "Create a new connection"
 msgstr "Create a new connection"
 
-msgid "Linked elements"
-msgstr "Linked elements"
-
 msgid "Connections linked"
 msgstr "Connections linked"
 
-msgid "Never expires"
-msgstr "Never expires"
-
-msgid "Creation date"
-msgstr "Creation date"
-
 msgid "Technical reference"
 msgstr "Technical reference"
-
-msgid "Rights management"
-msgstr "Rights management"
-
-# setup
-msgid "Plugin Setup"
-msgstr "Plugin Setup"
 
 msgid "Type of Connections"
 msgstr "Type of Connections"
@@ -55,12 +39,3 @@ msgstr "Rates"
 
 msgid "Guaranteed Rates"
 msgstr "Guaranteed Rates"
-
-msgid "Link"
-msgstr "Link"
-
-msgid "days"
-msgstr "days"
-
-msgid "Link to connections"
-msgstr "Link to connections"

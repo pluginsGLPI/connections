@@ -116,7 +116,6 @@ class PluginConnectionsConnectionInjection extends PluginConnectionsConnection i
     */
    public function addOrUpdateObject($values = array(), $options = array())
    {
-      global $LANG;
       $lib = new PluginDatainjectionCommonInjectionLib($this,$values,$options);
       $lib->processAddOrUpdate();
 

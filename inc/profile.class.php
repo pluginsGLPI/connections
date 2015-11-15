@@ -41,11 +41,10 @@ class PluginConnectionsProfile extends Profile {
    static $rightname = "profile";
 
    static function getAllRights() {
-      global $LANG;
 
       $rights = array(
           array('itemtype'  => 'PluginConnectionsConnection',
-                'label'     => $LANG['plugin_connections']['title'][1],
+                'label'     => __('Connections', 'connections'),
                 'field'     => 'plugin_connections_connection'));
       return $rights;
    }
@@ -64,11 +63,10 @@ class PluginConnectionsProfile extends Profile {
    }
 
    function getTabNameForItem(CommonGLPI $item, $withtemplate=0) {
-      global $LANG;
 
       if ($item->getType() == 'Profile') {
          if ($item->getField('interface') == 'central') {
-            return $LANG['plugin_connections']['title'][1];
+            return __('Connections', 'connections');
          }
          return '';
       }

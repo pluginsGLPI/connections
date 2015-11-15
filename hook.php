@@ -172,10 +172,9 @@ function plugin_connections_postinit()
 
 function plugin_connections_AssignToTicket($types)
 {
-   global $LANG;
 
    if (in_array('PluginConnectionsConnection', $_SESSION['glpiactiveprofile']['helpdesk_item_type'])) {
-      $types['PluginConnectionsConnection'] = $LANG['plugin_connections']['title'][1];
+      $types['PluginConnectionsConnection'] = __('Connections', 'connection');
    }
    return $types;
 }
@@ -209,15 +208,13 @@ function plugin_connections_getDatabaseRelations()
 // Define Dropdown tables to be manage in GLPI :
 function plugin_connections_getDropdown()
 {
-   global $LANG;
-
    $plugin = new Plugin();
 
    if ($plugin->isActivated("connections")) {
       return array(
-         'PluginConnectionsConnectionType'           => $LANG['plugin_connections']['setup'][2],
-         'PluginConnectionsConnectionRate'           => $LANG['plugin_connections']['setup'][3],
-         'PluginConnectionsGuaranteedConnectionRate' => $LANG['plugin_connections']['setup'][4],
+         'PluginConnectionsConnectionType'           => __('Type of Connections', 'connection'),
+         'PluginConnectionsConnectionRate'           => __('Rates', 'connection'),
+         'PluginConnectionsGuaranteedConnectionRate' => __('Guaranteed Rates', 'connection'),
       );
    }
 
@@ -226,17 +223,15 @@ function plugin_connections_getDropdown()
 
 function plugin_connections_getAddSearchOptions($itemtype)
 {
-   global $LANG;
-
    $sopt  = array();
-   $title = $LANG['plugin_connections']['title'][1];
+   $title = __('Connections', 'connection');
 
    if (in_array($itemtype, PluginConnectionsConnection_Item::getClasses(true))) {
       if (Session::haveRight("plugin_connections_connection", READ)) {
          $sopt[4410]['table']         = 'glpi_plugin_connections_connections';
          $sopt[4410]['field']         = 'name';
          $sopt[4410]['linkfield']     = '';
-         $sopt[4410]['name']          = $title . " - " . $LANG['plugin_connections'][7];
+         $sopt[4410]['name']          = $title . " - " . __('Associated element');
          $sopt[4410]['forcegroupby']  = '1';
          $sopt[4410]['datatype']      = 'itemlink';
          $sopt[4410]['itemlink_type'] = 'PluginConnectionsConnection';
@@ -244,19 +239,19 @@ function plugin_connections_getAddSearchOptions($itemtype)
          $sopt[4411]['table']         = 'glpi_plugin_connections_connectiontypes';
          $sopt[4411]['field']         = 'name';
          $sopt[4411]['linkfield']     = '';
-         $sopt[4411]['name']          = $title . " - " . $LANG['plugin_connections'][12];
+         $sopt[4411]['name']          = $title . " - " . __('Type of Connections', 'connection');
          $sopt[4411]['forcegroupby']  = '1';
 
          $sopt[4412]['table']         = 'glpi_plugin_connections_connectionrates';
          $sopt[4412]['field']         = 'name';
          $sopt[4412]['linkfield']     = '';
-         $sopt[4412]['name']          = $title . " - " . $LANG['plugin_connections']['setup'][3];
+         $sopt[4412]['name']          = $title . " - " . __('Rates', 'connection');
          $sopt[4412]['forcegroupby']  = '1';
 
          $sopt[4413]['table']         = 'glpi_plugin_connections_guaranteedconnectionrates';
          $sopt[4413]['field']         = 'name';
          $sopt[4413]['linkfield']     = '';
-         $sopt[4413]['name']          = $title . " - " . $LANG['plugin_connections']['setup'][3];
+         $sopt[4413]['name']          = $title . " - " . __('Guaranteed Rates', 'connection');
          $sopt[4413]['forcegroupby']  = '1';
 
       }
@@ -321,7 +316,7 @@ function plugin_connections_forceGroupBy($type)
 
 function plugin_connections_giveItem($type,$ID,$data,$num)
 {
-   global $CFG_GLPI, $DB, $LANG;
+   global $CFG_GLPI, $DB;
 
    $searchopt = &Search::getOptions($type);
    $table     = $searchopt[$ID]["table"];
@@ -395,26 +390,22 @@ function plugin_connections_giveItem($type,$ID,$data,$num)
 ////// SPECIFIC MODIF MASSIVE FUNCTIONS /////
 function plugin_connections_MassiveActions($type)
 {
-   global $LANG;
-
    switch ($type) {
       case 'PluginConnectionsConnection':
          return array(
-            "plugin_connections_install"    => $LANG['plugin_connections']['setup'][9],
-            "plugin_connections_desinstall" => $LANG['plugin_connections']['setup'][10],
+            "plugin_connections_install"    => __('Associate'),
+            "plugin_connections_desinstall" => __('Dissociate'),
             "plugin_connections_transfert"  => __('Transfer'),
             );
    }
    if (in_array($type, PluginConnectionsConnection_Item::getClasses(true))) {
-      return array("plugin_connections_add_item" => $LANG['plugin_connections']['setup'][18]);
+      return array("plugin_connections_add_item" => __('Associate'));
    }
    return array();
 }
 
 function plugin_connections_MassiveActionsDisplay($options = array())
 {
-   global $LANG;
-
    $PluginConnectionsConnection = new PluginConnectionsConnection();
 
    switch ($options['itemtype']) {

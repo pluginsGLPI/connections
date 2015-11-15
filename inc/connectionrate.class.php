@@ -43,9 +43,7 @@ class PluginConnectionsConnectionRate extends CommonDropdown
 
    public static function getTypeName($nb = 0)
    {
-      global $LANG;
-
-      return $LANG['plugin_connections']['setup'][3];
+      return __('Rates', 'connections');
    }
 
    public static function transfer($ID, $entity)

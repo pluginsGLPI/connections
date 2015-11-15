@@ -35,23 +35,14 @@
 include ('../../../inc/includes.php');
 
 $plugin = new Plugin();
-//if ($plugin->isActivated("environment")) {
-//   Html::header(
-//      $LANG['plugin_connections']['title'][1],
-//      '',
-//      "plugins",
-//      "environment",
-//      "connections"
-//   );
-//} else {
-      Html::header(
-         $LANG['plugin_connections']['title'][1],
-         $_SERVER["PHP_SELF"],
-         "assets",
-         "pluginconnectionsmenu",
-         ""
-      );
-//}
+
+Html::header(
+   __('Connections'),
+   $_SERVER["PHP_SELF"],
+   "assets",
+   "pluginconnectionsmenu",
+   ""
+);
 
 $PluginConnectionsConnection = new PluginConnectionsConnection();
 
