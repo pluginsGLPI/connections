@@ -183,7 +183,7 @@ class PluginConnectionsConnection_Item extends CommonDBTM
                $column           = "name";
                $table            = getTableForItemType($type);
                $itemTable        = $this->getTable();
-               $entitiesRestrict = getEntitiesRestrictRequest(" AND ", $table, '', '', $item->maybeRecursive());
+               $entitiesRestrict = getEntitiesRestrictRequest(" AND ", 't', '', '', $item->maybeRecursive());
                $mayBeTemplate    = ($item->maybeTemplate()) ? " AND t.`is_template` = '0'" : '';
 
                $query = "SELECT t.*, it.`id` AS items_id, `glpi_entities`.`ID` AS entity
