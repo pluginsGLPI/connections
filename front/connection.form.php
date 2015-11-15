@@ -40,7 +40,7 @@ if (!isset($_GET["withtemplate"]))  $_GET["withtemplate"] = "";
 $PluginConnectionsConnection      = new PluginConnectionsConnection();
 $PluginConnectionsConnection_Item = new PluginConnectionsConnection_Item();
 
-if (isset($_POST["add"])) {
+if (isset($_POST["add"]) && !isset($_POST["additem"])) {
    $PluginConnectionsConnection->check(-1, UPDATE, $_POST);
    $newID = $PluginConnectionsConnection->add($_POST);
    Html::back();
