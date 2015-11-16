@@ -36,8 +36,10 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
-class PluginConnectionsConnection_Item extends CommonDBTM
-{
+class PluginConnectionsConnection_Item extends CommonDBTM {
+
+   public $dohistory = TRUE;
+
    static $rightname = 'plugin_connections_connection';
 
    // From CommonDBRelation
@@ -114,11 +116,21 @@ class PluginConnectionsConnection_Item extends CommonDBTM
 
    public function addItem($connections_id, $items_id, $itemtype)
    {
-      $this->add(array(
+      $input = array(
          'plugin_connections_connections_id' => $connections_id,
          'items_id' => $items_id,
          'itemtype' => $itemtype,
-      ));
+      );
+
+      if ($this->add($input)) {
+         $item = new NetworkEquipment();
+         $item->getFromDB($items_id);
+
+         $changes[0] = 0;
+         $changes[1] = '';
+         $changes[2] = $item->getNameID(array('forceid' => true));
+         Log::history($items_id, 'PluginConnectionsConnection', $changes, 'NetworkEquipment', 15);
+      }
    }
 
    public function deleteItemByConnectionsAndItem($connections_id, $items_id, $itemtype)
