@@ -200,6 +200,8 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
          $result = $DB->query($query);
          $number = $DB->numrows($result);
 
+         $used['NetworkEquipment'] = array();
+
          if (Session::isMultiEntitiesMode()) {
             $colsup=1;
          } else {
@@ -257,6 +259,8 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
                      while ($data = $DB->fetch_assoc($result_linked)) {
                         $item->getFromDB($data["id"]);
 
+                        $used['NetworkEquipment'][] = $data["id"];
+                        
                         Session::addToNavigateListItems($type,$data["id"]);
 
                         $ID =  ($_SESSION["glpiis_ids_visible"] || empty($data["name"]))
@@ -303,31 +307,36 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
          }
 
          if ($canedit)   {
-            echo "<tr class='tab_bg_1'><td colspan='" . (3 + $colsup) . "' class='center'>";
-            echo "<input type='hidden' name='plugin_connections_connections_id' value='$instID'>";
-            Dropdown::showAllItems(
-               "items_id",
-               0,
-               0,
-               $PluginConnectionsConnection->fields['is_recursive']
-                  ? -1
-                  : $PluginConnectionsConnection->fields['entities_id'],
-               $this->getClasses()
-            );
-            echo "</td>";
-            echo "<td colspan='2' class='center' class='tab_bg_2'>";
-            echo "<input type='submit' name='additem' value=\"" . __('Add') . "\" class='submit'>";
-            echo "</td></tr>";
-            echo "</table></div>" ;
 
+            echo "<tr class='tab_bg_1'><td colspan='" . (4 + $colsup) . "' class='center'>";
+            Dropdown::showSelectItemFromItemtypes(array('itemtypes'
+                                                          => array('NetworkEquipment'),
+                                                        'entity_restrict'
+                                                          => ($PluginConnectionsConnection->fields['is_recursive']
+                                                              ?getSonsOf('glpi_entities',
+                                                                         $PluginConnectionsConnection->fields['entities_id'])
+                                                              :$PluginConnectionsConnection->fields['entities_id']),
+                                                        'checkright'
+                                                          => true,
+                                                        'items_id_name'
+                                                          => 'items_id',
+                                                        'used' => $used));
+            echo "</td><td class='center'>";
+            echo "<input type='submit' name='additem' value=\""._sx('button', 'Add')."\" class='submit'>";
+            echo "<input type='hidden' name='plugin_connections_connections_id' value='$instID'>";
+            echo "</td></tr>";
+            echo "</table>";
             Html::openArrowMassives("connections_form$rand");
             Html::closeArrowMassives(array('deleteitem' => __('Delete')));
+
+            Html::closeForm();
+            echo "</div>";
 
          } else {
 
             echo "</table></div>";
          }
-         echo Html::closeForm(false);
+
       }
    }
 
@@ -351,6 +360,19 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
          $PluginConnectionsConnection->maybeRecursive()
       );
 
+      $query = "SELECT  t.`plugin_connections_connections_id`
+                FROM `$table` t
+                WHERE t.`items_id` = '$ID'
+                AND t.`itemtype` = '$itemtype'";
+      $result = $DB->query($query);
+      $number = $DB->numrows($result);
+      $used = array();
+      if ($number) {
+         while ($data=$DB->fetch_array($result)) {
+            $used['PluginConnectionsConnection'][] = $data['plugin_connections_connections_id'];
+         }
+      }
+
       if ($canedit) {
          echo "<div class='firstbloc'>";
          echo "<form name='connection_form$rand' id='connection_form$rand' method='post'
@@ -370,7 +392,8 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
                                                      'checkright'
                                                        => true,
                                                      'items_id_name'
-                                                       => 'plugin_connections_connections_id'));
+                                                       => 'plugin_connections_connections_id',
+                                                     'used' => $used));
          echo "</td><td class='center'>";
          echo "<input type='submit' name='add' value=\""._sx('button', 'Add')."\" class='submit'>";
          echo "<input type='hidden' name='items_id' value='$ID'>";
