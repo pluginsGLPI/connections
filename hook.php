@@ -192,7 +192,7 @@ function plugin_connections_getDatabaseRelations()
          "glpi_plugin_connections_guaranteedconnectionrates" => array("glpi_plugin_connections_connections"       => "plugin_connections_guaranteedconnectionrates_id"),
          "glpi_users"                                        => array("glpi_plugin_connections_connections"       => "users_id"),
          "glpi_groups"                                       => array("glpi_plugin_connections_connections"       => "groups_id"),
-         "glpi_suppliers"                                    => array("glpi_plugin_connections_connections"       => "glpi_suppliers"),
+         "glpi_suppliers"                                    => array("glpi_plugin_connections_connections"       => "suppliers_id"),
          "glpi_plugin_connections_connections"               => array("glpi_plugin_connections_connections_items" => "plugin_connections_connections_id"),
          "glpi_profiles"                                     => array("glpi_plugin_badges_profiles"               => "profiles_id"),
          "glpi_entities"                                     => array(
