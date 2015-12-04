@@ -54,6 +54,22 @@ class PluginConnectionsConnection extends CommonDBTM
 
    }
 
+   /**
+    * Get the form page URL for the current class and point to a specific ID
+    * Backport for 0.85 compatibility
+    * @param $id      (default 0)
+    * @param $full    path or relative one (true by default)
+    *
+    * @since version 0.90
+   **/
+   static function getFormURLWithID($id=0, $full=true) {
+
+      $itemtype = get_called_class();
+      $link     = $itemtype::getFormURL($full);
+      $link    .= (strpos($link,'?') ? '&':'?').'id=' . $id;
+      return $link;
+   }
+
    public function getSearchOptions()
    {
 
