@@ -80,8 +80,7 @@ if (isset($_POST["add"]) && !isset($_POST["additem"])) {
    foreach ($_POST["item"] as $key => $val) {
       $input = array('id' => $key);
       if ($val == 1) {
-         $PluginConnectionsConnection_Item->check($key, UPDATE);
-         $PluginConnectionsConnection_Item->delete($input);
+         $PluginConnectionsConnection_Item->deleteItem($input);
       }
    }
    Html::back();

@@ -144,6 +144,35 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
       }
    }
 
+   public function deleteItem($input) {
+
+      $this->check($input['id'], UPDATE); 
+
+      $connections_id = $this->getField('plugin_connections_connections_id');
+      $items_id       = $this->getField('items_id');
+
+      if ($this->delete($input)) {
+
+         // History Log into PluginConnectionsConnection
+         $item = new NetworkEquipment();
+         $item->getFromDB($items_id);
+
+         $changes[0] = 0;
+         $changes[1] = $item->getNameID(array('forceid' => true));
+         $changes[2] = '';
+         Log::history($connections_id, 'PluginConnectionsConnection', $changes, 'NetworkEquipment', 16);
+
+         // History Log into NetworkEquipment
+         $item = new PluginConnectionsConnection();
+         $item->getFromDB($connections_id);
+
+         $changes[0] = 0;
+         $changes[1] = $item->getNameID(array('forceid' => true));   
+         $changes[2] = '';
+         Log::history($items_id, 'NetworkEquipment', $changes, 'PluginConnectionsConnection', 16);
+      }
+   }
+
    public function deleteItemByConnectionsAndItem($connections_id, $items_id, $itemtype)
    {
       if ($this->getFromDBbyConnectionsAndItem($connections_id, $items_id, $itemtype)) {
@@ -536,14 +565,31 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
       echo Html::closeForm(false);
    }
 
-   public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
-   {
+   public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
+
+      if ($item->getType() == 'PluginConnectionsConnection' && count(self::getClasses(false))) {
+
+         $tabName = __('Associated item');
+
+         $elements = countElementsInTable('glpi_plugin_connections_connections_items',
+                                                             "itemtype = 'NetworkEquipment'
+                                                               AND plugin_connections_connections_id = '".$item->getID()."'");
+
+      } else if (in_array($item->getType(), self::getClasses(true))) {
+
+         $tabName = PluginConnectionsConnection::getTypeName(2);
+
+         $elements = countElementsInTable('glpi_plugin_connections_connections_items',
+                                                             "itemtype = 'NetworkEquipment'
+                                                               AND items_id = '".$item->getID()."'");
+      }
+
       if (!$withtemplate) {
-         if ($item->getType() == 'PluginConnectionsConnection' && count(self::getClasses(false))) {
-            return __('Associated item');
-         } else if (in_array($item->getType(), self::getClasses(true))) {
-            return PluginConnectionsConnection::getTypeName(2);
+         if ($_SESSION['glpishow_count_on_tabs']) {
+            return self::createTabEntry($tabName, $elements);
          }
+         return $tabName;
+
       }
       return '';
    }
