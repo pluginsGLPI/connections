@@ -123,13 +123,24 @@ class PluginConnectionsConnection_Item extends CommonDBTM {
       );
 
       if ($this->add($input)) {
+
+         // History Log into PluginConnectionsConnection
          $item = new NetworkEquipment();
          $item->getFromDB($items_id);
 
          $changes[0] = 0;
          $changes[1] = '';
          $changes[2] = $item->getNameID(array('forceid' => true));
-         Log::history($items_id, 'PluginConnectionsConnection', $changes, 'NetworkEquipment', 15);
+         Log::history($connections_id, 'PluginConnectionsConnection', $changes, 'NetworkEquipment', 15);
+
+         // History Log into NetworkEquipment
+         $item = new PluginConnectionsConnection();
+         $item->getFromDB($connections_id);
+
+         $changes[0] = 0;
+         $changes[1] = '';
+         $changes[2] = $item->getNameID(array('forceid' => true));       
+         Log::history($items_id, 'NetworkEquipment', $changes, 'PluginConnectionsConnection', 15);
       }
    }
 
