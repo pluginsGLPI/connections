@@ -1,35 +1,30 @@
 <?php
 /*
- * @version $Id: HEADER 1 2010-02-24 00:12 Tsmr $
- -------------------------------------------------------------------------
- GLPI - Gestionnaire Libre de Parc Informatique
- Copyright (C) 2003-2010 by the INDEPNET Development Team.
+ * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
+-------------------------------------------------------------------------
+ connections plugin for GLPI
+ Copyright (C) 2015-2016 by the connections Development Team.
 
- http://indepnet.net/   http://glpi-project.org
- -------------------------------------------------------------------------
+ https://github.com/pluginsGLPI/connections
+-------------------------------------------------------------------------
 
- LICENSE
+LICENSE
 
- This file is part of GLPI.
+This file is part of connections.
 
- GLPI is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+ connections is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
- GLPI is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ connections is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with GLPI; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+You should have received a copy of the GNU General Public License
+along with connections. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
-// ----------------------------------------------------------------------
-// Original Author of file: CAILLAUD Xavier, GRISARD Jean Marc
-// Purpose of file: plugin connections v1.6.5 - GLPI 0.85 / 0.90
-// ----------------------------------------------------------------------
  */
 
 // Init the hooks of the plugins -Needed
@@ -37,6 +32,7 @@ function plugin_init_connections() {
    global $PLUGIN_HOOKS, $CFG_GLPI;
 
    $PLUGIN_HOOKS['csrf_compliant']['connections']   = true;
+   $PLUGIN_HOOKS['change_profile']['connections']   = array('PluginConnectionsProfile', 'initProfile');
    $PLUGIN_HOOKS['assign_to_ticket']['connections'] = true;
 
    $plugin = new Plugin();
@@ -57,47 +53,38 @@ function plugin_init_connections() {
       ));
 
       Plugin::registerClass('PluginConnectionsConnection_Item', array(
-         'addtabon' => 'NetworkEquipment'
+         'addtabon' => array('NetworkEquipment','Supplier')
       ));
 
-      $PLUGIN_HOOKS['item_purge']['connections'] = array();
-      foreach (PluginConnectionsConnection_Item::getClasses(true) as $type) {
-         $PLUGIN_HOOKS['item_purge']['connections'][$type] = 'plugin_item_purge_connections';
-      }
-
-      $PLUGIN_HOOKS['pre_item_purge']['connections'] = array(
-         'Profile' => array('PluginConnectionsProfile', 'purgeProfiles')
-      );
-
       if (Session::haveRight("plugin_connections_connection", READ)) {
-         $PLUGIN_HOOKS["menu_toadd"]['connections'] = array('assets'  => 'PluginConnectionsMenu');
+         $PLUGIN_HOOKS["menu_toadd"]['connections'] = array('assets' => 'PluginConnectionsMenu');
       }
 
-      $PLUGIN_HOOKS['add_css']['connections'] = "connections.css";
-      $PLUGIN_HOOKS['migratetypes']['connections'] = 'plugin_datainjection_migratetypes_connections';
+      $PLUGIN_HOOKS['add_css']['connections']                       = "connections.css";
+      $PLUGIN_HOOKS['migratetypes']['connections']                  = 'plugin_datainjection_migratetypes_connections';
       $PLUGIN_HOOKS['plugin_datainjection_populate']['connections'] = 'plugin_datainjection_populate_connections';
    }
-   
+
 }
 
 // Get the name and the version of the plugin - Needed
 function plugin_version_connections() {
-   
-   return array (
-      'name'           => __('Connections', 'connection'),
-      'version'        => '0.90-1.7.3',
+
+   return array(
+      'name'           => __('Connections', 'connections'),
+      'version'        => '9.2',
       'license'        => 'GPLv2+',
       'oldname'        => 'connection',
-      'author'         =>'Xavier Caillaud, Jean Marc GRISARD, TECLIB\'',
-      'homepage'       =>'https://github.com/pluginsGLPI/connections',
-      'minGlpiVersion' => '0.85',
+      'author'         => 'Xavier Caillaud, Jean Marc GRISARD, TECLIB\'',
+      'homepage'       => 'https://github.com/pluginsGLPI/connections',
+      'minGlpiVersion' => '9.2',
    );
 }
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
 function plugin_connections_check_prerequisites() {
-   if (version_compare(GLPI_VERSION, '0.85', 'lt')) {
-      echo 'This plugin requires GLPI >= 0.85';
+   if (version_compare(GLPI_VERSION, '9.2', 'lt')) {
+      echo 'This plugin requires GLPI >= 9.2';
       return false;
    }
    return true;
