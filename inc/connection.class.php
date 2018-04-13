@@ -126,7 +126,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       $tab[7]['table']       = $this->getTable();
       $tab[7]['field']       = 'comment';
       $tab[7]['linkfield']   = 'comment';
-      $tab[7]['name']        = _('Comments');
+      $tab[7]['name']        = __('Comments');
       $tab[7]['datatype']    = 'text';
       $tab[7]['datatype']    = 'text';
       $tab[7]['displaytype'] = 'multiline_text';
@@ -135,14 +135,14 @@ class PluginConnectionsConnection extends CommonDBTM {
       $tab[8]['table']         = 'glpi_plugin_connections_connections_items';
       $tab[8]['field']         = 'items_id';
       $tab[8]['linkfield']     = '';
-      $tab[8]['name']          = _('Associated element');
+      $tab[8]['name']          = __('Associated element');
       $tab[8]['injectable']    = false;
       $tab[8]['massiveaction'] = false;
 
       $tab[9]['table']       = $this->getTable();
       $tab[9]['field']       = 'others';
       $tab[9]['linkfield']   = 'others';
-      $tab[9]['name']        = _('Other');
+      $tab[9]['name']        = __('Other');
       $tab[9]['displaytype'] = 'text';
       $tab[9]['checktype']   = 'text';
       $tab[9]['injectable']  = true;
