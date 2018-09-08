@@ -73,7 +73,7 @@ if (isset($_POST["add"]) && !isset($_POST["additem"])) {
 
 } elseif (isset($_POST["deleteitem"])) {
    foreach ($_POST["item"] as $key => $val) {
-      $input = array('id' => $key);
+      $input = ['id' => $key];
       if ($val == 1) {
          $PluginConnectionsConnection_Item->deleteItem($input);
       }
@@ -81,7 +81,7 @@ if (isset($_POST["add"]) && !isset($_POST["additem"])) {
    Html::back();
 
 } elseif (isset($_POST["deleteconnections"])) {
-   $input = array('id' => $_POST["id"]);
+   $input = ['id' => $_POST["id"]];
    $PluginConnectionsConnection_Item->check($_POST["id"], UPDATE);
    $PluginConnectionsConnection_Item->delete($input);
    Html::back();

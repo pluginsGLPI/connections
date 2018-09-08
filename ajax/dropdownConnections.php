@@ -64,7 +64,7 @@ if (isset($_POST["entity_restrict"]) && $_POST["entity_restrict"] >= 0) {
    );
 }
 
-$used = array();
+$used = [];
 if (isset($_POST['used'])) {
    if (is_array($_POST['used'])) {
       $used = $_POST['used'];

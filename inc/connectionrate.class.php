@@ -32,13 +32,28 @@ if (!defined('GLPI_ROOT')) {
 }
 
 // Class for a Dropdown
+
+/**
+ * Class PluginConnectionsConnectionRate
+ */
 class PluginConnectionsConnectionRate extends CommonDropdown {
    static $rightname = 'plugin_connections_connection';
 
+   /**
+    * @param int $nb
+    *
+    * @return string
+    */
    public static function getTypeName($nb = 0) {
       return __('Rates', 'connections');
    }
 
+   /**
+    * @param $ID
+    * @param $entity
+    *
+    * @return int
+    */
    public static function transfer($ID, $entity) {
       global $DB;
 

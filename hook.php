@@ -27,6 +27,10 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
+/**
+ * @return bool
+ * @throws \GlpitestSQLError
+ */
 function plugin_connections_install() {
    global $DB;
 
@@ -68,15 +72,15 @@ function plugin_connections_install() {
             $query  = "UPDATE `glpi_plugin_connections_profiles`
                       SET `profiles_id` = '" . $data["id"] . "'
                       WHERE `id` = '" . $data["id"] . "';";
-            $result = $DB->query($query);
+            $DB->query($query);
          }
       }
 
       $DB->query("ALTER TABLE `glpi_plugin_connections_profiles` DROP `name`;");
 
       Plugin::migrateItemType(
-         array(4400 => 'PluginConnectionsConnection'),
-         array(
+         [4400 => 'PluginConnectionsConnection'],
+         [
             "glpi_bookmarks",
             "glpi_bookmarks_users",
             "glpi_displaypreferences",
@@ -84,16 +88,16 @@ function plugin_connections_install() {
             "glpi_infocoms",
             "glpi_logs",
             "glpi_tickets",
-         ),
-         array("glpi_plugin_connections_connections_items")
+         ],
+         ["glpi_plugin_connections_connections_items"]
       );
 
       Plugin::migrateItemType(
-         array(
+         [
             1200 => "PluginAppliancesAppliance",
             1300 => "PluginWebapplicationsWebapplication"
-         ),
-         array("glpi_plugin_connections_connections_items")
+         ],
+         ["glpi_plugin_connections_connections_items"]
       );
    }
 
@@ -104,10 +108,14 @@ function plugin_connections_install() {
    return true;
 }
 
+/**
+ * @return bool
+ * @throws \GlpitestSQLError
+ */
 function plugin_connections_uninstall() {
    global $DB;
 
-   $tables = array(
+   $tables = [
       'glpi_plugin_connections_configs',
       "glpi_plugin_connections_connections",
       "glpi_plugin_connections_connections_items",
@@ -116,45 +124,45 @@ function plugin_connections_uninstall() {
       "glpi_plugin_connections_guaranteedconnectionrates",
       "glpi_plugin_connections_profiles",
       "glpi_plugin_connections_notificationstates",
-   );
+   ];
 
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
    }
 
    //old versions
-   $tables = array(
+   $tables = [
       "glpi_plugin_connection",
       "glpi_plugin_connection_device",
       'glpi_plugin_connections_connectionratesguaranteed',
       "glpi_dropdown_plugin_connections_type",
       "glpi_plugin_connection_profiles",
       "glpi_plugin_connection_mailing",
-   );
+   ];
 
    foreach ($tables as $table) {
       $DB->query("DROP TABLE IF EXISTS `$table`;");
    }
 
-   $tables_glpi = array(
+   $tables_glpi = [
       "glpi_displaypreferences",
       "glpi_documents_items",
       "glpi_savedsearches",
       "glpi_logs",
-   );
+   ];
 
    foreach ($tables_glpi as $table_glpi) {
       $DB->query("DELETE FROM `$table_glpi` WHERE `itemtype` = 'PluginConnectionsConnection';");
    }
 
    if (class_exists('PluginDatainjectionModel')) {
-      PluginDatainjectionModel::clean(array('itemtype' => 'PluginConnectionsConnection'));
+      PluginDatainjectionModel::clean(['itemtype' => 'PluginConnectionsConnection']);
    }
 
    //Delete rights associated with the plugin
    $profileRight = new ProfileRight();
    foreach (PluginConnectionsProfile::getAllRights() as $right) {
-      $profileRight->deleteByCriteria(array('name' => $right['field']));
+      $profileRight->deleteByCriteria(['name' => $right['field']]);
    }
    PluginConnectionsMenu::removeRightsFromSession();
    PluginConnectionsProfile::removeRightsFromSession();
@@ -165,17 +173,22 @@ function plugin_connections_uninstall() {
 function plugin_connections_postinit() {
    global $PLUGIN_HOOKS;
 
-   $PLUGIN_HOOKS['item_purge']['connections'] = array();
+   $PLUGIN_HOOKS['item_purge']['connections'] = [];
 
    foreach (PluginConnectionsConnection_Item::getClasses(true) as $type) {
 
       $PLUGIN_HOOKS['item_purge']['connections'][$type]
-         = array('PluginConnectionsConnection_Item', 'cleanForItem');
+         = ['PluginConnectionsConnection_Item', 'cleanForItem'];
 
       CommonGLPI::registerStandardTab($type, 'PluginConnectionsConnection_Item');
    }
 }
 
+/**
+ * @param $types
+ *
+ * @return mixed
+ */
 function plugin_connections_AssignToTicket($types) {
 
    if (in_array('PluginConnectionsConnection', $_SESSION['glpiactiveprofile']['helpdesk_item_type'])) {
@@ -186,45 +199,56 @@ function plugin_connections_AssignToTicket($types) {
 
 
 // Define dropdown relations
+/**
+ * @return array
+ */
 function plugin_connections_getDatabaseRelations() {
    $plugin = new Plugin();
 
    if ($plugin->isActivated("connections")) {
-      return array(
-         "glpi_plugin_connections_connectiontypes"           => array("glpi_plugin_connections_connections" => "plugin_connections_connectiontypes_id"),
-         "glpi_plugin_connections_connectionrates"           => array("glpi_plugin_connections_connections" => "plugin_connections_connectionrates_id"),
-         "glpi_plugin_connections_guaranteedconnectionrates" => array("glpi_plugin_connections_connections" => "plugin_connections_guaranteedconnectionrates_id"),
-         "glpi_users"                                        => array("glpi_plugin_connections_connections" => "users_id"),
-         "glpi_groups"                                       => array("glpi_plugin_connections_connections" => "groups_id"),
-         "glpi_suppliers"                                    => array("glpi_plugin_connections_connections" => "suppliers_id"),
-         "glpi_plugin_connections_connections"               => array("glpi_plugin_connections_connections_items" => "plugin_connections_connections_id"),
-         "glpi_entities"                                     => array(
+      return [
+         "glpi_plugin_connections_connectiontypes"           => ["glpi_plugin_connections_connections" => "plugin_connections_connectiontypes_id"],
+         "glpi_plugin_connections_connectionrates"           => ["glpi_plugin_connections_connections" => "plugin_connections_connectionrates_id"],
+         "glpi_plugin_connections_guaranteedconnectionrates" => ["glpi_plugin_connections_connections" => "plugin_connections_guaranteedconnectionrates_id"],
+         "glpi_users"                                        => ["glpi_plugin_connections_connections" => "users_id"],
+         "glpi_groups"                                       => ["glpi_plugin_connections_connections" => "groups_id"],
+         "glpi_suppliers"                                    => ["glpi_plugin_connections_connections" => "suppliers_id"],
+         "glpi_plugin_connections_connections"               => ["glpi_plugin_connections_connections_items" => "plugin_connections_connections_id"],
+         "glpi_entities"                                     => [
             "glpi_plugin_connections_connections"     => "entities_id",
             "glpi_plugin_connections_connectiontypes" => "entities_id"
-         )
-      );
+         ]
+      ];
    }
 
-   return array();
+   return [];
 }
 
 // Define Dropdown tables to be manage in GLPI :
+/**
+ * @return array
+ */
 function plugin_connections_getDropdown() {
    $plugin = new Plugin();
 
    if ($plugin->isActivated("connections")) {
-      return array(
+      return [
          'PluginConnectionsConnectionType'           => __('Type of Connections', 'connections'),
          'PluginConnectionsConnectionRate'           => __('Rates', 'connections'),
          'PluginConnectionsGuaranteedConnectionRate' => __('Guaranteed Rates', 'connections'),
-      );
+      ];
    }
 
-   return array();
+   return [];
 }
 
+/**
+ * @param $itemtype
+ *
+ * @return array
+ */
 function plugin_connections_getAddSearchOptions($itemtype) {
-   $sopt  = array();
+   $sopt  = [];
    $title = __('Connections', 'connections');
 
    if (in_array($itemtype, PluginConnectionsConnection_Item::getClasses(true))) {
@@ -260,6 +284,15 @@ function plugin_connections_getAddSearchOptions($itemtype) {
    return $sopt;
 }
 
+/**
+ * @param $type
+ * @param $ref_table
+ * @param $new_table
+ * @param $linkfield
+ * @param $already_link_tables
+ *
+ * @return \Left|string
+ */
 function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfield, &$already_link_tables) {
    switch ($new_table) {
       case "glpi_plugin_connections_connections_items" :
@@ -309,12 +342,26 @@ function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfiel
    return "";
 }
 
+/**
+ * @param $type
+ *
+ * @return bool
+ */
 function plugin_connections_forceGroupBy($type) {
    return true;
 }
 
+/**
+ * @param $type
+ * @param $ID
+ * @param $data
+ * @param $num
+ *
+ * @return string
+ * @throws \GlpitestSQLError
+ */
 function plugin_connections_giveItem($type, $ID, $data, $num) {
-   global $CFG_GLPI, $DB;
+   global $DB;
 
    $searchopt = &Search::getOptions($type);
    $table     = $searchopt[$ID]["table"];
@@ -384,121 +431,6 @@ function plugin_connections_giveItem($type, $ID, $data, $num) {
    }
    return "";
 }
-
-////// SPECIFIC MODIF MASSIVE FUNCTIONS /////
-/*function plugin_connections_MassiveActions($type) {
-   switch ($type) {
-      case 'PluginConnectionsConnection':
-         return array(
-            "plugin_connections_install"    => __('Associate'),
-            "plugin_connections_desinstall" => __('Dissociate'),
-            "plugin_connections_transfert"  => __('Transfer'),
-         );
-   }
-   if (in_array($type, PluginConnectionsConnection_Item::getClasses(true))) {
-      return array("plugin_connections_add_item" => __('Associate'));
-   }
-   return array();
-}
-
-function plugin_connections_MassiveActionsDisplay($options = array()) {
-   $PluginConnectionsConnection = new PluginConnectionsConnection();
-
-   switch ($options['itemtype']) {
-      case 'PluginConnectionsConnection':
-         switch ($options['action']) {
-            // No case for add_document : use GLPI core one
-            case "plugin_connections_install":
-               Dropdown::showAllItems("item_item", 0, 0, -1, PluginConnectionsConnection_Item::getClasses(true));
-               echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"" . __('Post') . "\" >";
-               break;
-
-            case "plugin_connections_desinstall":
-               Dropdown::showAllItems("item_item", 0, 0, -1, PluginConnectionsConnection_Item::getClasses(true));
-               echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"" . __('Post') . "\" >";
-               break;
-
-            case "plugin_connections_transfert":
-               Entity::dropdown();
-               echo "&nbsp;<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"" . __('Post') . "\" >";
-               break;
-         }
-         break;
-   }
-   if (in_array($options['itemtype'], PluginConnectionsConnection_Item::getClasses(true))) {
-      $PluginConnectionsConnection->dropdownConnections("plugin_connections_connections_id");
-      echo "<input type=\"submit\" name=\"massiveaction\" class=\"submit\" value=\"" . __('Post') . "\" >";
-   }
-   return "";
-}
-
-function plugin_connections_MassiveActionsProcess($data) {
-   $PluginConnectionsConnection      = new PluginConnectionsConnection();
-   $PluginConnectionsConnection_Item = new PluginConnectionsConnection_Item();
-
-   switch ($data['action']) {
-      case "plugin_connections_add_item":
-         foreach ($data["item"] as $key => $val) {
-            if ($val == 1) {
-               $input = array(
-                  'plugin_connections_connections_id' => $data['plugin_connections_connections_id'],
-                  'items_id'                          => $key,
-                  'itemtype'                          => $data['itemtype'],
-               );
-               if ($PluginConnectionsConnection_Item->can(-1, UPDATE, $input)) {
-                  $PluginConnectionsConnection_Item->add($input);
-               }
-            }
-         }
-         break;
-
-      case "plugin_connections_install":
-         foreach ($data["item"] as $key => $val) {
-            if ($val == 1) {
-               $input = array(
-                  'plugin_connections_connections_id' => $key,
-                  'items_id'                          => $data["item_item"],
-                  'itemtype'                          => $data['itemtype'],
-               );
-               if ($PluginConnectionsConnection_Item->can(-1, UPDATE, $input)) {
-                  $PluginConnectionsConnection_Item->add($input);
-               }
-            }
-         }
-         break;
-
-      case "plugin_connections_desinstall":
-         foreach ($data["item"] as $key => $val) {
-            if ($val == 1) {
-               $PluginConnectionsConnection_Item->deleteItemByConnectionsAndItem(
-                  $key,
-                  $data['item_item'],
-                  $data['itemtype']
-               );
-            }
-         }
-         break;
-
-      case "plugin_connections_transfert":
-         if ($data['itemtype'] == 'PluginConnectionsConnection') {
-            foreach ($data["item"] as $key => $val) {
-               if ($val == 1) {
-                  $PluginConnectionsConnection->getFromDB($key);
-
-                  $type                                        = PluginConnectionsConnectionType::transfer(
-                     $PluginConnectionsConnection->fields["plugin_connections_connections_id"],
-                     $data['entities_id']
-                  );
-                  $values["id"]                                = $key;
-                  $values["plugin_connections_connections_id"] = $type;
-                  $values["entities_id"]                       = $data['entities_id'];
-                  $PluginConnectionsConnection->update($values);
-               }
-            }
-         }
-         break;
-   }
-}*/
 
 
 function plugin_datainjection_populate_connections() {

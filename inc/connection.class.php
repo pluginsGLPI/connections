@@ -31,10 +31,18 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
+/**
+ * Class PluginConnectionsConnection
+ */
 class PluginConnectionsConnection extends CommonDBTM {
    static $rightname = 'plugin_connections_connection';
    public $dohistory = true;
 
+   /**
+    * @param int $nb
+    *
+    * @return string
+    */
    public static function getTypeName($nb = 0) {
       return __('Connections', 'connections');
    }
@@ -42,7 +50,7 @@ class PluginConnectionsConnection extends CommonDBTM {
    public function cleanDBonPurge() {
 
       $temp = new PluginConnectionsConnection_Item();
-      $temp->deleteByCriteria(array('plugin_connections_connections_id' => $this->fields['id']));
+      $temp->deleteByCriteria(['plugin_connections_connections_id' => $this->fields['id']]);
 
    }
 
@@ -51,11 +59,13 @@ class PluginConnectionsConnection extends CommonDBTM {
     * Get the form page URL for the current class and point to a specific ID
     * Backport for 0.85 compatibility
     *
-    * @param $id (default 0)
-    * @param $full    path or relative one (true by default)
+    * @param int  $id (default 0)
+    * @param bool $full path or relative one (true by default)
     *
+    * @return string
     * @since version 0.90
-    **/
+    *
+    */
    static function getFormURLWithID($id = 0, $full = true) {
 
       $itemtype = get_called_class();
@@ -64,142 +74,161 @@ class PluginConnectionsConnection extends CommonDBTM {
       return $link;
    }
 
-   public function getSearchOptions() {
+   /**
+    * @return array
+    */
+   public function rawSearchOptions() {
 
-      $tab = array();
+      $tab = [];
 
-      $tab['common'] = __('Connections', 'connections');
+      $tab[] = [
+         'id'   => 'common',
+         'name' => self::getTypeName(2)
+      ];
 
-      $tab[1]['table']         = $this->getTable();
-      $tab[1]['field']         = 'name';
-      $tab[1]['linkfield']     = 'name';
-      $tab[1]['name']          = __('Name');
-      $tab[1]['datatype']      = 'itemlink';
-      $tab[1]['itemlink_type'] = $this->getType();
-      $tab[1]['displaytype']   = 'text';
-      $tab[1]['checktype']     = 'text';
-      $tab[1]['injectable']    = true;
+      $tab[] = [
+         'id'            => '1',
+         'table'         => $this->getTable(),
+         'field'         => 'name',
+         'name'          => __('Name'),
+         'datatype'      => 'itemlink',
+         'itemlink_type' => $this->getType()
+      ];
 
-      $tab[2]['table']       = 'glpi_plugin_connections_connectiontypes';
-      $tab[2]['field']       = 'name';
-      $tab[2]['linkfield']   = 'plugin_connections_connectiontypes_id';
-      $tab[2]['name']        = __('Type of Connections', 'connections');
-      $tab[2]['displaytype'] = 'dropdown';
-      $tab[2]['checktype']   = 'text';
-      $tab[2]['injectable']  = true;
+      $tab[] = [
+         'id'       => '2',
+         'table'    => 'glpi_plugin_connections_connectiontypes',
+         'field'    => 'name',
+         'name'     => PluginConnectionsConnectionType::getTypeName(1),
+         'datatype' => 'dropdown'
+      ];
 
-      $tab[3]['table']       = 'glpi_users';
-      $tab[3]['field']       = 'name';
-      $tab[3]['linkfield']   = 'users_id';
-      $tab[3]['name']        = __('Technician in charge of the hardware');
-      $tab[3]['displaytype'] = 'user';
-      $tab[3]['checktype']   = 'text';
-      $tab[3]['injectable']  = true;
+      $tab[] = [
+         'id'        => '3',
+         'table'     => 'glpi_users',
+         'field'     => 'name',
+         'linkfield' => 'users_id',
+         'name'      => __('Technician in charge of the hardware'),
+         'datatype'  => 'dropdown',
+         'right'     => 'interface'
+      ];
 
-      $tab[4]['table']         = 'glpi_suppliers';
-      $tab[4]['field']         = 'name';
-      $tab[4]['linkfield']     = 'suppliers_id';
-      $tab[4]['name']          = __('Supplier');
-      $tab[4]['datatype']      = 'itemlink';
-      $tab[4]['itemlink_type'] = 'Supplier';
-      $tab[4]['forcegroupby']  = true;
-      $tab[4]['displaytype']   = 'supplier';
-      $tab[4]['checktype']     = 'text';
-      $tab[4]['injectable']    = true;
+      $tab[] = [
+         'id'       => '4',
+         'table'    => 'glpi_suppliers',
+         'field'    => 'name',
+         'name'     => __('Supplier'),
+         'datatype' => 'dropdown'
+      ];
 
-      $tab[5]['table']       = 'glpi_plugin_connections_connectionrates';
-      $tab[5]['field']       = 'name';
-      $tab[5]['linkfield']   = 'plugin_connections_connectionrates_id';
-      $tab[5]['name']        = __('Rates', 'connections');
-      $tab[5]['displaytype'] = 'dropdown';
-      $tab[5]['checktype']   = 'text';
-      $tab[5]['injectable']  = true;
+      $tab[] = [
+         'id'       => '5',
+         'table'    => 'glpi_plugin_connections_connectionrates',
+         'field'    => 'name',
+         'name'     => PluginConnectionsConnectionRate::getTypeName(1),
+         'datatype' => 'dropdown'
+      ];
 
-      $tab[6]['table']       = 'glpi_plugin_connections_guaranteedconnectionrates';
-      $tab[6]['field']       = 'name';
-      $tab[6]['linkfield']   = 'plugin_connections_guaranteedconnectionrates_id';
-      $tab[6]['name']        = __('Guaranteed Rates', 'connections');
-      $tab[6]['displaytype'] = 'dropdown';
-      $tab[6]['checktype']   = 'text';
-      $tab[6]['injectable']  = true;
+      $tab[] = [
+         'id'       => '6',
+         'table'    => 'glpi_plugin_connections_guaranteedconnectionrates',
+         'field'    => 'name',
+         'name'     => PluginConnectionsGuaranteedConnectionRate::getTypeName(1),
+         'datatype' => 'dropdown'
+      ];
 
-      $tab[7]['table']       = $this->getTable();
-      $tab[7]['field']       = 'comment';
-      $tab[7]['linkfield']   = 'comment';
-      $tab[7]['name']        = __('Comments');
-      $tab[7]['datatype']    = 'text';
-      $tab[7]['datatype']    = 'text';
-      $tab[7]['displaytype'] = 'multiline_text';
-      $tab[7]['injectable']  = true;
+      $tab[] = [
+         'id'       => '7',
+         'table'    => $this->getTable(),
+         'field'    => 'comment',
+         'name'     => __('Comments'),
+         'datatype' => 'text'
+      ];
 
-      $tab[8]['table']         = 'glpi_plugin_connections_connections_items';
-      $tab[8]['field']         = 'items_id';
-      $tab[8]['linkfield']     = '';
-      $tab[8]['name']          = __('Associated element');
-      $tab[8]['injectable']    = false;
-      $tab[8]['massiveaction'] = false;
+      //      $tab[8]['table']         = 'glpi_plugin_connections_connections_items';
+      //      $tab[8]['field']         = 'items_id';
+      //      $tab[8]['linkfield']     = '';
+      //      $tab[8]['name']          = __('Associated element');
+      //      $tab[8]['injectable']    = false;
+      //      $tab[8]['massiveaction'] = false;
 
-      $tab[9]['table']       = $this->getTable();
-      $tab[9]['field']       = 'others';
-      $tab[9]['linkfield']   = 'others';
-      $tab[9]['name']        = __('Other');
-      $tab[9]['displaytype'] = 'text';
-      $tab[9]['checktype']   = 'text';
-      $tab[9]['injectable']  = true;
+      $tab[] = [
+         'id'       => '9',
+         'table'    => $this->getTable(),
+         'field'    => 'others',
+         'name'     => __('Other'),
+         'datatype' => 'text'
+      ];
 
-      $tab[10]['table']       = 'glpi_groups';
-      $tab[10]['field']       = 'name';
-      $tab[10]['linkfield']   = 'groups_id';
-      $tab[10]['name']        = __('Group');
-      $tab[10]['displaytype'] = 'dropdown';
-      $tab[10]['checktype']   = 'text';
-      $tab[10]['injectable']  = true;
+      $tab[] = [
+         'id'        => '10',
+         'table'     => 'glpi_groups',
+         'field'     => 'name',
+         'linkfield' => 'groups_id',
+         'name'      => __('Group in charge of the hardware'),
+         'datatype'  => 'dropdown'
+      ];
 
-      $tab[11]['table']       = $this->getTable();
-      $tab[11]['field']       = 'is_helpdesk_visible';
-      $tab[11]['linkfield']   = 'is_helpdesk_visible';
-      $tab[11]['name']        = __('Associable to a ticket');
-      $tab[11]['datatype']    = 'bool';
-      $tab[11]['displaytype'] = 'bool';
-      $tab[11]['checktype']   = 'decimal';
-      $tab[11]['injectable']  = true;
 
-      $tab[12]['table']       = $this->getTable();
-      $tab[12]['field']       = 'date_mod';
-      $tab[12]['linkfield']   = 'date_mod';
-      $tab[12]['name']        = __('Last update');
-      $tab[12]['datatype']    = 'datetime';
-      $tab[12]['displaytype'] = 'date';
-      $tab[12]['checktype']   = 'date';
-      $tab[12]['injectable']  = true;
+      $tab[] = [
+         'id'       => '13',
+         'table'    => $this->getTable(),
+         'field'    => 'is_helpdesk_visible',
+         'name'     => __('Associable to a ticket'),
+         'datatype' => 'bool'
+      ];
 
-      $tab[18]['table']       = $this->getTable();
-      $tab[18]['field']       = 'is_recursive';
-      $tab[18]['linkfield']   = 'is_recursive';
-      $tab[18]['name']        = __('Child entities');
-      $tab[18]['datatype']    = 'bool';
-      $tab[18]['displaytype'] = 'bool';
-      $tab[18]['checktype']   = 'decimal';
-      $tab[18]['injectable']  = true;
+      $tab[] = [
+         'id'            => '14',
+         'table'         => $this->getTable(),
+         'field'         => 'date_mod',
+         'massiveaction' => false,
+         'name'          => __('Last update'),
+         'datatype'      => 'datetime'
+      ];
 
-      $tab[30]['table']         = $this->getTable();
-      $tab[30]['field']         = 'id';
-      $tab[30]['linkfield']     = '';
-      $tab[30]['name']          = __('ID');
-      $tab[30]['injectable']    = false;
-      $tab[30]['massiveaction'] = false;
+      $tab[] = [
+         'id'       => '30',
+         'table'    => $this->getTable(),
+         'field'    => 'id',
+         'name'     => __('ID'),
+         'datatype' => 'number'
+      ];
 
-      $tab[80]['table']      = 'glpi_entities';
-      $tab[80]['field']      = 'completename';
-      $tab[80]['name']       = __('Entity');
-      $tab[80]['injectable'] = false;
+      $tab[] = [
+         'id'       => '80',
+         'table'    => 'glpi_entities',
+         'field'    => 'completename',
+         'name'     => __('Entity'),
+         'datatype' => 'dropdown'
+      ];
+
+      $tab[] = [
+         'id'    => '81',
+         'table' => 'glpi_entities',
+         'field' => 'entities_id',
+         'name'  => __('Entity') . "-" . __('ID')
+      ];
+
+      $tab[] = [
+         'id'       => '86',
+         'table'    => $this->getTable(),
+         'field'    => 'is_recursive',
+         'name'     => __('Child entities'),
+         'datatype' => 'bool'
+      ];
 
       return $tab;
    }
 
-   public function defineTabs($options = array()) {
+   /**
+    * @param array $options
+    *
+    * @return array
+    */
+   public function defineTabs($options = []) {
 
-      $ong = array();
+      $ong = [];
       $this->addDefaultFormTab($ong);
       $this->addStandardTab('PluginConnectionsConnection_Item', $ong, $options);
       if ($this->fields['id'] > 0) {
@@ -214,6 +243,11 @@ class PluginConnectionsConnection extends CommonDBTM {
       return $ong;
    }
 
+   /**
+    * @param null $checkitem
+    *
+    * @return array
+    */
    function getSpecificMassiveActions($checkitem = NULL) {
 
       $isadmin = static::canUpdate();
@@ -234,32 +268,37 @@ class PluginConnectionsConnection extends CommonDBTM {
       return $actions;
    }
 
+   /**
+    * @param \MassiveAction $ma
+    *
+    * @return bool
+    */
    static function showMassiveActionsSubForm(MassiveAction $ma) {
 
       switch ($ma->getAction()) {
          case "install" :
-            Dropdown::showSelectItemFromItemtypes(array('items_id_name' => 'item_item',
+            Dropdown::showSelectItemFromItemtypes(['items_id_name' => 'item_item',
                                                         'itemtype_name' => 'typeitem',
                                                         'itemtypes'     => PluginConnectionsConnection_Item::getClasses(true),
                                                         'checkright'
                                                                         => true,
-                                                  ));
-            echo Html::submit(_x('button', 'Post'), array('name' => 'massiveaction'));
+                                                  ]);
+            echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
             return true;
             break;
          case "uninstall" :
-            Dropdown::showSelectItemFromItemtypes(array('items_id_name' => 'item_item',
+            Dropdown::showSelectItemFromItemtypes(['items_id_name' => 'item_item',
                                                         'itemtype_name' => 'typeitem',
                                                         'itemtypes'     => PluginConnectionsConnection_Item::getClasses(true),
                                                         'checkright'
                                                                         => true,
-                                                  ));
-            echo Html::submit(_x('button', 'Post'), array('name' => 'massiveaction'));
+                                                  ]);
+            echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
             return true;
             break;
          case "transfer" :
             Dropdown::show('Entity');
-            echo Html::submit(_x('button', 'Post'), array('name' => 'massiveaction'));
+            echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
             return true;
             break;
 
@@ -267,6 +306,11 @@ class PluginConnectionsConnection extends CommonDBTM {
       return parent::showMassiveActionsSubForm($ma);
    }
 
+   /**
+    * @param \MassiveAction $ma
+    * @param \CommonDBTM    $item
+    * @param array          $ids
+    */
    static function processMassiveActionsForOneItemtype(MassiveAction $ma, CommonDBTM $item,
                                                        array $ids) {
 
@@ -294,7 +338,7 @@ class PluginConnectionsConnection extends CommonDBTM {
                      $item->update($values);
                   }
                   unset($values);
-                  
+
                   $grate = PluginConnectionsGuaranteedConnectionRate::transfer($item->fields["plugin_connections_connections_id"], $input['entities_id']);
                   if ($grate > 0) {
                      $values["id"]                                = $key;
@@ -318,9 +362,9 @@ class PluginConnectionsConnection extends CommonDBTM {
             $input = $ma->getInput();
             foreach ($ids as $key) {
                if ($item->can($key, UPDATE)) {
-                  $values = array('plugin_connections_connections_id' => $key,
-                                  'items_id'                      => $input["item_item"],
-                                  'itemtype'                      => $input['typeitem']);
+                  $values = ['plugin_connections_connections_id' => $key,
+                                  'items_id'                          => $input["item_item"],
+                                  'itemtype'                          => $input['typeitem']];
                   if ($connection_item->add($values)) {
                      $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
                   } else {
@@ -353,14 +397,22 @@ class PluginConnectionsConnection extends CommonDBTM {
     *
     * @return a SQL command which return a set of (itemtype, items_id)
     */
+   /**
+    * @return string
+    */
    public function getSelectLinkedItem() {
       return "SELECT `itemtype`, `items_id`
               FROM `glpi_plugin_connections_connections_items`
               WHERE `plugin_connections_connections_id` = '" . $this->fields['id'] . "'";
    }
 
-   public function showForm($ID, $options = array()) {
-      global $CFG_GLPI;
+   /**
+    * @param       $ID
+    * @param array $options
+    *
+    * @return bool
+    */
+   public function showForm($ID, $options = []) {
 
       $this->initForm($ID, $options);
       $this->showFormHeader($options);
@@ -383,20 +435,20 @@ class PluginConnectionsConnection extends CommonDBTM {
 
       echo "<td>" . __('Supplier') . " : </td>";
       echo "<td>";
-      Supplier::dropdown(array(
+      Supplier::dropdown([
                             'name'   => "suppliers_id",
                             'value'  => $this->fields["suppliers_id"],
                             'entity' => $this->fields["entities_id"],
-                         ));
+                         ]);
       echo "</td>";
 
       echo "<td>" . __('Rates', 'connections') . " : </td>";
       echo "<td>";
-      PluginConnectionsConnectionRate::dropdown(array(
+      PluginConnectionsConnectionRate::dropdown([
                                                    'name'   => "plugin_connections_connectionrates_id",
                                                    'value'  => $this->fields["plugin_connections_connectionrates_id"],
                                                    'entity' => $this->fields["entities_id"],
-                                                ));
+                                                ]);
       echo "</td>";
 
       echo "</tr>";
@@ -404,20 +456,20 @@ class PluginConnectionsConnection extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
 
       echo "<td>" . __('Type of Connections', 'connections') . " : </td><td>";
-      PluginConnectionsConnectionType::dropdown(array(
+      PluginConnectionsConnectionType::dropdown([
                                                    'name'   => "plugin_connections_connectiontypes_id",
                                                    'value'  => $this->fields["plugin_connections_connectiontypes_id"],
                                                    'entity' => $this->fields["entities_id"],
-                                                ));
+                                                ]);
       echo "</td>";
 
       echo "<td>" . __('Guaranteed Rates', 'connections') . " : </td>";
       echo "<td>";
-      PluginConnectionsGuaranteedConnectionRate::dropdown(array(
+      PluginConnectionsGuaranteedConnectionRate::dropdown([
                                                              'name'   => "plugin_connections_guaranteedconnectionrates_id",
                                                              'value'  => $this->fields["plugin_connections_guaranteedconnectionrates_id"],
                                                              'entity' => $this->fields["entities_id"],
-                                                          ));
+                                                          ]);
       echo "</td>";
 
       echo "</tr>";
@@ -425,11 +477,11 @@ class PluginConnectionsConnection extends CommonDBTM {
       echo "<tr class='tab_bg_1'>";
 
       echo "<td>" . __('Technician in charge of the hardware') . " : </td><td>";
-      User::dropdown(array(
+      User::dropdown([
                         'value'  => $this->fields["users_id"],
                         'entity' => $this->fields["entities_id"],
                         'right'  => 'all'
-                     ));
+                     ]);
       echo "</td>";
 
       echo "<td>" . __('Associable to a ticket') . " :</td><td>";
@@ -440,12 +492,12 @@ class PluginConnectionsConnection extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td>" . __('Group') . " : </td><td>";
-      Group::dropdown(array(
+      echo "<td>" . __('Group in charge of the hardware') . " : </td><td>";
+      Group::dropdown([
                          'name'   => "groups_id",
                          'value'  => $this->fields["groups_id"],
                          'entity' => $this->fields["entities_id"],
-                      ));
+                      ]);
       echo "</td>";
 
       echo "<td>" . __('Last update') . " : </td>";
@@ -467,12 +519,21 @@ class PluginConnectionsConnection extends CommonDBTM {
       return true;
    }
 
-   public function dropdownConnections($myname, $entity_restrict = '', $used = array()) {
+   /**
+    * @param        $myname
+    * @param string $entity_restrict
+    * @param array  $used
+    *
+    * @return int
+    * @throws \GlpitestSQLError
+    */
+   public function dropdownConnections($myname, $entity_restrict = '', $used = []) {
       global $DB, $CFG_GLPI;
 
+      $dbu              = new DbUtils();
       $rand             = mt_rand();
       $table            = $this->getTable();
-      $entitiesRestrict = getEntitiesRestrictRequest(
+      $entitiesRestrict = $dbu->getEntitiesRestrictRequest(
          "AND",
          $this->getTable(),
          '',
@@ -503,13 +564,13 @@ class PluginConnectionsConnection extends CommonDBTM {
       }
       echo "</select>\n";
 
-      $params = array(
+      $params = [
          'plugin_connections_connectiontypes_id' => '__VALUE__',
          'entity_restrict'                       => $entity_restrict,
          'rand'                                  => $rand,
          'myname'                                => $myname,
          'used'                                  => $used,
-      );
+      ];
 
       Ajax::updateItemOnSelectEvent(
          "plugin_connections_connectiontypes_id",

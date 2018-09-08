@@ -30,6 +30,9 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
+/**
+ * Class PluginConnectionsConnectionInjection
+ */
 class PluginConnectionsConnectionInjection extends PluginConnectionsConnection implements PluginDatainjectionInjectionInterface {
 
    public function __construct() {
@@ -37,14 +40,25 @@ class PluginConnectionsConnectionInjection extends PluginConnectionsConnection i
       $this->table = getTableForItemType('PluginConnectionsConnection');
    }
 
+   /**
+    * @return \a|bool
+    */
    public function isPrimaryType() {
       return true;
    }
 
+   /**
+    * @return \an|array
+    */
    public function connectedTo() {
-      return array();
+      return [];
    }
 
+   /**
+    * @param string $primary_type
+    *
+    * @return \an|array
+    */
    public function getOptions($primary_type = '') {
       $tab = parent::getSearchOptions();
 
@@ -53,10 +67,10 @@ class PluginConnectionsConnectionInjection extends PluginConnectionsConnection i
 
       //Add linkfield for theses fields : no massive action is allowed in the core, but they can be
       //imported using the commonlib
-      $add_linkfield = array(
+      $add_linkfield = [
          'comment' => 'comment',
          'notepad' => 'notepad',
-      );
+      ];
 
       foreach ($tab as $id => $tmp) {
          if (in_array($tmp['field'], $add_linkfield)) {
@@ -84,10 +98,12 @@ class PluginConnectionsConnectionInjection extends PluginConnectionsConnection i
     * Standard method to delete an object into glpi
     * WILL BE INTEGRATED INTO THE CORE IN 0.80
     *
-    * @param fields fields to add into glpi
-    * @param options options used during creation
+    * @param array $values
+    * @param array $options
+    *
+    * @return \an
     */
-   public function deleteObject($values = array(), $options = array()) {
+   public function deleteObject($values = [], $options = []) {
       $lib = new PluginDatainjectionCommonInjectionLib($this, $values, $options);
       $lib->deleteObject();
 
@@ -98,12 +114,11 @@ class PluginConnectionsConnectionInjection extends PluginConnectionsConnection i
     * Standard method to add an object into glpi
     * WILL BE INTEGRATED INTO THE CORE IN 0.80
     *
-    * @param values fields to add into glpi
-    * @param options options used during creation
-    *
+    * @param array $values
+    * @param array $options
     * @return an array of IDs of newly created objects : for example array(Computer=>1, Networkport=>10)
     */
-   public function addOrUpdateObject($values = array(), $options = array()) {
+   public function addOrUpdateObject($values = [], $options = []) {
       $lib = new PluginDatainjectionCommonInjectionLib($this, $values, $options);
       $lib->processAddOrUpdate();
 

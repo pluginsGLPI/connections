@@ -29,16 +29,16 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
 
 // Init the hooks of the plugins -Needed
 function plugin_init_connections() {
-   global $PLUGIN_HOOKS, $CFG_GLPI;
+   global $PLUGIN_HOOKS;
 
    $PLUGIN_HOOKS['csrf_compliant']['connections']   = true;
-   $PLUGIN_HOOKS['change_profile']['connections']   = array('PluginConnectionsProfile', 'initProfile');
+   $PLUGIN_HOOKS['change_profile']['connections']   = ['PluginConnectionsProfile', 'initProfile'];
    $PLUGIN_HOOKS['assign_to_ticket']['connections'] = true;
 
    $plugin = new Plugin();
    if ($plugin->isActivated("connections")) {
 
-      Plugin::registerClass('PluginConnectionsConnection', array(
+      Plugin::registerClass('PluginConnectionsConnection', [
          'linkuser_types'              => true,
          'linkgroup_types'             => true,
          'document_types'              => true,
@@ -46,18 +46,18 @@ function plugin_init_connections() {
          'ticket_types'                => true,
          'helpdesk_visible_types'      => true,
          'notificationtemplates_types' => true,
-      ));
+      ]);
 
-      Plugin::registerClass('PluginConnectionsProfile', array(
+      Plugin::registerClass('PluginConnectionsProfile', [
          'addtabon' => 'Profile'
-      ));
+      ]);
 
-      Plugin::registerClass('PluginConnectionsConnection_Item', array(
-         'addtabon' => array('NetworkEquipment','Supplier')
-      ));
+      Plugin::registerClass('PluginConnectionsConnection_Item', [
+         'addtabon' => ['NetworkEquipment','Supplier']
+      ]);
 
       if (Session::haveRight("plugin_connections_connection", READ)) {
-         $PLUGIN_HOOKS["menu_toadd"]['connections'] = array('assets' => 'PluginConnectionsMenu');
+         $PLUGIN_HOOKS["menu_toadd"]['connections'] = ['assets' => 'PluginConnectionsMenu'];
       }
 
       $PLUGIN_HOOKS['add_css']['connections']                       = "connections.css";
@@ -68,33 +68,47 @@ function plugin_init_connections() {
 }
 
 // Get the name and the version of the plugin - Needed
+/**
+ * @return array
+ */
 function plugin_version_connections() {
 
-   return array(
+   return [
       'name'           => __('Connections', 'connections'),
-      'version'        => '9.2',
+      'version'        => '9.3',
       'license'        => 'GPLv2+',
       'oldname'        => 'connection',
       'author'         => 'Xavier Caillaud, Jean Marc GRISARD, TECLIB\'',
       'homepage'       => 'https://github.com/pluginsGLPI/connections',
-      'minGlpiVersion' => '9.2',
-   );
+      'minGlpiVersion' => '9.3',
+   ];
 }
 
 // Optional : check prerequisites before install : may print errors or add to message after redirect
+/**
+ * @return bool
+ */
 function plugin_connections_check_prerequisites() {
-   if (version_compare(GLPI_VERSION, '9.2', 'lt')) {
-      echo 'This plugin requires GLPI >= 9.2';
+   if (version_compare(GLPI_VERSION, '9.3', 'lt')) {
+      echo 'This plugin requires GLPI >= 9.3';
       return false;
    }
    return true;
 }
 
 // Uninstall process for plugin : need to return true if succeeded : may display messages or add to message after redirect
+/**
+ * @return bool
+ */
 function plugin_connections_check_config() {
    return true;
 }
 
+/**
+ * @param $types
+ *
+ * @return mixed
+ */
 function plugin_datainjection_migratetypes_connections($types) {
    $types[4400] = 'PluginConnectionsConnection';
    return $types;

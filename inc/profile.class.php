@@ -31,11 +31,20 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
+/**
+ * Class PluginConnectionsProfile
+ */
 class PluginConnectionsProfile extends Profile {
 
    static $rightname = "profile";
 
 
+   /**
+    * @param \CommonGLPI $item
+    * @param int         $withtemplate
+    *
+    * @return string
+    */
    function getTabNameForItem(CommonGLPI $item, $withtemplate = 0) {
 
       if ($item->getType() == 'Profile') {
@@ -48,6 +57,13 @@ class PluginConnectionsProfile extends Profile {
    }
 
 
+   /**
+    * @param \CommonGLPI $item
+    * @param int         $tabnum
+    * @param int         $withtemplate
+    *
+    * @return bool
+    */
    static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0) {
 
       if ($item->getType() == 'Profile') {
@@ -55,19 +71,19 @@ class PluginConnectionsProfile extends Profile {
          $prof = new self();
          //In case there's no right for this profile, create it
          self::addDefaultProfileInfos($ID,
-                                      array('plugin_connections_connection' => 0));
+                                      ['plugin_connections_connection' => 0]);
          $prof->showForm($ID);
       }
       return true;
    }
 
    /**
-    * @param $ID  integer
+    * @param $profiles_id
     */
    static function createFirstAccess($profiles_id) {
 
       self::addDefaultProfileInfos($profiles_id,
-                                   array('plugin_connections_connection' => ALLSTANDARDRIGHT));
+                                   ['plugin_connections_connection' => ALLSTANDARDRIGHT]);
    }
 
    /**
@@ -82,11 +98,11 @@ class PluginConnectionsProfile extends Profile {
       $profileRight = new ProfileRight();
       foreach ($rights as $right => $value) {
          if ($dbu->countElementsInTable('glpi_profilerights',
-                                        "`profiles_id`='$profiles_id' AND `name`='$right'") && $drop_existing) {
-            $profileRight->deleteByCriteria(array('profiles_id' => $profiles_id, 'name' => $right));
+                                        ["profiles_id" => $profiles_id, "name" => $right]) && $drop_existing) {
+            $profileRight->deleteByCriteria(['profiles_id' => $profiles_id, 'name' => $right]);
          }
          if (!$dbu->countElementsInTable('glpi_profilerights',
-                                         "`profiles_id`='$profiles_id' AND `name`='$right'")) {
+                                         ["profiles_id" => $profiles_id, "name" => $right])) {
             $myright['profiles_id'] = $profiles_id;
             $myright['name']        = $right;
             $myright['rights']      = $value;
@@ -101,15 +117,16 @@ class PluginConnectionsProfile extends Profile {
    /**
     * Show profile form
     *
-    * @param $items_id integer id of the profile
-    * @param $target value url of target
+    * @param int  $profiles_id
+    * @param bool $openform
+    * @param bool $closeform
     *
-    * @return nothing
-    **/
+    * @return void
+    */
    function showForm($profiles_id = 0, $openform = TRUE, $closeform = TRUE) {
 
       echo "<div class='firstbloc'>";
-      if (($canedit = Session::haveRightsOr(self::$rightname, array(CREATE, UPDATE, PURGE)))
+      if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]))
           && $openform) {
          $profile = new Profile();
          echo "<form method='post' action='" . $profile->getFormURL() . "'>";
@@ -118,28 +135,30 @@ class PluginConnectionsProfile extends Profile {
       $profile = new Profile();
       $profile->getFromDB($profiles_id);
 
-      $rights = self::getAllRights();
       $profile->displayRightsChoiceMatrix(self::getAllRights(),
-                                          array('canedit'       => $canedit,
+                                          ['canedit'       => $canedit,
                                                 'default_class' => 'tab_bg_2',
-                                                'title'         => __('General')));
+                                                'title'         => __('General')]);
       if ($canedit
           && $closeform) {
          echo "<div class='center'>";
-         echo Html::hidden('id', array('value' => $profiles_id));
-         echo Html::submit(_sx('button', 'Save'), array('name' => 'update'));
+         echo Html::hidden('id', ['value' => $profiles_id]);
+         echo Html::submit(_sx('button', 'Save'), ['name' => 'update']);
          echo "</div>\n";
          Html::closeForm();
       }
       echo "</div>";
    }
 
+   /**
+    * @return array
+    */
    static function getAllRights() {
 
-      $rights = array(
-         array('itemtype' => 'PluginConnectionsConnection',
+      $rights = [
+         ['itemtype' => 'PluginConnectionsConnection',
                'label'    => __('Connections', 'connections'),
-               'field'    => 'plugin_connections_connection'));
+               'field'    => 'plugin_connections_connection']];
       return $rights;
    }
 
@@ -186,7 +205,7 @@ class PluginConnectionsProfile extends Profile {
       foreach ($DB->request('glpi_plugin_databases_profiles',
                             "`profiles_id`='$profiles_id'") as $profile_data) {
 
-         $matching       = array('connections' => 'plugin_connections_connection');
+         $matching       = ['connections' => 'plugin_connections_connection'];
          $current_rights = ProfileRight::getProfileRights($profiles_id, array_values($matching));
          foreach ($matching as $old => $new) {
             if (!isset($current_rights[$old])) {
@@ -207,10 +226,10 @@ class PluginConnectionsProfile extends Profile {
       $profile = new self();
       $dbu     = new DbUtils();
       //Add new rights in glpi_profilerights table
-      foreach ($profile->getAllRights(true) as $data) {
+      foreach ($profile->getAllRights() as $data) {
          if ($dbu->countElementsInTable("glpi_profilerights",
-                                        "`name` = '" . $data['field'] . "'") == 0) {
-            ProfileRight::addProfileRights(array($data['field']));
+                                        ["name" => $data['field']]) == 0) {
+            ProfileRight::addProfileRights([$data['field']]);
          }
       }
 
@@ -227,7 +246,7 @@ class PluginConnectionsProfile extends Profile {
    }
 
    static function removeRightsFromSession() {
-      foreach (self::getAllRights(true) as $right) {
+      foreach (self::getAllRights() as $right) {
          if (isset($_SESSION['glpiactiveprofile'][$right['field']])) {
             unset($_SESSION['glpiactiveprofile'][$right['field']]);
          }

@@ -27,33 +27,41 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
+/**
+ * Class PluginConnectionsMenu
+ */
 class PluginConnectionsMenu extends CommonGLPI {
    static $rightname = 'plugin_connections_connection';
 
+   /**
+    * @return string
+    */
    static function getMenuName() {
       return __('Connections', 'connections');
    }
 
+   /**
+    * @return array
+    */
    static function getMenuContent() {
-      global $CFG_GLPI;
 
-      $menu          = array();
+      $menu          = [];
       $menu['title'] = self::getMenuName();
       $menu['page']  = '/plugins/connections/front/connection.php';
-      $menu['links'] = array(
+      $menu['links'] = [
          'add'    => Toolbox::getItemTypeFormURL('PluginConnectionsConnection', false),
          'search' => Toolbox::getItemTypeSearchURL('PluginConnectionsConnection', false),
-      );
+      ];
 
       if (Session::haveRight(static::$rightname, READ)) {
-         $menu['options']['connections'] = array(
+         $menu['options']['connections'] = [
             'title' => self::getMenuName(),
             'page'  => Toolbox::getItemTypeFormURL('PluginConnectionsConnection', false),
-            'links' => array(
+            'links' => [
                'add'    => Toolbox::getItemTypeFormURL('PluginConnectionsConnection', false),
                'search' => Toolbox::getItemTypeSearchURL('PluginConnectionsConnection', false),
-            ),
-         );
+            ],
+         ];
       }
 
       return $menu;
