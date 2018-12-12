@@ -202,7 +202,7 @@ class PluginConnectionsProfile extends Profile {
          return true;
       }
 
-      foreach ($DB->request('glpi_plugin_databases_profiles',
+      foreach ($DB->request('glpi_plugin_connections_profiles',
                             "`profiles_id`='$profiles_id'") as $profile_data) {
 
          $matching       = ['connections' => 'plugin_connections_connection'];
