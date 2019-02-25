@@ -42,24 +42,27 @@ function plugin_connections_install() {
 
    // Go for 1.7.0
    if (!$DB->tableExists('glpi_plugin_connection') && !$DB->tableExists('glpi_plugin_connections_connections')) { // Fresh install
-      $DB->runFile(GLPI_ROOT . '/plugins/connections/sql/empty-1.7.0.sql');
+      $DB->runFile(GLPI_ROOT . '/plugins/connections/sql/empty-9.4.0.sql');
 
       // We're 1.6.0 update to 1.6.4
    } elseif ($DB->tableExists('glpi_plugin_connections_connectionratesguaranteed')
              && !$DB->tableExists('glpi_plugin_connectiond_device')) {
       $DB->runFile(GLPI_ROOT . '/plugins/connections/sql/update-1.6.0-to-1.6.4.sql');
-   } elseif ($DB->tableExists("glpi_plugin_connection") && !FieldExists("glpi_plugin_connection", "recursive")) {
+   } elseif ($DB->tableExists("glpi_plugin_connection") && !$DB->FieldExists("glpi_plugin_connection", "recursive")) {
       $update = true;
       $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.3.0.sql");
       $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.4.0.sql");
       $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.5.0.sql");
-   } elseif ($DB->tableExists("glpi_plugin_connection_profiles") && FieldExists("glpi_plugin_connection_profiles", "interface")) {
+   } elseif ($DB->tableExists("glpi_plugin_connection_profiles") && $DB->FieldExists("glpi_plugin_connection_profiles", "interface")) {
       $update = true;
       $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.4.0.sql");
       $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.3.0.sql");
-   } elseif ($DB->tableExists("glpi_plugin_connection") && !FieldExists("glpi_plugin_connection", "helpdesk_visible")) {
+   } elseif ($DB->tableExists("glpi_plugin_connection") && !$DB->FieldExists("glpi_plugin_connection", "helpdesk_visible")) {
       $update = true;
       $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.3.0.sql");
+   } elseif ($DB->tableExists("glpi_plugin_connections_connectionrates") &&
+       !$DB->FieldExists("glpi_plugin_connections_connectionrates", "is_recursive")) {
+      $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-9.4.0.sql");
    }
 
 
@@ -149,6 +152,7 @@ function plugin_connections_uninstall() {
       "glpi_documents_items",
       "glpi_savedsearches",
       "glpi_logs",
+      "glpi_items_tickets"
    ];
 
    foreach ($tables_glpi as $table_glpi) {
