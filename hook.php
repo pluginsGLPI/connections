@@ -41,28 +41,39 @@ function plugin_connections_install() {
    //TODO: Use "Migration" class instead (available since GLPI v0.80)
 
    // Go for 1.7.0
-   if (!$DB->tableExists('glpi_plugin_connection') && !$DB->tableExists('glpi_plugin_connections_connections')) { // Fresh install
-      $DB->runFile(GLPI_ROOT . '/plugins/connections/sql/empty-9.4.0.sql');
+   if (!$DB->tableExists('glpi_plugin_connection')
+       && !$DB->tableExists('glpi_plugin_connections_connections')) { // Fresh install
+      $DB->runFile(GLPI_ROOT . '/plugins/connections/sql/empty-9.5.0.sql');
 
       // We're 1.6.0 update to 1.6.4
-   } elseif ($DB->tableExists('glpi_plugin_connections_connectionratesguaranteed')
-             && !$DB->tableExists('glpi_plugin_connectiond_device')) {
+   } else if ($DB->tableExists('glpi_plugin_connections_connectionratesguaranteed')
+              && !$DB->tableExists('glpi_plugin_connectiond_device')) {
       $DB->runFile(GLPI_ROOT . '/plugins/connections/sql/update-1.6.0-to-1.6.4.sql');
-   } elseif ($DB->tableExists("glpi_plugin_connection") && !$DB->FieldExists("glpi_plugin_connection", "recursive")) {
+
+   } else if ($DB->tableExists("glpi_plugin_connection")
+              && !$DB->FieldExists("glpi_plugin_connection", "recursive")) {
       $update = true;
       $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.3.0.sql");
       $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.4.0.sql");
       $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.5.0.sql");
-   } elseif ($DB->tableExists("glpi_plugin_connection_profiles") && $DB->FieldExists("glpi_plugin_connection_profiles", "interface")) {
+
+   } else if ($DB->tableExists("glpi_plugin_connection_profiles")
+              && $DB->FieldExists("glpi_plugin_connection_profiles", "interface")) {
       $update = true;
       $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.4.0.sql");
       $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.3.0.sql");
-   } elseif ($DB->tableExists("glpi_plugin_connection") && !$DB->FieldExists("glpi_plugin_connection", "helpdesk_visible")) {
+
+   } else if ($DB->tableExists("glpi_plugin_connection")
+              && !$DB->FieldExists("glpi_plugin_connection", "helpdesk_visible")) {
       $update = true;
       $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.3.0.sql");
-   } elseif ($DB->tableExists("glpi_plugin_connections_connectionrates") &&
-       !$DB->FieldExists("glpi_plugin_connections_connectionrates", "is_recursive")) {
+
+   } else if ($DB->tableExists("glpi_plugin_connections_connectionrates") &&
+              !$DB->FieldExists("glpi_plugin_connections_connectionrates", "is_recursive")) {
       $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-9.4.0.sql");
+
+   } else if (!$DB->FieldExists("glpi_plugin_connections_connections", "locations_id")) {
+      $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-9.5.0.sql");
    }
 
 
@@ -71,8 +82,8 @@ function plugin_connections_install() {
       $result_ = $DB->query($query_);
 
       if ($DB->numrows($result_) > 0) {
-         while ($data = $DB->fetch_array($result_)) {
-            $query  = "UPDATE `glpi_plugin_connections_profiles`
+         while ($data = $DB->fetchArray($result_)) {
+            $query = "UPDATE `glpi_plugin_connections_profiles`
                       SET `profiles_id` = '" . $data["id"] . "'
                       WHERE `id` = '" . $data["id"] . "';";
             $DB->query($query);
@@ -152,12 +163,18 @@ function plugin_connections_uninstall() {
       "glpi_documents_items",
       "glpi_savedsearches",
       "glpi_logs",
-      "glpi_items_tickets"
+      "glpi_items_tickets",
+      "glpi_impactitems"
    ];
 
    foreach ($tables_glpi as $table_glpi) {
       $DB->query("DELETE FROM `$table_glpi` WHERE `itemtype` = 'PluginConnectionsConnection';");
    }
+
+   $DB->query("DELETE
+                  FROM `glpi_impactrelations`
+                  WHERE `itemtype_source` IN ('PluginConnectionsConnection')
+                    OR `itemtype_impacted` IN ('PluginConnectionsConnection')");
 
    if (class_exists('PluginDatainjectionModel')) {
       PluginDatainjectionModel::clean(['itemtype' => 'PluginConnectionsConnection']);
@@ -417,7 +434,7 @@ function plugin_connections_giveItem($type, $ID, $data, $num) {
                      if ($DB->numrows($result_linked)) {
                         $item = new $itemtype();
 
-                        while ($data = $DB->fetch_assoc($result_linked)) {
+                        while ($data = $DB->fetchAssoc($result_linked)) {
                            if ($item->getFromDB($data['id'])) {
                               $out .= $item->getTypeName() . " - " . $item->getLink() . "<br>";
                            }

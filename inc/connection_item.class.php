@@ -111,7 +111,7 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
          if ($DB->numrows($result) != 1) {
             return false;
          }
-         $this->fields = $DB->fetch_assoc($result);
+         $this->fields = $DB->fetchAssoc($result);
          if (is_array($this->fields) && count($this->fields)) {
             return true;
          } else {
@@ -313,7 +313,7 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
 
                   Session::initNavigateListItems($itemType, PluginConnectionsConnection::getTypeName(2) . " = " . $connection->fields['name']);
 
-                  while ($data = $DB->fetch_assoc($result_linked)) {
+                  while ($data = $DB->fetchAssoc($result_linked)) {
 
                      $item->getFromDB($data["id"]);
 
@@ -396,7 +396,7 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
       $number = $DB->numrows($result);
       $used   = [];
       if ($number) {
-         while ($data = $DB->fetch_array($result)) {
+         while ($data = $DB->fetchArray($result)) {
             $used['PluginConnectionsConnection'][] = $data['plugin_connections_connections_id'];
          }
       }
@@ -471,7 +471,7 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
          echo $header_begin . $header_top . $header_end;
       }
 
-      while ($data = $DB->fetch_array($result)) {
+      while ($data = $DB->fetchArray($result)) {
          $name = $data["name"];
          if ($_SESSION["glpiis_ids_visible"]
              || empty($data["name"])) {
@@ -572,7 +572,7 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
       echo "<th>" . __('Last update') . "</th>";
       echo "</tr>";
 
-      while ($data = $DB->fetch_array($result)) {
+      while ($data = $DB->fetchArray($result)) {
          echo "<tr class='tab_bg_1" . ($data["is_deleted"] == '1' ? "_2" : "") . "'>";
 
          if ($withtemplate != 3 && $canread

@@ -63,8 +63,13 @@ class PluginConnectionsMenu extends CommonGLPI {
             ],
          ];
       }
+      $menu['icon'] = self::getIcon();
 
       return $menu;
+   }
+
+   static function getIcon() {
+      return "fas fa-wifi";
    }
 
    static function removeRightsFromSession()

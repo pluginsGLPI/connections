@@ -27,11 +27,11 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_CONNECTIONS_VERSION', '9.4');
+define('PLUGIN_CONNECTIONS_VERSION', '9.5');
 
 // Init the hooks of the plugins -Needed
 function plugin_init_connections() {
-   global $PLUGIN_HOOKS;
+   global $PLUGIN_HOOKS, $CFG_GLPI;
 
    $PLUGIN_HOOKS['csrf_compliant']['connections']   = true;
    $PLUGIN_HOOKS['change_profile']['connections']   = ['PluginConnectionsProfile', 'initProfile'];
@@ -58,9 +58,15 @@ function plugin_init_connections() {
          'addtabon' => ['NetworkEquipment','Supplier']
       ]);
 
+      if (class_exists('PluginAccountsAccount')) {
+         PluginAccountsAccount::registerType('PluginConnectionsConnection');
+      }
+
       if (Session::haveRight("plugin_connections_connection", READ)) {
          $PLUGIN_HOOKS["menu_toadd"]['connections'] = ['assets' => 'PluginConnectionsMenu'];
       }
+
+      $CFG_GLPI['impact_asset_types']['PluginConnectionsConnection'] = "plugins/connections/pics/icon.png";
 
       $PLUGIN_HOOKS['add_css']['connections']                       = "connections.css";
       $PLUGIN_HOOKS['migratetypes']['connections']                  = 'plugin_datainjection_migratetypes_connections';
@@ -84,7 +90,7 @@ function plugin_version_connections() {
       'homepage'       => 'https://github.com/pluginsGLPI/connections',
       'requirements'   => [
          'glpi' => [
-            'min' => '9.3',
+            'min' => '9.5',
             'dev' => false
          ]
       ]
@@ -96,10 +102,10 @@ function plugin_version_connections() {
  * @return bool
  */
 function plugin_connections_check_prerequisites() {
-   if (version_compare(GLPI_VERSION, '9.3', 'lt') 
-         || version_compare(GLPI_VERSION, '9.5', 'ge')) {
+   if (version_compare(GLPI_VERSION, '9.5', 'lt')
+         || version_compare(GLPI_VERSION, '9.6', 'ge')) {
       if (method_exists('Plugin', 'messageIncompatible')) {
-         echo Plugin::messageIncompatible('core', '9.3');
+         echo Plugin::messageIncompatible('core', '9.5');
       }
       return false;
    }

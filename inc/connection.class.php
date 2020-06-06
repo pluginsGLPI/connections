@@ -104,7 +104,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       ];
 
       $tab[] = [
-         'id'        => '3',
+         'id'        => '8',
          'table'     => 'glpi_users',
          'field'     => 'name',
          'linkfield' => 'users_id',
@@ -120,6 +120,8 @@ class PluginConnectionsConnection extends CommonDBTM {
          'name'     => __('Supplier'),
          'datatype' => 'dropdown'
       ];
+
+      $tab = array_merge($tab, Location::rawSearchOptionsToAdd());
 
       $tab[] = [
          'id'       => '5',
@@ -230,16 +232,15 @@ class PluginConnectionsConnection extends CommonDBTM {
 
       $ong = [];
       $this->addDefaultFormTab($ong);
+      $this->addImpactTab($ong, $options);
       $this->addStandardTab('PluginConnectionsConnection_Item', $ong, $options);
-      if ($this->fields['id'] > 0) {
-         $this->addStandardTab('Ticket', $ong, $options);
-         $this->addStandardTab('Item_Problem', $ong, $options);
-         $this->addStandardTab('Infocom', $ong, $options);
-         $this->addStandardTab('Contract_Item', $ong, $options);
-         $this->addStandardTab('Document_Item', $ong, $options);
-         $this->addStandardTab('Note', $ong, $options);
-         $this->addStandardTab('Log', $ong, $options);
-      }
+      $this->addStandardTab('Ticket', $ong, $options);
+      $this->addStandardTab('Item_Problem', $ong, $options);
+      $this->addStandardTab('Infocom', $ong, $options);
+      $this->addStandardTab('Contract_Item', $ong, $options);
+      $this->addStandardTab('Document_Item', $ong, $options);
+      $this->addStandardTab('Note', $ong, $options);
+      $this->addStandardTab('Log', $ong, $options);
       return $ong;
    }
 
@@ -276,22 +277,13 @@ class PluginConnectionsConnection extends CommonDBTM {
    static function showMassiveActionsSubForm(MassiveAction $ma) {
 
       switch ($ma->getAction()) {
+         case "uninstall":
          case "install" :
             Dropdown::showSelectItemFromItemtypes(['items_id_name' => 'item_item',
-                                                        'itemtype_name' => 'typeitem',
-                                                        'itemtypes'     => PluginConnectionsConnection_Item::getClasses(true),
-                                                        'checkright'
-                                                                        => true,
-                                                  ]);
-            echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
-            return true;
-            break;
-         case "uninstall" :
-            Dropdown::showSelectItemFromItemtypes(['items_id_name' => 'item_item',
-                                                        'itemtype_name' => 'typeitem',
-                                                        'itemtypes'     => PluginConnectionsConnection_Item::getClasses(true),
-                                                        'checkright'
-                                                                        => true,
+                                                   'itemtype_name' => 'typeitem',
+                                                   'itemtypes'     => PluginConnectionsConnection_Item::getClasses(true),
+                                                   'checkright'
+                                                                   => true,
                                                   ]);
             echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
             return true;
@@ -363,8 +355,8 @@ class PluginConnectionsConnection extends CommonDBTM {
             foreach ($ids as $key) {
                if ($item->can($key, UPDATE)) {
                   $values = ['plugin_connections_connections_id' => $key,
-                                  'items_id'                          => $input["item_item"],
-                                  'itemtype'                          => $input['typeitem']];
+                             'items_id'                          => $input["item_item"],
+                             'itemtype'                          => $input['typeitem']];
                   if ($connection_item->add($values)) {
                      $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
                   } else {
@@ -419,21 +411,22 @@ class PluginConnectionsConnection extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td>" . __('Name') . " : </td>";
+      echo "<td>" . __('Name') . "</td>";
       echo "<td>";
       Html::autocompletionTextField($this, "name");
       echo "</td>";
 
-      echo "<td>" . __('Other') . " : </td>";
+      echo "<td>" . __('Location') . "</td>";
       echo "<td>";
-      Html::autocompletionTextField($this, "others");
+      Location::dropdown(['value'  => $this->fields["locations_id"],
+                          'entity' => $this->fields["entities_id"]]);
       echo "</td>";
 
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td>" . __('Supplier') . " : </td>";
+      echo "<td>" . __('Supplier') . "</td>";
       echo "<td>";
       Supplier::dropdown([
                             'name'   => "suppliers_id",
@@ -442,7 +435,7 @@ class PluginConnectionsConnection extends CommonDBTM {
                          ]);
       echo "</td>";
 
-      echo "<td>" . __('Rates', 'connections') . " : </td>";
+      echo "<td>" . __('Rates', 'connections') . "</td>";
       echo "<td>";
       PluginConnectionsConnectionRate::dropdown([
                                                    'name'   => "plugin_connections_connectionrates_id",
@@ -455,7 +448,7 @@ class PluginConnectionsConnection extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td>" . __('Type of Connections', 'connections') . " : </td><td>";
+      echo "<td>" . __('Type of Connections', 'connections') . "</td><td>";
       PluginConnectionsConnectionType::dropdown([
                                                    'name'   => "plugin_connections_connectiontypes_id",
                                                    'value'  => $this->fields["plugin_connections_connectiontypes_id"],
@@ -463,7 +456,7 @@ class PluginConnectionsConnection extends CommonDBTM {
                                                 ]);
       echo "</td>";
 
-      echo "<td>" . __('Guaranteed Rates', 'connections') . " : </td>";
+      echo "<td>" . __('Guaranteed Rates', 'connections') . "</td>";
       echo "<td>";
       PluginConnectionsGuaranteedConnectionRate::dropdown([
                                                              'name'   => "plugin_connections_guaranteedconnectionrates_id",
@@ -476,7 +469,7 @@ class PluginConnectionsConnection extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td>" . __('Technician in charge of the hardware') . " : </td><td>";
+      echo "<td>" . __('Technician in charge of the hardware') . "</td><td>";
       User::dropdown([
                         'value'  => $this->fields["users_id"],
                         'entity' => $this->fields["entities_id"],
@@ -484,7 +477,7 @@ class PluginConnectionsConnection extends CommonDBTM {
                      ]);
       echo "</td>";
 
-      echo "<td>" . __('Associable to a ticket') . " :</td><td>";
+      echo "<td>" . __('Associable to a ticket') . "</td><td>";
       Dropdown::showYesNo('is_helpdesk_visible', $this->fields['is_helpdesk_visible']);
       echo "</td>";
 
@@ -492,7 +485,7 @@ class PluginConnectionsConnection extends CommonDBTM {
 
       echo "<tr class='tab_bg_1'>";
 
-      echo "<td>" . __('Group in charge of the hardware') . " : </td><td>";
+      echo "<td>" . __('Group in charge of the hardware') . "</td><td>";
       Group::dropdown([
                          'name'   => "groups_id",
                          'value'  => $this->fields["groups_id"],
@@ -506,9 +499,13 @@ class PluginConnectionsConnection extends CommonDBTM {
       echo "</tr>";
 
       echo "<tr class='tab_bg_1'>";
+      echo "<td>" . __('Other') . "</td>";
+      echo "<td>";
+      Html::autocompletionTextField($this, "others");
+      echo "</td>";
 
-      echo "<td>" . __('Comments') . " : </td>";
-      echo "<td class='center' colspan='3'>";
+      echo "<td>" . __('Comments') . "</td>";
+      echo "<td>";
       echo "<textarea cols='35' rows='4' name='comment' >" . $this->fields["comment"] . "</textarea>";
       echo "</td>";
 
@@ -559,7 +556,7 @@ class PluginConnectionsConnection extends CommonDBTM {
 
       echo "<select name='_type' id='plugin_connections_connectiontypes_id'>\n";
       echo "<option value='0'>" . Dropdown::EMPTY_VALUE . "</option>\n";
-      while ($data = $DB->fetch_assoc($result)) {
+      while ($data = $DB->fetchAssoc($result)) {
          echo "<option value='" . $data['id'] . "'>" . $data['name'] . "</option>\n";
       }
       echo "</select>\n";
