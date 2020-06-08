@@ -16,7 +16,7 @@ CREATE TABLE `glpi_plugin_connections_connections` (
    `notepad` longtext collate utf8_unicode_ci,
    `others` varchar(255) collate utf8_unicode_ci default NULL,
    `is_helpdesk_visible` int(11) NOT NULL default '1',
-   `date_mod` datetime default NULL,
+   `date_mod` timestamp NULL DEFAULT NULL,
    `is_deleted` tinyint(1) NOT NULL default '0',
     PRIMARY KEY  (`id`),
     KEY `name` (`name`),
