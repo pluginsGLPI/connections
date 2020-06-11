@@ -55,7 +55,11 @@ function plugin_init_connections() {
       ]);
 
       Plugin::registerClass('PluginConnectionsConnection_Item', [
-         'addtabon' => ['NetworkEquipment','Supplier']
+         'addtabon' => ['NetworkEquipment',
+                        'Appliance',
+                        'Computer',
+                        'Certificate',
+                        'Supplier']
       ]);
 
       if (class_exists('PluginAccountsAccount')) {

@@ -55,7 +55,7 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
       $temp = new self();
       $temp->deleteByCriteria(
          ['itemtype' => $item->getType(),
-               'items_id' => $item->getField('id')]
+          'items_id' => $item->getField('id')]
       );
    }
 
@@ -67,13 +67,11 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
    public static function getClasses($all = false) {
 
       static $types = [
-         'NetworkEquipment'
+         'NetworkEquipment',
+         'Appliance',
+         'Computer',
+         'Certificate'
       ];
-
-      $plugin = new Plugin();
-      if ($plugin->isActivated("appliances")) {
-         $types[] = 'PluginAppliancesAppliance';
-      }
 
       if ($all) {
          return $types;
@@ -136,22 +134,22 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
       if ($this->add($input)) {
 
          // History Log into PluginConnectionsConnection
-         $item = new NetworkEquipment();
+         $item = new $itemtype();
          $item->getFromDB($items_id);
 
          $changes[0] = 0;
          $changes[1] = '';
          $changes[2] = $item->getNameID(['forceid' => true]);
-         Log::history($connections_id, 'PluginConnectionsConnection', $changes, 'NetworkEquipment', 15);
+         Log::history($connections_id, 'PluginConnectionsConnection', $changes, $item->getType(), 15);
 
-         // History Log into NetworkEquipment
+         // History Log into Item
          $item = new PluginConnectionsConnection();
          $item->getFromDB($connections_id);
 
          $changes[0] = 0;
          $changes[1] = '';
          $changes[2] = $item->getNameID(['forceid' => true]);
-         Log::history($items_id, 'NetworkEquipment', $changes, 'PluginConnectionsConnection', 15);
+         Log::history($items_id, $item->getType(), $changes, 'PluginConnectionsConnection', 15);
       }
    }
 
@@ -163,27 +161,27 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
       $this->check($input['id'], UPDATE);
 
       $connections_id = $this->getField('plugin_connections_connections_id');
+      $itemtype       = $this->getField('itemtype');
       $items_id       = $this->getField('items_id');
-
       if ($this->delete($input)) {
 
          // History Log into PluginConnectionsConnection
-         $item = new NetworkEquipment();
+         $item = new $itemtype();
          $item->getFromDB($items_id);
 
          $changes[0] = 0;
          $changes[1] = $item->getNameID(['forceid' => true]);
          $changes[2] = '';
-         Log::history($connections_id, 'PluginConnectionsConnection', $changes, 'NetworkEquipment', 16);
+         Log::history($connections_id, 'PluginConnectionsConnection', $changes, $item->getType(), 16);
 
-         // History Log into NetworkEquipment
+         // History Log into item
          $item = new PluginConnectionsConnection();
          $item->getFromDB($connections_id);
 
          $changes[0] = 0;
          $changes[1] = $item->getNameID(['forceid' => true]);
          $changes[2] = '';
-         Log::history($items_id, 'NetworkEquipment', $changes, 'PluginConnectionsConnection', 16);
+         Log::history($items_id, $item->getType(), $changes, 'PluginConnectionsConnection', 16);
       }
    }
 
@@ -243,14 +241,14 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
          echo "<tr class='tab_bg_1'><td colspan='" . (3 + $colsup) . "' class='center'>";
          echo "<input type='hidden' name='plugin_connections_connections_id' value='$instID'>";
          Dropdown::showSelectItemFromItemtypes(['items_id_name' => 'items_id',
-                                                     'itemtypes'     => self::getClasses(true),
-                                                     'entity_restrict'
-                                                                     => ($connection->fields['is_recursive']
-                                                        ? getSonsOf('glpi_entities',
-                                                                    $connection->fields['entities_id'])
-                                                        : $connection->fields['entities_id']),
-                                                     'checkright'
-                                                                     => true,
+                                                'itemtypes'     => self::getClasses(true),
+                                                'entity_restrict'
+                                                                => ($connection->fields['is_recursive']
+                                                   ? getSonsOf('glpi_entities',
+                                                               $connection->fields['entities_id'])
+                                                   : $connection->fields['entities_id']),
+                                                'checkright'
+                                                                => true,
                                                ]);
          echo "</td>";
          echo "<td colspan='2' class='tab_bg_2'>";
@@ -411,22 +409,22 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
 
          echo "<tr class='tab_bg_1'><td class='right'>";
          Dropdown::showSelectItemFromItemtypes(['itemtypes'
-                                                            => ['PluginConnectionsConnection'],
-                                                     'entity_restrict'
-                                                            => ($item->fields['is_recursive']
-                                                        ? getSonsOf('glpi_entities',
-                                                                    $item->fields['entities_id'])
-                                                        : $item->fields['entities_id']),
-                                                     'checkright'
-                                                            => true,
-                                                     'items_id_name'
-                                                            => 'plugin_connections_connections_id',
-                                                     'used' => $used]);
+                                                       => ['PluginConnectionsConnection'],
+                                                'entity_restrict'
+                                                       => ($item->fields['is_recursive']
+                                                   ? getSonsOf('glpi_entities',
+                                                               $item->fields['entities_id'])
+                                                   : $item->fields['entities_id']),
+                                                'checkright'
+                                                       => true,
+                                                'items_id_name'
+                                                       => 'plugin_connections_connections_id',
+                                                'used' => $used]);
          echo "</td><td class='center'>";
          echo "<input type='submit' name='add' value=\"" . _sx('button', 'Add') . "\" class='submit'>";
          echo "<input type='hidden' name='items_id' value='$ID'>";
          echo "<input type='hidden' name='additem' value='true'>";
-         echo "<input type='hidden' name='itemtype' value='NetworkEquipment'>";
+         echo "<input type='hidden' name='itemtype' value='" . $item->getType() . "'>";
          echo "</td></tr>";
          echo "</table>";
          Html::closeForm();
@@ -621,6 +619,24 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
    }
 
    /**
+    * @param PluginConnectionsConnection $item
+    *
+    * @return int
+    */
+   static function countForConnection(PluginConnectionsConnection $item) {
+
+      $types = self::getClasses();
+      if (count($types) == 0) {
+         return 0;
+      }
+      $dbu = new DbUtils();
+      return $dbu->countElementsInTable('glpi_plugin_connections_connections_items',
+                                        ["plugin_connections_connections_id" => $item->getID(),
+                                         "itemtype"                      => $types
+                                        ]);
+   }
+
+   /**
     * @param \CommonGLPI $item
     * @param int         $withtemplate
     *
@@ -631,35 +647,30 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
       $dbu = new DbUtils();
       if ($item->getType() == 'PluginConnectionsConnection' && count(self::getClasses(false))) {
 
-         $tabName = __('Associated item');
+         if ($_SESSION['glpishow_count_on_tabs']) {
+            return self::createTabEntry(_n('Associated item', 'Associated items', 2), self::countForConnection($item));
+         }
+         return _n('Associated item', 'Associated items', 2);
 
-         $elements = $dbu->countElementsInTable('glpi_plugin_connections_connections_items',
-                                                ["plugin_connections_connections_id" => $item->getID(),
-                                                 "itemtype"                          => "NetworkEquipment"]);
-
-      } else if (in_array($item->getType(), self::getClasses(true))) {
-
-         $tabName = PluginConnectionsConnection::getTypeName(2);
-
-         $elements = $dbu->countElementsInTable('glpi_plugin_connections_connections_items',
-                                                ["items_id" => $item->getID(),
-                                                 "itemtype" => "NetworkEquipment"]);
-      } else if ($item->getType() == 'Supplier') {
+      } else if (in_array($item->getType(), self::getClasses(true))
+                 && Session::haveRight('plugin_connections_connection', READ)) {
 
          if ($_SESSION['glpishow_count_on_tabs']) {
             return self::createTabEntry(PluginConnectionsConnection::getTypeName(2), self::countForItem($item));
          }
 
          return self::getTypeName(2);
-      }
 
-      if (!$withtemplate) {
+      } else if ($item->getType() == 'Supplier'
+                 && Session::haveRight('plugin_connections_connection', READ)) {
+
          if ($_SESSION['glpishow_count_on_tabs']) {
-            return self::createTabEntry($tabName, $elements);
+            return self::createTabEntry(PluginConnectionsConnection::getTypeName(2), self::countSupplierForItem($item));
          }
-         return $tabName;
 
+         return self::getTypeName(2);
       }
+
       return '';
    }
 
@@ -690,12 +701,25 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
       return true;
    }
 
+
    /**
     * @param CommonDBTM $item
     *
     * @return int
     */
    static function countForItem(CommonDBTM $item) {
+      $dbu = new DbUtils();
+      return $dbu->countElementsInTable('glpi_plugin_connections_connections_items',
+                                        ["itemtype" => $item->getType(),
+                                         "items_id" => $item->getID()]);
+   }
+
+   /**
+    * @param CommonDBTM $item
+    *
+    * @return int
+    */
+   static function countSupplierForItem(CommonDBTM $item) {
       $dbu = new DbUtils();
       return $dbu->countElementsInTable('glpi_plugin_connections_connections',
                                         ["suppliers_id" => $item->getID()]);
