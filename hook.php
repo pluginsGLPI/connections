@@ -212,7 +212,8 @@ function plugin_connections_postinit() {
  */
 function plugin_connections_AssignToTicket($types) {
 
-   if (in_array('PluginConnectionsConnection', $_SESSION['glpiactiveprofile']['helpdesk_item_type'])) {
+   if (isset($_SESSION['glpiactiveprofile']['helpdesk_item_type'])
+       && in_array('PluginConnectionsConnection', $_SESSION['glpiactiveprofile']['helpdesk_item_type'])) {
       $types['PluginConnectionsConnection'] = __('Connections', 'connections');
    }
    return $types;
