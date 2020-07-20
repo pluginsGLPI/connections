@@ -1,65 +1,44 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE CONNECTIONS'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the CONNECTIONS package.
+# Copyright (C) YEAR Connections Development Team
+# This file is distributed under the same license as the GLPI - Connections plugin package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: ESCALADE 2.0\n"
+"Project-Id-Version: GLPI - Connections plugin 9.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-07-30 09:41+0200\n"
-"PO-Revision-Date: 2015-10-02 16:20+0100\n"
-"Language-Team: TECLIB <contact@teclib.com>\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2020-07-20 09:18+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language-Team: \n"
-"X-Generator: Poedit 1.7.5\n"
-"Language: en_GB\n"
 
-#: hook.php:219
+#: hook.php:217 hook.php:274 setup.php:89 front/connection.form.php:100
+#: front/connection.php:35 inc/connection.class.php:47 inc/menu.class.php:40
+#: inc/profile.class.php:160
 msgid "Connections"
 msgstr ""
 
-msgid "Create a new connection"
-msgstr ""
-
-msgid "Linked elements"
-msgstr ""
-
-msgid "Connections linked"
-msgstr ""
-
-msgid "Never expires"
-msgstr ""
-
-msgid "Creation date"
-msgstr ""
-
-msgid "Technical reference"
-msgstr ""
-
-msgid "Rights management"
-msgstr ""
-
-# setup
-msgid "Plugin Setup"
-msgstr ""
-
+#: hook.php:258 hook.php:289 inc/connection.class.php:451
+#: inc/connection_item.class.php:464 inc/connection_item.class.php:569
+#: inc/connectiontype.class.php:48
 msgid "Type of Connections"
 msgstr ""
 
+#: hook.php:259 hook.php:295 inc/connection.class.php:438
+#: inc/connection_item.class.php:465 inc/connectionrate.class.php:48
 msgid "Rates"
 msgstr ""
 
+#: hook.php:260 hook.php:301 inc/connection.class.php:459
+#: inc/connection_item.class.php:466 inc/guaranteedconnectionrate.class.php:48
 msgid "Guaranteed Rates"
 msgstr ""
 
-msgid "Link"
-msgstr ""
-
-msgid "days"
-msgstr ""
-
-msgid "Link to connections"
+#: inc/connection_item.class.php:563
+msgid "Connections linked"
 msgstr ""
