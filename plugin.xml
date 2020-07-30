@@ -26,6 +26,10 @@
    </authors>
    <versions>
       <version>
+         <num>9.5</num>
+         <compatibility>9.5</compatibility>
+      </version>
+      <version>
          <num>9.4</num>
          <compatibility>9.4</compatibility>
       </version>
