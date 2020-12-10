@@ -71,8 +71,10 @@ function plugin_init_connections() {
       }
 
       $CFG_GLPI['impact_asset_types']['PluginConnectionsConnection'] = "plugins/connections/pics/icon.png";
-
-      $PLUGIN_HOOKS['add_css']['connections']                       = "connections.css";
+      if (isset($_SESSION['glpiactiveprofile']['interface'])
+          && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
+         $PLUGIN_HOOKS['add_css']['connections'] = "connections.css";
+      }
       $PLUGIN_HOOKS['migratetypes']['connections']                  = 'plugin_datainjection_migratetypes_connections';
       $PLUGIN_HOOKS['plugin_datainjection_populate']['connections'] = 'plugin_datainjection_populate_connections';
    }
