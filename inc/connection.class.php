@@ -31,6 +31,7 @@ if (!defined('GLPI_ROOT')) {
    die("Sorry. You can't access directly to this file");
 }
 
+use Glpi\Application\View\TemplateRenderer;
 /**
  * Class PluginConnectionsConnection
  */
@@ -107,7 +108,7 @@ class PluginConnectionsConnection extends CommonDBTM {
          'id'        => '8',
          'table'     => 'glpi_users',
          'field'     => 'name',
-         'linkfield' => 'users_id',
+         'linkfield' => 'users_id_tech',
          'name'      => __('Technician in charge of the hardware'),
          'datatype'  => 'dropdown',
          'right'     => 'interface'
@@ -166,7 +167,7 @@ class PluginConnectionsConnection extends CommonDBTM {
          'id'        => '10',
          'table'     => 'glpi_groups',
          'field'     => 'name',
-         'linkfield' => 'groups_id',
+         'linkfield' => 'groups_id_tech',
          'name'      => __('Group in charge of the hardware'),
          'datatype'  => 'dropdown'
       ];
@@ -405,117 +406,132 @@ class PluginConnectionsConnection extends CommonDBTM {
     *
     * @return bool
     */
-   public function showForm($ID, $options = []) {
-
+   function showForm($ID, $options = []) {
       $this->initForm($ID, $options);
-      $this->showFormHeader($options);
-
-      echo "<tr class='tab_bg_1'>";
-
-      echo "<td>" . __('Name') . "</td>";
-      echo "<td>";
-      Html::autocompletionTextField($this, "name");
-      echo "</td>";
-
-      echo "<td>" . __('Location') . "</td>";
-      echo "<td>";
-      Location::dropdown(['value'  => $this->fields["locations_id"],
-                          'entity' => $this->fields["entities_id"]]);
-      echo "</td>";
-
-      echo "</tr>";
-
-      echo "<tr class='tab_bg_1'>";
-
-      echo "<td>" . __('Supplier') . "</td>";
-      echo "<td>";
-      Supplier::dropdown([
-                            'name'   => "suppliers_id",
-                            'value'  => $this->fields["suppliers_id"],
-                            'entity' => $this->fields["entities_id"],
-                         ]);
-      echo "</td>";
-
-      echo "<td>" . __('Rates', 'connections') . "</td>";
-      echo "<td>";
-      PluginConnectionsConnectionRate::dropdown([
-                                                   'name'   => "plugin_connections_connectionrates_id",
-                                                   'value'  => $this->fields["plugin_connections_connectionrates_id"],
-                                                   'entity' => $this->fields["entities_id"],
-                                                ]);
-      echo "</td>";
-
-      echo "</tr>";
-
-      echo "<tr class='tab_bg_1'>";
-
-      echo "<td>" . __('Type of Connections', 'connections') . "</td><td>";
-      PluginConnectionsConnectionType::dropdown([
-                                                   'name'   => "plugin_connections_connectiontypes_id",
-                                                   'value'  => $this->fields["plugin_connections_connectiontypes_id"],
-                                                   'entity' => $this->fields["entities_id"],
-                                                ]);
-      echo "</td>";
-
-      echo "<td>" . __('Guaranteed Rates', 'connections') . "</td>";
-      echo "<td>";
-      PluginConnectionsGuaranteedConnectionRate::dropdown([
-                                                             'name'   => "plugin_connections_guaranteedconnectionrates_id",
-                                                             'value'  => $this->fields["plugin_connections_guaranteedconnectionrates_id"],
-                                                             'entity' => $this->fields["entities_id"],
-                                                          ]);
-      echo "</td>";
-
-      echo "</tr>";
-
-      echo "<tr class='tab_bg_1'>";
-
-      echo "<td>" . __('Technician in charge of the hardware') . "</td><td>";
-      User::dropdown([
-                        'value'  => $this->fields["users_id"],
-                        'entity' => $this->fields["entities_id"],
-                        'right'  => 'all'
-                     ]);
-      echo "</td>";
-
-      echo "<td>" . __('Associable to a ticket') . "</td><td>";
-      Dropdown::showYesNo('is_helpdesk_visible', $this->fields['is_helpdesk_visible']);
-      echo "</td>";
-
-      echo "</tr>";
-
-      echo "<tr class='tab_bg_1'>";
-
-      echo "<td>" . __('Group in charge of the hardware') . "</td><td>";
-      Group::dropdown([
-                         'name'   => "groups_id",
-                         'value'  => $this->fields["groups_id"],
-                         'entity' => $this->fields["entities_id"],
-                      ]);
-      echo "</td>";
-
-      echo "<td>" . __('Last update') . " : </td>";
-      echo "<td>" . Html::convDateTime($this->fields["date_mod"]) . "</td>";
-
-      echo "</tr>";
-
-      echo "<tr class='tab_bg_1'>";
-      echo "<td>" . __('Other') . "</td>";
-      echo "<td>";
-      Html::autocompletionTextField($this, "others");
-      echo "</td>";
-
-      echo "<td>" . __('Comments') . "</td>";
-      echo "<td>";
-      echo "<textarea cols='35' rows='4' name='comment' >" . $this->fields["comment"] . "</textarea>";
-      echo "</td>";
-
-      echo "</tr>";
-
-      $this->showFormButtons($options);
-
+      TemplateRenderer::getInstance()->display('@connections/connection_form.html.twig', [
+         'item'   => $this,
+         'params' => $options,
+      ]);
       return true;
    }
+
+   /**
+    * @param       $ID
+    * @param array $options
+    *
+    * @return bool
+    */
+//   public function showForm($ID, $options = []) {
+//
+//      $this->initForm($ID, $options);
+//      $this->showFormHeader($options);
+//
+//      echo "<tr class='tab_bg_1'>";
+//
+//      echo "<td>" . __('Name') . "</td>";
+//      echo "<td>";
+//      Html::autocompletionTextField($this, "name");
+//      echo "</td>";
+//
+//      echo "<td>" . __('Location') . "</td>";
+//      echo "<td>";
+//      Location::dropdown(['value'  => $this->fields["locations_id"],
+//                          'entity' => $this->fields["entities_id"]]);
+//      echo "</td>";
+//
+//      echo "</tr>";
+//
+//      echo "<tr class='tab_bg_1'>";
+//
+//      echo "<td>" . __('Supplier') . "</td>";
+//      echo "<td>";
+//      Supplier::dropdown([
+//                            'name'   => "suppliers_id",
+//                            'value'  => $this->fields["suppliers_id"],
+//                            'entity' => $this->fields["entities_id"],
+//                         ]);
+//      echo "</td>";
+//
+//      echo "<td>" . __('Rates', 'connections') . "</td>";
+//      echo "<td>";
+//      PluginConnectionsConnectionRate::dropdown([
+//                                                   'name'   => "plugin_connections_connectionrates_id",
+//                                                   'value'  => $this->fields["plugin_connections_connectionrates_id"],
+//                                                   'entity' => $this->fields["entities_id"],
+//                                                ]);
+//      echo "</td>";
+//
+//      echo "</tr>";
+//
+//      echo "<tr class='tab_bg_1'>";
+//
+//      echo "<td>" . __('Type of Connections', 'connections') . "</td><td>";
+//      PluginConnectionsConnectionType::dropdown([
+//                                                   'name'   => "plugin_connections_connectiontypes_id",
+//                                                   'value'  => $this->fields["plugin_connections_connectiontypes_id"],
+//                                                   'entity' => $this->fields["entities_id"],
+//                                                ]);
+//      echo "</td>";
+//
+//      echo "<td>" . __('Guaranteed Rates', 'connections') . "</td>";
+//      echo "<td>";
+//      PluginConnectionsGuaranteedConnectionRate::dropdown([
+//                                                             'name'   => "plugin_connections_guaranteedconnectionrates_id",
+//                                                             'value'  => $this->fields["plugin_connections_guaranteedconnectionrates_id"],
+//                                                             'entity' => $this->fields["entities_id"],
+//                                                          ]);
+//      echo "</td>";
+//
+//      echo "</tr>";
+//
+//      echo "<tr class='tab_bg_1'>";
+//
+//      echo "<td>" . __('Technician in charge of the hardware') . "</td><td>";
+//      User::dropdown([
+//                        'value'  => $this->fields["users_id"],
+//                        'entity' => $this->fields["entities_id"],
+//                        'right'  => 'all'
+//                     ]);
+//      echo "</td>";
+//
+//      echo "<td>" . __('Associable to a ticket') . "</td><td>";
+//      Dropdown::showYesNo('is_helpdesk_visible', $this->fields['is_helpdesk_visible']);
+//      echo "</td>";
+//
+//      echo "</tr>";
+//
+//      echo "<tr class='tab_bg_1'>";
+//
+//      echo "<td>" . __('Group in charge of the hardware') . "</td><td>";
+//      Group::dropdown([
+//                         'name'   => "groups_id",
+//                         'value'  => $this->fields["groups_id"],
+//                         'entity' => $this->fields["entities_id"],
+//                      ]);
+//      echo "</td>";
+//
+//      echo "<td>" . __('Last update') . " : </td>";
+//      echo "<td>" . Html::convDateTime($this->fields["date_mod"]) . "</td>";
+//
+//      echo "</tr>";
+//
+//      echo "<tr class='tab_bg_1'>";
+//      echo "<td>" . __('Other') . "</td>";
+//      echo "<td>";
+//      Html::autocompletionTextField($this, "others");
+//      echo "</td>";
+//
+//      echo "<td>" . __('Comments') . "</td>";
+//      echo "<td>";
+//      echo "<textarea cols='35' rows='4' name='comment' >" . $this->fields["comment"] . "</textarea>";
+//      echo "</td>";
+//
+//      echo "</tr>";
+//
+//      $this->showFormButtons($options);
+//
+//      return true;
+//   }
 
    /**
     * @param        $myname
@@ -555,7 +571,7 @@ class PluginConnectionsConnection extends CommonDBTM {
                 ORDER BY `name`";
       $result = $DB->query($query);
 
-      echo "<select name='_type' id='plugin_connections_connectiontypes_id'>\n";
+      echo "<select class='form-select' name='_type' id='plugin_connections_connectiontypes_id'>\n";
       echo "<option value='0'>" . Dropdown::EMPTY_VALUE . "</option>\n";
       while ($data = $DB->fetchAssoc($result)) {
          echo "<option value='" . $data['id'] . "'>" . $data['name'] . "</option>\n";

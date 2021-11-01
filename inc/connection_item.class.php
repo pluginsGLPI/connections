@@ -239,7 +239,7 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
               __('Add an item') . "</th></tr>";
 
          echo "<tr class='tab_bg_1'><td colspan='" . (3 + $colsup) . "' class='center'>";
-         echo "<input type='hidden' name='plugin_connections_connections_id' value='$instID'>";
+         echo Html::hidden('plugin_connections_connections_id', ['value' => $instID]);
          Dropdown::showSelectItemFromItemtypes(['items_id_name' => 'items_id',
                                                 'itemtypes'     => self::getClasses(true),
                                                 'entity_restrict'
@@ -252,7 +252,7 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
                                                ]);
          echo "</td>";
          echo "<td colspan='2' class='tab_bg_2'>";
-         echo "<input type='submit' name='additem' value=\"" . _sx('button', 'Add') . "\" class='submit'>";
+         echo Html::submit(_sx('button', 'Add'), ['name' => 'additem', 'class' => 'btn btn-primary']);
          echo "</td></tr>";
          echo "</table>";
          Html::closeForm();
@@ -421,10 +421,10 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
                                                        => 'plugin_connections_connections_id',
                                                 'used' => $used]);
          echo "</td><td class='center'>";
-         echo "<input type='submit' name='add' value=\"" . _sx('button', 'Add') . "\" class='submit'>";
-         echo "<input type='hidden' name='items_id' value='$ID'>";
-         echo "<input type='hidden' name='additem' value='true'>";
-         echo "<input type='hidden' name='itemtype' value='" . $item->getType() . "'>";
+         echo Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
+         echo Html::hidden('items_id', ['value' => $ID]);
+         echo Html::hidden('additem', ['value' => true]);
+         echo Html::hidden('itemtype', ['value' => $item->getType()]);
          echo "</td></tr>";
          echo "</table>";
          Html::closeForm();

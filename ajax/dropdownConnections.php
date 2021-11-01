@@ -93,7 +93,7 @@ $query  = "SELECT *
           $LIMIT";
 $result = $DB->query($query);
 
-echo "<select name=\"" . $_POST['myname'] . "\">";
+echo "<select class='form-select' name=\"" . $_POST['myname'] . "\">";
 
 echo "<option value=\"0\">" . Dropdown::EMPTY_VALUE . "</option>";
 

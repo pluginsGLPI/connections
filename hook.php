@@ -43,7 +43,7 @@ function plugin_connections_install() {
    // Go for 1.7.0
    if (!$DB->tableExists('glpi_plugin_connection')
        && !$DB->tableExists('glpi_plugin_connections_connections')) { // Fresh install
-      $DB->runFile(GLPI_ROOT . '/plugins/connections/sql/empty-9.5.0.sql');
+      $DB->runFile(GLPI_ROOT . '/plugins/connections/sql/empty-10.0.sql');
 
       // We're 1.6.0 update to 1.6.4
    } else if ($DB->tableExists('glpi_plugin_connections_connectionratesguaranteed')
@@ -74,6 +74,8 @@ function plugin_connections_install() {
 
    } else if (!$DB->FieldExists("glpi_plugin_connections_connections", "locations_id")) {
       $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-9.5.0.sql");
+   } else if (!$DB->FieldExists("glpi_plugin_connections_connections", "users_id_tech")) {
+      $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-10.0.sql");
    }
 
 
@@ -232,8 +234,8 @@ function plugin_connections_getDatabaseRelations() {
          "glpi_plugin_connections_connectiontypes"           => ["glpi_plugin_connections_connections" => "plugin_connections_connectiontypes_id"],
          "glpi_plugin_connections_connectionrates"           => ["glpi_plugin_connections_connections" => "plugin_connections_connectionrates_id"],
          "glpi_plugin_connections_guaranteedconnectionrates" => ["glpi_plugin_connections_connections" => "plugin_connections_guaranteedconnectionrates_id"],
-         "glpi_users"                                        => ["glpi_plugin_connections_connections" => "users_id"],
-         "glpi_groups"                                       => ["glpi_plugin_connections_connections" => "groups_id"],
+         "glpi_users"                                        => ["glpi_plugin_connections_connections" => "users_id_tech"],
+         "glpi_groups"                                       => ["glpi_plugin_connections_connections" => "groups_id_tech"],
          "glpi_suppliers"                                    => ["glpi_plugin_connections_connections" => "suppliers_id"],
          "glpi_plugin_connections_connections"               => ["glpi_plugin_connections_connections_items" => "plugin_connections_connections_id"],
          "glpi_entities"                                     => [

@@ -1,0 +1,164 @@
+
+{% import "components/form/fields_macros.html.twig" as fields %}
+
+{% set bg = "" %}
+{% if item.isDeleted() %}
+   {% set bg = "asset-deleted" %}
+{% endif %}
+
+<div class="asset {{ bg }}">
+   {% include("components/form/header.html.twig") %}
+
+   {% set rand = random() %}
+   {% set params  = params ?? [] %}
+   {% set target       = params['target'] ?? item.getFormURL() %}
+   {% set withtemplate = params['withtemplate'] ?? "" %}
+
+   {# TODO form-select normal size for select2 #}
+
+   <div class="card-body">
+      <div class="d-flex flex-row flex-wrap flex-xl-nowrap">
+         <div class="row flex-row align-items-start">
+            <div class="row flex-row">
+               {% if item.isField('name') %}
+                  {{ fields.autoNameField(
+                     "name",
+                     item,
+                     __('Name'),
+                     withtemplate
+                  ) }}
+               {% endif %}
+
+               {% if item.isField('states_id') %}
+                  {{ fields.dropdownField(
+                     "State",
+                     "states_id",
+                     item.fields['states_id'],
+                     __("Status"),
+                     {
+                        'entity'  : item.fields['entities_id'],
+                        'condition': {'is_visible_computer': 1},
+                     }
+                  ) }}
+               {% endif %}
+
+               {% if item.isField('locations_id') %}
+                  {{ fields.dropdownField(
+                     "Location",
+                     "locations_id",
+                     item.fields['locations_id'],
+                     "Location"|itemtype_name,
+                     {
+                        'entity'  : item.fields['entities_id'],
+                     }
+                  ) }}
+               {% endif %}
+
+               {{ fields.dropdownField(
+                  'Supplier',
+                  'suppliers_id',
+                  item.fields['suppliers_id'],
+                  'Supplier'|itemtype_name,
+                  {
+                     'entity'  : item.fields['entities_id'],
+                     'disabled': disabled
+                  }
+               ) }}
+
+               {% if item.isField('plugin_connections_connectionrates_id') %}
+                  {{ fields.dropdownField(
+                     "PluginConnectionsConnectionRate",
+                     "plugin_connections_connectionrates_id",
+                     item.fields['plugin_connections_connectionrates_id'],
+                     "PluginConnectionsConnectionRate"|itemtype_name,
+                  ) }}
+               {% endif %}
+
+                {% if item.isField('plugin_connections_connectiontypes_id') %}
+                    {{ fields.dropdownField(
+                        "PluginConnectionsConnectionType",
+                        "plugin_connections_connectiontypes_id",
+                        item.fields['plugin_connections_connectiontypes_id'],
+                        "PluginConnectionsConnectionType"|itemtype_name,
+                    ) }}
+                {% endif %}
+
+               {% if item.isField('plugin_connections_guaranteedconnectionrates_id') %}
+                  {{ fields.dropdownField(
+                     "PluginConnectionsGuaranteedConnectionRate",
+                     "plugin_connections_guaranteedconnectionrates_id",
+                     item.fields['plugin_connections_guaranteedconnectionrates_id'],
+                     "PluginConnectionsGuaranteedConnectionRate"|itemtype_name,
+                  ) }}
+               {% endif %}
+
+               {% if item.isField('users_id_tech') %}
+                  {{ fields.dropdownField(
+                     "User",
+                     "users_id_tech",
+                     item.fields['users_id_tech'],
+                     __('Technician in charge of the hardware'),
+                     {
+                        'entity'  : item.fields['entities_id'],
+                        'right' : 'own_ticket',
+                     }
+                  ) }}
+               {% endif %}
+
+               {% if item.isField('is_helpdesk_visible') %}
+                  {{ fields.checkboxField(
+                     "is_helpdesk_visible",
+                     item.fields['is_helpdesk_visible'],
+                     __('Associable to a ticket'),
+                  ) }}
+               {% endif %}
+
+               {% if item.isField('groups_id_tech') %}
+                  {{ fields.dropdownField(
+                     "Group",
+                     "groups_id_tech",
+                     item.fields['groups_id_tech'],
+                     __('Group in charge of the hardware'),
+                     {
+                        'entity'  : item.fields['entities_id'],
+                        'condition': {'is_assign': 1},
+                     }
+                  ) }}
+               {% endif %}
+
+                {% if item.isField('others') %}
+                    {{ fields.textField(
+                        "others",
+                        item.fields['others'],
+                        __("Other"),
+                    ) }}
+                {% endif %}
+
+               {% if item.isField('comment') %}
+                  {{ fields.textareaField(
+                     "comment",
+                     item.fields['comment'],
+                     _n('Comment', 'Comments', 2),
+                  ) }}
+               {% endif %}
+
+               {% set flags_html %}
+                  {% include("components/form/flags.html.twig") %}
+               {% endset %}
+
+            </div> {# .row #}
+         </div> {# .row #}
+         {% include("components/form/pictures.html.twig") %}
+      </div> {# .flex-row #}
+   </div> {# .card-body #}
+
+   {% include("components/form/buttons.html.twig") %}
+   {% include("components/form/inventory_info.html.twig") %}
+
+
+   {% if params['formfooter'] == null %}
+      <div class="card-footer mx-n2 mb-n2 mt-4">
+         {% include("components/form/dates.html.twig") %}
+      </div>
+   {% endif %}
+</div>
