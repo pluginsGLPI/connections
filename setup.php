@@ -27,7 +27,7 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_CONNECTIONS_VERSION', '9.5');
+define('PLUGIN_CONNECTIONS_VERSION', '10.0');
 
 // Init the hooks of the plugins -Needed
 function plugin_init_connections() {
