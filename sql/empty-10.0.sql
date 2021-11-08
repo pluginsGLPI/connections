@@ -30,7 +30,7 @@ CREATE TABLE `glpi_plugin_connections_connections` (
    KEY `date_mod` (`date_mod`),
    KEY `is_helpdesk_visible` (`is_helpdesk_visible`),
    KEY `is_deleted` (`is_deleted`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `glpi_plugin_connections_connections_items`;
 CREATE TABLE `glpi_plugin_connections_connections_items` (
@@ -42,7 +42,7 @@ CREATE TABLE `glpi_plugin_connections_connections_items` (
    UNIQUE KEY `unicity` (`plugin_connections_connections_id`,`itemtype`,`items_id`),
    KEY `FK_device` (`items_id`,`itemtype`),
    KEY `item` (`itemtype`,`items_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `glpi_plugin_connections_connectiontypes`;
 CREATE TABLE `glpi_plugin_connections_connectiontypes` (
@@ -53,7 +53,7 @@ CREATE TABLE `glpi_plugin_connections_connectiontypes` (
    `is_recursive` tinyint(1) NOT NULL default '0',
    PRIMARY KEY  (`id`),
    KEY `name` (`name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `glpi_plugin_connections_connectionrates`;
 CREATE TABLE `glpi_plugin_connections_connectionrates` (
@@ -64,7 +64,7 @@ CREATE TABLE `glpi_plugin_connections_connectionrates` (
    `is_recursive` tinyint(1) NOT NULL default '0',
    PRIMARY KEY  (`id`),
    KEY `name` (`name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `glpi_plugin_connections_guaranteedconnectionrates`;
 CREATE TABLE `glpi_plugin_connections_guaranteedconnectionrates` (
@@ -75,7 +75,7 @@ CREATE TABLE `glpi_plugin_connections_guaranteedconnectionrates` (
    `is_recursive` tinyint(1) NOT NULL default '0',
    PRIMARY KEY  (`id`),
    KEY `name` (`name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 DROP TABLE IF EXISTS `glpi_plugin_connections_configs`;
 CREATE TABLE `glpi_plugin_connections_configs` (
@@ -83,7 +83,7 @@ CREATE TABLE `glpi_plugin_connections_configs` (
    `delay_expired` varchar(50) collate utf8_unicode_ci NOT NULL default '30',
    `delay_whichexpire` varchar(50) collate utf8_unicode_ci NOT NULL default '30',
    PRIMARY KEY  (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginConnectionsConnection','2','3','0');
 INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginConnectionsConnection','3','1','0');
