@@ -53,13 +53,9 @@ class PluginConnectionsMenu extends CommonGLPI {
          $menu['links']['add'] = PluginConnectionsConnection::getFormURL(false);
       }
 
-      $menu['icon'] = self::getIcon();
+      $menu['icon'] = PluginConnectionsConnection::getIcon();
 
       return $menu;
-   }
-
-   static function getIcon() {
-      return "fas fa-wifi";
    }
 
    static function removeRightsFromSession()

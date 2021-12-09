@@ -48,6 +48,10 @@ class PluginConnectionsConnection extends CommonDBTM {
       return __('Connections', 'connections');
    }
 
+   static function getIcon() {
+      return "ti ti-wifi";
+   }
+
    public function cleanDBonPurge() {
 
       $temp = new PluginConnectionsConnection_Item();
