@@ -34,7 +34,7 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
 function plugin_connections_install() {
    global $DB;
 
-   include_once(GLPI_ROOT . "/plugins/connections/inc/profile.class.php");
+   include_once(PLUGINCONNECTIONS_DIR . "/inc/profile.class.php");
 
    $update = false;
 
@@ -43,39 +43,39 @@ function plugin_connections_install() {
    // Go for 1.7.0
    if (!$DB->tableExists('glpi_plugin_connection')
        && !$DB->tableExists('glpi_plugin_connections_connections')) { // Fresh install
-      $DB->runFile(GLPI_ROOT . '/plugins/connections/sql/empty-10.0.sql');
+      $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/empty-10.0.sql");
 
       // We're 1.6.0 update to 1.6.4
    } else if ($DB->tableExists('glpi_plugin_connections_connectionratesguaranteed')
               && !$DB->tableExists('glpi_plugin_connectiond_device')) {
-      $DB->runFile(GLPI_ROOT . '/plugins/connections/sql/update-1.6.0-to-1.6.4.sql');
+      $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-1.6.0-to-1.6.4.sql");
 
    } else if ($DB->tableExists("glpi_plugin_connection")
               && !$DB->FieldExists("glpi_plugin_connection", "recursive")) {
       $update = true;
-      $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.3.0.sql");
-      $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.4.0.sql");
-      $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.5.0.sql");
+      $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-1.3.0.sql");
+      $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-1.4.0.sql");
+      $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-1.5.0.sql");
 
    } else if ($DB->tableExists("glpi_plugin_connection_profiles")
               && $DB->FieldExists("glpi_plugin_connection_profiles", "interface")) {
       $update = true;
-      $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.4.0.sql");
-      $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.3.0.sql");
+      $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-1.4.0.sql");
+      $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-1.3.0.sql");
 
    } else if ($DB->tableExists("glpi_plugin_connection")
               && !$DB->FieldExists("glpi_plugin_connection", "helpdesk_visible")) {
       $update = true;
-      $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-1.3.0.sql");
+      $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-1.3.0.sql");
 
    } else if ($DB->tableExists("glpi_plugin_connections_connectionrates") &&
               !$DB->FieldExists("glpi_plugin_connections_connectionrates", "is_recursive")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-9.4.0.sql");
+      $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-9.4.0.sql");
 
    } else if (!$DB->FieldExists("glpi_plugin_connections_connections", "locations_id")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-9.5.0.sql");
+      $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-9.5.0.sql");
    } else if (!$DB->FieldExists("glpi_plugin_connections_connections", "users_id_tech")) {
-      $DB->runFile(GLPI_ROOT . "/plugins/connections/sql/update-10.0.sql");
+      $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-10.0.sql");
    }
 
 

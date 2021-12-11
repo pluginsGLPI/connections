@@ -29,6 +29,16 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
 
 define('PLUGIN_CONNECTIONS_VERSION', '10.0');
 
+if (!defined("PLUGINCONNECTIONS_DIR")) {
+   define("PLUGINCONNECTIONS_DIR", Plugin::getPhpDir("connections"));
+}
+if (!defined("PLUGINCONNECTIONS_WEBDIR")) {
+   define("PLUGINCONNECTIONS_WEBDIR", Plugin::getWebDir("connections"));
+}
+if (!defined("PLUGINCONNECTIONS_NOTFULL_WEBDIR")) {
+   define("PLUGINCONNECTIONS_NOTFULL_WEBDIR", Plugin::getPhpDir("connections",false));
+}
+
 // Init the hooks of the plugins -Needed
 function plugin_init_connections() {
    global $PLUGIN_HOOKS, $CFG_GLPI;
@@ -69,8 +79,8 @@ function plugin_init_connections() {
       if (Session::haveRight("plugin_connections_connection", READ)) {
          $PLUGIN_HOOKS["menu_toadd"]['connections'] = ['assets' => 'PluginConnectionsMenu'];
       }
-
-      $CFG_GLPI['impact_asset_types']['PluginConnectionsConnection'] = "plugins/connections/pics/icon.png";
+Toolbox::logInfo(PLUGINCONNECTIONS_NOTFULL_WEBDIR);
+      $CFG_GLPI['impact_asset_types']['PluginConnectionsConnection'] = PLUGINCONNECTIONS_NOTFULL_WEBDIR."/pics/icon.png";
       if (isset($_SESSION['glpiactiveprofile']['interface'])
           && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
          $PLUGIN_HOOKS['add_css']['connections'] = "connections.css";

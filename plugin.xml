@@ -27,7 +27,8 @@
    <versions>
       <version>
          <num>9.5</num>
-         <compatibility>9.5</compatibility>
+         <compatibility>~9.5</compatibility>
+         <download_url>https://github.com/pluginsGLPI/connections/releases/download/9.5/glpi-connections-9.5.tar.gz</download_url>
       </version>
       <version>
          <num>9.4</num>

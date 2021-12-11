@@ -593,7 +593,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       Ajax::updateItemOnSelectEvent(
          "plugin_connections_connectiontypes_id",
          "show_$myname$rand",
-         $CFG_GLPI["root_doc"] . "/plugins/connections/ajax/dropdownTypeConnections.php",
+         PLUGINCONNECTIONS_WEBDIR . "/ajax/dropdownTypeConnections.php",
          $params
       );
 
@@ -603,7 +603,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       $_POST["myname"]                                = $myname;
       $_POST["rand"]                                  = $rand;
       $_POST["used"]                                  = $used;
-      include(GLPI_ROOT . "/plugins/connections/ajax/dropdownTypeConnections.php");
+      include(PLUGINCONNECTIONS_DIR . "/ajax/dropdownTypeConnections.php");
       echo "</span>\n";
 
       return $rand;

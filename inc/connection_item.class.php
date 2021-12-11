@@ -577,7 +577,7 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
              && (in_array($data['entities_id'], $_SESSION['glpiactiveentities'])
                  || $data["is_recursive"])) {
             echo "<td class='center'>";
-            echo "<a href='" . $CFG_GLPI["root_doc"] . "/plugins/connections/front/connection.form.php?id=" . $data["id"] . "'>";
+            echo "<a href='" . PLUGINCONNECTIONS_WEBDIR . "/front/connection.form.php?id=" . $data["id"] . "'>";
             echo $data["name"];
             if ($_SESSION["glpiis_ids_visible"]) {
                echo " (" . $data["id"] . ")";

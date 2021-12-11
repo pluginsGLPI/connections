@@ -47,7 +47,7 @@ class PluginConnectionsMenu extends CommonGLPI {
 
       $menu          = [];
       $menu['title'] = self::getMenuName();
-      $menu['page']  = '/plugins/connections/front/connection.php';
+      $menu['page']  = PluginConnectionsConnection::getSearchURL(false);
       $menu['links']['search'] = PluginConnectionsConnection::getSearchURL(false);
       if (Session::haveRight(static::$rightname, CREATE)) {
          $menu['links']['add'] = PluginConnectionsConnection::getFormURL(false);
