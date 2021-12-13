@@ -1,29 +1,28 @@
 <?php
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
- -------------------------------------------------------------------------
- badges plugin for GLPI
- Copyright (C) 2009-2016 by the badges Development Team.
+-------------------------------------------------------------------------
+ connections plugin for GLPI
+ Copyright (C) 2015-2016 by the connections Development Team.
 
- https://github.com/InfotelGLPI/badges
- -------------------------------------------------------------------------
+ https://github.com/pluginsGLPI/connections
+-------------------------------------------------------------------------
 
- LICENSE
+LICENSE
 
- This file is part of badges.
+This file is part of connections.
 
- badges is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 2 of the License, or
- (at your option) any later version.
+ connections is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
- badges is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+ connections is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
- You should have received a copy of the GNU General Public License
- along with badges. If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with connections. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
-

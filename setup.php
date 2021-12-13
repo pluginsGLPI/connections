@@ -79,7 +79,7 @@ function plugin_init_connections() {
       if (Session::haveRight("plugin_connections_connection", READ)) {
          $PLUGIN_HOOKS["menu_toadd"]['connections'] = ['assets' => 'PluginConnectionsMenu'];
       }
-Toolbox::logInfo(PLUGINCONNECTIONS_NOTFULL_WEBDIR);
+
       $CFG_GLPI['impact_asset_types']['PluginConnectionsConnection'] = PLUGINCONNECTIONS_NOTFULL_WEBDIR."/pics/icon.png";
       if (isset($_SESSION['glpiactiveprofile']['interface'])
           && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
