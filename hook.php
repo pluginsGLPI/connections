@@ -43,7 +43,7 @@ function plugin_connections_install() {
    // Go for 1.7.0
    if (!$DB->tableExists('glpi_plugin_connection')
        && !$DB->tableExists('glpi_plugin_connections_connections')) { // Fresh install
-      $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/empty-10.0.sql");
+      $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/empty-10.0.0.sql");
 
       // We're 1.6.0 update to 1.6.4
    } else if ($DB->tableExists('glpi_plugin_connections_connectionratesguaranteed')
@@ -75,7 +75,7 @@ function plugin_connections_install() {
    } else if (!$DB->FieldExists("glpi_plugin_connections_connections", "locations_id")) {
       $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-9.5.0.sql");
    } else if (!$DB->FieldExists("glpi_plugin_connections_connections", "users_id_tech")) {
-      $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-10.0.sql");
+      $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-10.0.0.sql");
    }
 
 
