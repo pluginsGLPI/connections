@@ -51,8 +51,8 @@ function plugin_init_connections() {
    if ($plugin->isActivated("connections")) {
 
       Plugin::registerClass('PluginConnectionsConnection', [
-         'linkuser_types'              => true,
-         'linkgroup_types'             => true,
+//         'linkuser_types'              => true,
+//         'linkgroup_types'             => true,
          'document_types'              => true,
          'contract_types'              => true,
          'ticket_types'                => true,
