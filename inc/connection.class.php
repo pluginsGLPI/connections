@@ -291,12 +291,12 @@ class PluginConnectionsConnection extends CommonDBTM {
                                                    'checkright'
                                                                    => true,
                                                   ]);
-            echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
+            echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction', 'class' => 'btn btn-primary']);
             return true;
             break;
          case "transfer" :
             Dropdown::show('Entity');
-            echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction']);
+            echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction', 'class' => 'btn btn-primary']);
             return true;
             break;
 
