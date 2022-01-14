@@ -3,7 +3,7 @@
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
 -------------------------------------------------------------------------
  connections plugin for GLPI
- Copyright (C) 2015-2016 by the connections Development Team.
+ Copyright (C) 2015-2022 by the connections Development Team.
 
  https://github.com/pluginsGLPI/connections
 -------------------------------------------------------------------------
