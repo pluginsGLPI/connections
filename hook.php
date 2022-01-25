@@ -187,7 +187,7 @@ function plugin_connections_uninstall() {
    foreach (PluginConnectionsProfile::getAllRights() as $right) {
       $profileRight->deleteByCriteria(['name' => $right['field']]);
    }
-   PluginConnectionsMenu::removeRightsFromSession();
+   PluginConnectionsConnection::removeRightsFromSession();
    PluginConnectionsProfile::removeRightsFromSession();
 
    return true;

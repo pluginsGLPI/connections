@@ -77,7 +77,7 @@ function plugin_init_connections() {
       }
 
       if (Session::haveRight("plugin_connections_connection", READ)) {
-         $PLUGIN_HOOKS["menu_toadd"]['connections'] = ['assets' => 'PluginConnectionsMenu'];
+         $PLUGIN_HOOKS["menu_toadd"]['connections'] = ['assets' => 'PluginConnectionsConnection'];
       }
 
       $CFG_GLPI['impact_asset_types']['PluginConnectionsConnection'] = PLUGINCONNECTIONS_NOTFULL_WEBDIR."/pics/icon.png";

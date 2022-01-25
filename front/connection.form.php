@@ -100,7 +100,7 @@ if (isset($_POST["add"]) && !isset($_POST["additem"])) {
       __('Connections', 'connections'),
       $_SERVER["PHP_SELF"],
       "assets",
-      "pluginconnectionsmenu",
+      "pluginconnectionsconnection",
       "connections"
    );
 

@@ -35,7 +35,7 @@ Html::header(
    __('Connections', 'connections'),
    $_SERVER["PHP_SELF"],
    "assets",
-   "pluginconnectionsmenu",
+   "pluginconnectionsconnection",
    ""
 );
 

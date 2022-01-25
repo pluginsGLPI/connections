@@ -609,4 +609,33 @@ class PluginConnectionsConnection extends CommonDBTM {
       return $rand;
    }
 
+   /**
+    * @return array
+    */
+   static function getMenuContent() {
+
+      $menu          = [];
+      $menu['title'] = self::getMenuName();
+      $menu['page']  = self::getSearchURL(false);
+      $menu['links']['search'] = self::getSearchURL(false);
+      if (Session::haveRight(static::$rightname, CREATE)) {
+         $menu['links']['add'] = self::getFormURL(false);
+      }
+      $menu['links']['lists']  = "";
+
+      $menu['icon'] = self::getIcon();
+
+      return $menu;
+   }
+
+   static function removeRightsFromSession()
+   {
+      if (isset($_SESSION['glpimenu']['assets']['types']['PluginConnectionsConnection'])) {
+         unset($_SESSION['glpimenu']['assets']['types']['PluginConnectionsConnection']);
+      }
+      if (isset($_SESSION['glpimenu']['assets']['content']['pluginconnectionsconnection'])) {
+         unset($_SESSION['glpimenu']['assets']['content']['pluginconnectionsconnection']);
+      }
+   }
+
 }
