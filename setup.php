@@ -27,7 +27,7 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
-define('PLUGIN_CONNECTIONS_VERSION', '10.0.0-rc2');
+define('PLUGIN_CONNECTIONS_VERSION', '10.0.0');
 
 if (!defined("PLUGINCONNECTIONS_DIR")) {
    define("PLUGINCONNECTIONS_DIR", Plugin::getPhpDir("connections"));
