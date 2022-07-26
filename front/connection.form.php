@@ -94,8 +94,6 @@ if (isset($_POST["add"]) && !isset($_POST["additem"])) {
       $_SESSION['glpi_tab'] = $_GET['onglet'];
    }
 
-   $plugin = new Plugin();
-
    Html::header(
       __('Connections', 'connections'),
       $_SERVER["PHP_SELF"],

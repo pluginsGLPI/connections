@@ -47,8 +47,7 @@ function plugin_init_connections() {
    $PLUGIN_HOOKS['change_profile']['connections']   = ['PluginConnectionsProfile', 'initProfile'];
    $PLUGIN_HOOKS['assign_to_ticket']['connections'] = true;
 
-   $plugin = new Plugin();
-   if ($plugin->isActivated("connections")) {
+   if (Plugin::isPluginActive("connections")) {
 
       Plugin::registerClass('PluginConnectionsConnection', [
 //         'linkuser_types'              => true,

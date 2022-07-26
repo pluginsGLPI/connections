@@ -29,8 +29,6 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
 
 include('../../../inc/includes.php');
 
-$plugin = new Plugin();
-
 Html::header(
    __('Connections', 'connections'),
    $_SERVER["PHP_SELF"],

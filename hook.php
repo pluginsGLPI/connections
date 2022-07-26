@@ -227,9 +227,8 @@ function plugin_connections_AssignToTicket($types) {
  * @return array
  */
 function plugin_connections_getDatabaseRelations() {
-   $plugin = new Plugin();
 
-   if ($plugin->isActivated("connections")) {
+   if (Plugin::isPluginActive("connections")) {
       return [
          "glpi_plugin_connections_connectiontypes"           => ["glpi_plugin_connections_connections" => "plugin_connections_connectiontypes_id"],
          "glpi_plugin_connections_connectionrates"           => ["glpi_plugin_connections_connections" => "plugin_connections_connectionrates_id"],
@@ -253,9 +252,8 @@ function plugin_connections_getDatabaseRelations() {
  * @return array
  */
 function plugin_connections_getDropdown() {
-   $plugin = new Plugin();
 
-   if ($plugin->isActivated("connections")) {
+   if (Plugin::isPluginActive("connections")) {
       return [
          'PluginConnectionsConnectionType'           => __('Type of Connections', 'connections'),
          'PluginConnectionsConnectionRate'           => __('Rates', 'connections'),
