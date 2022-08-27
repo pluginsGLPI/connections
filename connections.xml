@@ -72,19 +72,19 @@
       <lang>en_GB</lang>
       <lang>fr_FR</lang>
    </langs>
-   <license>GPL v2+</license>
+   <license><![CDATA[GPL v2+]]></license>
    <tags>
-      <en>
-         <tag>Network</tag>
-         <tag>Inventory</tag>
-         <tag>Link</tag>
-         <tag>Connections</tag>
-      </en>
       <fr>
          <tag>Réseaux</tag>
          <tag>Inventaire</tag>
          <tag>Liaison</tag>
          <tag>Connexions</tag>
       </fr>
+      <en>
+         <tag>Network</tag>
+         <tag>Inventory</tag>
+         <tag>Link</tag>
+         <tag>Connections</tag>
+      </en>
    </tags>
 </root>
