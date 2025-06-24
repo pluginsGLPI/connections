@@ -29,15 +29,20 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
 
 define('PLUGIN_CONNECTIONS_VERSION', '10.0.0');
 
+global $CFG_GLPI;
+
 if (!defined("PLUGINCONNECTIONS_DIR")) {
    define("PLUGINCONNECTIONS_DIR", Plugin::getPhpDir("connections"));
 }
 if (!defined("PLUGINCONNECTIONS_WEBDIR")) {
-   define("PLUGINCONNECTIONS_WEBDIR", Plugin::getWebDir("connections"));
+    $root = $CFG_GLPI['root_doc'] . '/plugins/connections';
+    define("PLUGINCONNECTIONS_WEBDIR", $root);
 }
 if (!defined("PLUGINCONNECTIONS_NOTFULL_WEBDIR")) {
    define("PLUGINCONNECTIONS_NOTFULL_WEBDIR", Plugin::getPhpDir("connections",false));
 }
+
+use Glpi\Plugin\Hooks;
 
 // Init the hooks of the plugins -Needed
 function plugin_init_connections() {
@@ -82,7 +87,7 @@ function plugin_init_connections() {
       $CFG_GLPI['impact_asset_types']['PluginConnectionsConnection'] = PLUGINCONNECTIONS_NOTFULL_WEBDIR."/pics/icon.png";
       if (isset($_SESSION['glpiactiveprofile']['interface'])
           && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
-         $PLUGIN_HOOKS['add_css']['connections'] = "connections.css";
+         $PLUGIN_HOOKS[Hooks::ADD_CSS]['connections'] = "connections.css";
       }
       $PLUGIN_HOOKS['migratetypes']['connections']                  = 'plugin_datainjection_migratetypes_connections';
       $PLUGIN_HOOKS['plugin_datainjection_populate']['connections'] = 'plugin_datainjection_populate_connections';
@@ -105,8 +110,8 @@ function plugin_version_connections() {
       'homepage'       => 'https://github.com/pluginsGLPI/connections',
       'requirements'   => [
          'glpi' => [
-            'min' => '10.0',
-            'max' => '11.0',
+            'min' => '11.0',
+            'max' => '12.0',
             'dev' => false
          ]
       ]

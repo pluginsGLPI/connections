@@ -194,13 +194,6 @@ class PluginConnectionsConnection extends CommonDBTM {
          'datatype'      => 'datetime'
       ];
 
-      $tab[] = [
-         'id'       => '30',
-         'table'    => $this->getTable(),
-         'field'    => 'id',
-         'name'     => __('ID'),
-         'datatype' => 'number'
-      ];
 
       $tab[] = [
          'id'       => '80',
@@ -239,7 +232,7 @@ class PluginConnectionsConnection extends CommonDBTM {
       $this->addDefaultFormTab($ong);
       $this->addImpactTab($ong, $options);
       $this->addStandardTab('PluginConnectionsConnection_Item', $ong, $options);
-      $this->addStandardTab('Ticket', $ong, $options);
+      $this->addStandardTab('Item_Ticket', $ong, $options);
       $this->addStandardTab('Item_Problem', $ong, $options);
       $this->addStandardTab('Change_Item', $ong, $options);
       $this->addStandardTab('Infocom', $ong, $options);
@@ -573,7 +566,7 @@ class PluginConnectionsConnection extends CommonDBTM {
                 )
                 GROUP BY `name`
                 ORDER BY `name`";
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
 
       echo "<select class='form-select' name='_type' id='plugin_connections_connectiontypes_id'>\n";
       echo "<option value='0'>" . Dropdown::EMPTY_VALUE . "</option>\n";

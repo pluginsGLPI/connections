@@ -91,7 +91,7 @@ $query  = "SELECT *
           $where
           ORDER BY `entities_id`, `name`
           $LIMIT";
-$result = $DB->query($query);
+$result = $DB->doQuery($query);
 
 echo "<select class='form-select' name=\"" . $_POST['myname'] . "\">";
 

@@ -27,6 +27,8 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\AccessDeniedHttpException;
+
 include('../../../inc/includes.php');
 
 Html::header(
@@ -43,7 +45,7 @@ if ($PluginConnectionsConnection->canView() || Session::haveRight("config", UPDA
    Search::show("PluginConnectionsConnection");
 
 } else {
-   Html::displayRightError();
+    throw new AccessDeniedHttpException();
 }
 
 Html::footer();

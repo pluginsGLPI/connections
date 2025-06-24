@@ -105,7 +105,7 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
                 WHERE `plugin_connections_connections_id` = '" . $connections_id . "'
                 AND `itemtype` = '" . $itemtype . "'
                 AND `items_id` = '" . $items_id . "'";
-      if ($result = $DB->query($query)) {
+      if ($result = $DB->doQuery($query)) {
          if ($DB->numrows($result) != 1) {
             return false;
          }
@@ -220,7 +220,7 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
              ORDER BY `itemtype`
              LIMIT " . count(self::getClasses(true));
 
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
       $number = $DB->numrows($result);
 
       if (Session::isMultiEntitiesMode()) {
@@ -306,7 +306,7 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
             }
             $query .= " ORDER BY `glpi_entities`.`completename`, `" . $itemTable . "`.`$column`";
 
-            if ($result_linked = $DB->query($query)) {
+            if ($result_linked = $DB->doQuery($query)) {
                if ($DB->numrows($result_linked)) {
 
                   Session::initNavigateListItems($itemType, PluginConnectionsConnection::getTypeName(2) . " = " . $connection->fields['name']);
@@ -390,7 +390,7 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
                 FROM `$table` t
                 WHERE t.`items_id` = '$ID'
                 AND t.`itemtype` = '$itemtype'";
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
       $number = $DB->numrows($result);
       $used   = [];
       if ($number) {
@@ -439,7 +439,7 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
                 AND t.`plugin_connections_connections_id` = `glpi_plugin_connections_connections`.`id`
                 $entitiesRestrict
                 ORDER BY `glpi_plugin_connections_connections`.`name` ";
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
       $number = $DB->numrows($result);
 
       echo "<div class='spaced'>";
@@ -551,7 +551,7 @@ class PluginConnectionsConnection_Item extends CommonDBRelation {
                 WHERE `suppliers_id` = '" . $ID . "'
                 $entitiesRestrict
                 ORDER BY `glpi_plugin_connections_connections`.`name`";
-      $result = $DB->query($query);
+      $result = $DB->doQuery($query);
 
       if (Session::isMultiEntitiesMode()) {
          $colsup = 1;

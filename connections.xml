@@ -3,7 +3,7 @@
    <name>Connections</name>
    <key>connections</key>
    <state>stable</state>
-   <logo>https://raw.githubusercontent.com/pluginsGLPI/connections/master/pics/icon.png</logo>
+   <logo>https://raw.githubusercontent.com/pluginsGLPI/connections/master/public/pics/icon.png</logo>
    <description>
       <short>
          <en>This plugin allows you to manage the connections of your network and associate them with elements of the inventory.</en>

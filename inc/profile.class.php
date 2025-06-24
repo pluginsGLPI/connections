@@ -49,15 +49,23 @@ class PluginConnectionsProfile extends Profile {
 
       if ($item->getType() == 'Profile') {
          if ($item->getField('interface') == 'central') {
-            return PluginConnectionsConnection::getTypeName(2);
+            return self::createTabEntry(PluginConnectionsConnection::getTypeName(2));
          }
          return '';
       }
       return '';
    }
 
+    /**
+     * @return string
+     */
+    public static function getIcon()//self::createTabEntry(
+    {
+        return "ti ti-wifi";
+    }
 
-   /**
+
+    /**
     * @param \CommonGLPI $item
     * @param int         $tabnum
     * @param int         $withtemplate
@@ -202,20 +210,24 @@ class PluginConnectionsProfile extends Profile {
          return true;
       }
 
-      foreach ($DB->request('glpi_plugin_connections_profiles',
-                            "`profiles_id`='$profiles_id'") as $profile_data) {
-
-         $matching       = ['connections' => 'plugin_connections_connection'];
-         $current_rights = ProfileRight::getProfileRights($profiles_id, array_values($matching));
-         foreach ($matching as $old => $new) {
-            if (!isset($current_rights[$old])) {
-               $query = "UPDATE `glpi_profilerights`
-                         SET `rights`='" . self::translateARight($profile_data[$old]) . "'
-                         WHERE `name`='$new' AND `profiles_id`='$profiles_id'";
-               $DB->query($query);
-            }
-         }
-      }
+       foreach (
+           $DB->request([
+               'FROM' => 'glpi_plugin_connections_profiles',
+               'WHERE' => ['profiles_id' => $profiles_id]]) as $profile_data
+       ) {
+           $matching = [
+               'connections' => 'plugin_connections_connection'
+           ];
+           $current_rights = ProfileRight::getProfileRights($profiles_id, array_values($matching));
+           foreach ($matching as $old => $new) {
+               if (!isset($current_rights[$old])) {
+                   $DB->update('glpi_profilerights', ['rights' => self::translateARight($profile_data[$old])], [
+                       'name'        => $new,
+                       'profiles_id' => $profiles_id
+                   ]);
+               }
+           }
+       }
    }
 
    /**
@@ -234,15 +246,24 @@ class PluginConnectionsProfile extends Profile {
       }
 
       //Migration old rights in new ones
-      foreach ($DB->request("SELECT `id` FROM `glpi_profiles`") as $prof) {
+      foreach (
+      $DB->request([
+          'FROM' => 'glpi_profiles']) as $prof) {
          self::migrateOneProfile($prof['id']);
       }
-      foreach ($DB->request("SELECT *
-                           FROM `glpi_profilerights`
-                           WHERE `profiles_id`='" . $_SESSION['glpiactiveprofile']['id'] . "'
-                              AND `name` LIKE '%plugin_connections%'") as $prof) {
-         $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
-      }
+
+       $it = $DB->request([
+           'FROM' => 'glpi_profilerights',
+           'WHERE' => [
+               'profiles_id' => $_SESSION['glpiactiveprofile']['id'],
+               'name' => ['LIKE', '%plugin_connections%']
+           ]
+       ]);
+       foreach ($it as $prof) {
+           if (isset($_SESSION['glpiactiveprofile'])) {
+               $_SESSION['glpiactiveprofile'][$prof['name']] = $prof['rights'];
+           }
+       }
    }
 
    static function removeRightsFromSession() {

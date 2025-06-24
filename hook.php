@@ -80,19 +80,22 @@ function plugin_connections_install() {
 
 
    if ($update) {
-      $query_  = "SELECT * FROM `glpi_plugin_connections_profiles` ";
-      $result_ = $DB->query($query_);
-
-      if ($DB->numrows($result_) > 0) {
-         while ($data = $DB->fetchArray($result_)) {
+       $iterator = $DB->request([
+           'SELECT' => [
+               'id'
+           ],
+           'FROM' => 'glpi_plugin_connections_profiles',
+       ]);
+       if (count($iterator) > 0) {
+           foreach ($iterator as $data) {
             $query = "UPDATE `glpi_plugin_connections_profiles`
                       SET `profiles_id` = '" . $data["id"] . "'
                       WHERE `id` = '" . $data["id"] . "';";
-            $DB->query($query);
+            $DB->doQuery($query);
          }
       }
 
-      $DB->query("ALTER TABLE `glpi_plugin_connections_profiles` DROP `name`;");
+      $DB->doQuery("ALTER TABLE `glpi_plugin_connections_profiles` DROP `name`;");
 
       Plugin::migrateItemType(
          [4400 => 'PluginConnectionsConnection'],
@@ -143,7 +146,7 @@ function plugin_connections_uninstall() {
    ];
 
    foreach ($tables as $table) {
-      $DB->query("DROP TABLE IF EXISTS `$table`;");
+      $DB->doQuery("DROP TABLE IF EXISTS `$table`;");
    }
 
    //old versions
@@ -157,7 +160,7 @@ function plugin_connections_uninstall() {
    ];
 
    foreach ($tables as $table) {
-      $DB->query("DROP TABLE IF EXISTS `$table`;");
+      $DB->doQuery("DROP TABLE IF EXISTS `$table`;");
    }
 
    $tables_glpi = [
@@ -170,10 +173,10 @@ function plugin_connections_uninstall() {
    ];
 
    foreach ($tables_glpi as $table_glpi) {
-      $DB->query("DELETE FROM `$table_glpi` WHERE `itemtype` = 'PluginConnectionsConnection';");
+      $DB->doQuery("DELETE FROM `$table_glpi` WHERE `itemtype` = 'PluginConnectionsConnection';");
    }
 
-   $DB->query("DELETE
+   $DB->doQuery("DELETE
                   FROM `glpi_impactrelations`
                   WHERE `itemtype_source` IN ('PluginConnectionsConnection')
                     OR `itemtype_impacted` IN ('PluginConnectionsConnection')");
@@ -230,9 +233,9 @@ function plugin_connections_getDatabaseRelations() {
 
    if (Plugin::isPluginActive("connections")) {
       return [
-         "glpi_plugin_connections_connectiontypes"           => ["glpi_plugin_connections_connections" => "plugin_connections_connectiontypes_id"],
-         "glpi_plugin_connections_connectionrates"           => ["glpi_plugin_connections_connections" => "plugin_connections_connectionrates_id"],
-         "glpi_plugin_connections_guaranteedconnectionrates" => ["glpi_plugin_connections_connections" => "plugin_connections_guaranteedconnectionrates_id"],
+//         "glpi_plugin_connections_connectiontypes"           => ["glpi_plugin_connections_connections" => "plugin_connections_connectiontypes_id"],
+//         "glpi_plugin_connections_connectionrates"           => ["glpi_plugin_connections_connections" => "plugin_connections_connectionrates_id"],
+//         "glpi_plugin_connections_guaranteedconnectionrates" => ["glpi_plugin_connections_connections" => "plugin_connections_guaranteedconnectionrates_id"],
          "glpi_users"                                        => ["glpi_plugin_connections_connections" => "users_id_tech"],
          "glpi_groups"                                       => ["glpi_plugin_connections_connections" => "groups_id_tech"],
          "glpi_suppliers"                                    => ["glpi_plugin_connections_connections" => "suppliers_id"],
@@ -385,7 +388,7 @@ function plugin_connections_forceGroupBy($type) {
 function plugin_connections_giveItem($type, $ID, $data, $num) {
    global $DB;
 
-   $searchopt = &Search::getOptions($type);
+   $searchopt = Search::getOptions($type);
    $table     = $searchopt[$ID]["table"];
    $field     = $searchopt[$ID]["field"];
 
@@ -395,7 +398,7 @@ function plugin_connections_giveItem($type, $ID, $data, $num) {
                           FROM `glpi_plugin_connections_connections_items`
                           WHERE `plugin_connections_connections_id` = '" . $data['id'] . "'
                           ORDER BY `itemtype`";
-         $result_device = $DB->query($query_device);
+         $result_device = $DB->doQuery($query_device);
          $number_device = $DB->numrows($result_device);
 
          $out         = '';
@@ -431,7 +434,7 @@ function plugin_connections_giveItem($type, $ID, $data, $num) {
                             AND ci.`plugin_connections_connections_id` = '$connections'
                             $mayBeTemplated
                             ORDER BY `glpi_entities`.`completename`, `$table_item`.`$column`";
-                  if ($result_linked = $DB->query($query))
+                  if ($result_linked = $DB->doQuery($query))
                      if ($DB->numrows($result_linked)) {
                         $item = new $itemtype();
 
