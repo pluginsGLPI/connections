@@ -85,8 +85,8 @@ CREATE TABLE `glpi_plugin_connections_configs` (
     PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
-INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginConnectionsConnection','2','3','0');
-INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginConnectionsConnection','3','1','0');
-INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginConnectionsConnection','4','2','0');
-INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginConnectionsConnection','6','4','0');
-INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginConnectionsConnection','7','5','0');
+INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginConnectionsConnection','2','3','0', 'central');
+INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginConnectionsConnection','3','1','0', 'central');
+INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginConnectionsConnection','4','2','0', 'central');
+INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginConnectionsConnection','6','4','0', 'central');
+INSERT INTO `glpi_displaypreferences` VALUES (NULL,'PluginConnectionsConnection','7','5','0', 'central');
