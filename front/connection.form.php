@@ -27,13 +27,14 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
-include('../../../inc/includes.php');
+use GlpiPlugin\Connections\Connection;
+use GlpiPlugin\Connections\Connection_Item;
 
 if (!isset($_GET["id"])) $_GET["id"] = "";
 if (!isset($_GET["withtemplate"])) $_GET["withtemplate"] = "";
 
-$PluginConnectionsConnection      = new PluginConnectionsConnection();
-$PluginConnectionsConnection_Item = new PluginConnectionsConnection_Item();
+$PluginConnectionsConnection      = new Connection();
+$PluginConnectionsConnection_Item = new Connection_Item();
 
 if (isset($_POST["add"]) && !isset($_POST["additem"])) {
    $PluginConnectionsConnection->check(-1, UPDATE, $_POST);
@@ -43,17 +44,17 @@ if (isset($_POST["add"]) && !isset($_POST["additem"])) {
 } elseif (isset($_POST["delete"])) {
    $PluginConnectionsConnection->check($_POST['id'], UPDATE);
    $PluginConnectionsConnection->delete($_POST);
-   Html::redirect(Toolbox::getItemTypeSearchURL('PluginConnectionsConnection'));
+   Html::redirect(Toolbox::getItemTypeSearchURL(Connection::class));
 
 } elseif (isset($_POST["restore"])) {
    $PluginConnectionsConnection->check($_POST['id'], UPDATE);
    $PluginConnectionsConnection->restore($_POST);
-   Html::redirect(Toolbox::getItemTypeSearchURL('PluginConnectionsConnection'));
+   Html::redirect(Toolbox::getItemTypeSearchURL(Connection::class));
 
 } elseif (isset($_POST["purge"])) {
    $PluginConnectionsConnection->check($_POST['id'], UPDATE);
    $PluginConnectionsConnection->delete($_POST, 1);
-   Html::redirect(Toolbox::getItemTypeSearchURL('PluginConnectionsConnection'));
+   Html::redirect(Toolbox::getItemTypeSearchURL(Connection::class));
 
 } elseif (isset($_POST["update"])) {
    $PluginConnectionsConnection->check($_POST['id'], UPDATE);

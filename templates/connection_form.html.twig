@@ -67,28 +67,28 @@
 
                {% if item.isField('plugin_connections_connectionrates_id') %}
                   {{ fields.dropdownField(
-                     "PluginConnectionsConnectionRate",
+                     'ConnectionRate',
                      "plugin_connections_connectionrates_id",
                      item.fields['plugin_connections_connectionrates_id'],
-                     "PluginConnectionsConnectionRate"|itemtype_name,
+                      'ConnectionRate'|itemtype_name,
                   ) }}
                {% endif %}
 
                 {% if item.isField('plugin_connections_connectiontypes_id') %}
                     {{ fields.dropdownField(
-                        "PluginConnectionsConnectionType",
+                        'ConnectionType',
                         "plugin_connections_connectiontypes_id",
                         item.fields['plugin_connections_connectiontypes_id'],
-                        "PluginConnectionsConnectionType"|itemtype_name,
+                        'ConnectionType'|itemtype_name,
                     ) }}
                 {% endif %}
 
                {% if item.isField('plugin_connections_guaranteedconnectionrates_id') %}
                   {{ fields.dropdownField(
-                     "PluginConnectionsGuaranteedConnectionRate",
+                      'GuaranteedConnectionRate',
                      "plugin_connections_guaranteedconnectionrates_id",
                      item.fields['plugin_connections_guaranteedconnectionrates_id'],
-                     "PluginConnectionsGuaranteedConnectionRate"|itemtype_name,
+                      'GuaranteedConnectionRate'|itemtype_name,
                   ) }}
                {% endif %}
 

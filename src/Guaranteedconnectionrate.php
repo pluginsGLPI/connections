@@ -27,26 +27,28 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
-if (!defined('GLPI_ROOT')) {
-   die("Sorry. You can't access directly to this file");
-}
+namespace GlpiPlugin\Connections;
+
+use CommonDropdown;
 
 // Class for a Dropdown
 
 /**
- * Class PluginConnectionsConnectionType
+ * Class GuaranteedConnectionRate
  */
-class PluginConnectionsConnectionType extends CommonDropdown {
-   static $rightname = 'plugin_connections_connection';
+final class GuaranteedConnectionRate extends CommonDropdown
+{
+    static $rightname = 'plugin_connections_connection';
 
    /**
     * @param int $nb
     *
     * @return string
     */
-   public static function getTypeName($nb = 0) {
-      return __('Type of Connections', 'connections');
-   }
+    public static function getTypeName($nb = 0)
+    {
+        return __('Guaranteed Rates', 'connections');
+    }
 
    /**
     * @param $ID
@@ -54,24 +56,28 @@ class PluginConnectionsConnectionType extends CommonDropdown {
     *
     * @return int
     */
-   public static function transfer($ID, $entity) {
-      global $DB;
+    public static function transfer($ID, $entity)
+    {
+        global $DB;
 
-      $temp = new self();
-      if ($ID <= 0 || !$temp->getFromDB($ID)) {
-         return 0;
-      }
-      $query = "SELECT `id`
-                FROM `" . $temp->getTable() . "`
-                WHERE `entities_id` = '$entity'
-                  AND `name` = '" . addslashes($temp->fields['name']) . "'";
-      foreach ($DB->request($query) as $data) {
-         return $data['id'];
-      }
-      $input                = $temp->fields;
-      $input['entities_id'] = $entity;
-      unset($input['id']);
+        if ($ID > 0) {
+            $table = self::getTable();
+            $iterator = $DB->request([
+               'FROM'   => $table,
+               'WHERE'  => ['id' => $ID]
+            ]);
 
-      return $temp->add($input);
-   }
+            foreach ($iterator as $data) {
+                $input['name']        = $data['name'];
+                $input['entities_id'] = $entity;
+                $temp                 = new self();
+                $newID                = $temp->getID();
+                if ($newID < 0) {
+                    $newID = $temp->import($input);
+                }
+
+                return $newID;
+            }
+        }
+    }
 }

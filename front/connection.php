@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
 -------------------------------------------------------------------------
@@ -28,22 +29,20 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
  */
 
 use Glpi\Exception\Http\AccessDeniedHttpException;
-
-include('../../../inc/includes.php');
+use GlpiPlugin\Connections\Connection;
 
 Html::header(
-   __('Connections', 'connections'),
-   $_SERVER["PHP_SELF"],
-   "assets",
-   "pluginconnectionsconnection",
-   ""
+    __('Connections', 'connections'),
+    $_SERVER["PHP_SELF"],
+    "assets",
+    "pluginconnectionsconnection",
+    ""
 );
 
-$PluginConnectionsConnection = new PluginConnectionsConnection();
+$PluginConnectionsConnection = new Connection();
 
 if ($PluginConnectionsConnection->canView() || Session::haveRight("config", UPDATE)) {
-   Search::show("PluginConnectionsConnection");
-
+    Search::show(Connection::class);
 } else {
     throw new AccessDeniedHttpException();
 }
