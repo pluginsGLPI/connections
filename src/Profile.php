@@ -157,7 +157,7 @@ final class Profile extends \Profile
         echo "<div class='firstbloc'>";
         if (($canedit = Session::haveRightsOr(self::$rightname, [CREATE, UPDATE, PURGE]))
           && $openform) {
-            $profile = new Profile();
+            $profile = new \Profile();
             echo "<form method='post' action='" . $profile->getFormURL() . "'>";
         }
 

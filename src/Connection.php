@@ -529,8 +529,8 @@ class Connection extends CommonDBTM
         if (isset($_SESSION['glpimenu']['assets']['types'][Connection::class])) {
             unset($_SESSION['glpimenu']['assets']['types'][Connection::class]);
         }
-        if (isset($_SESSION['glpimenu']['assets']['content']['pluginconnectionsconnection'])) {
-            unset($_SESSION['glpimenu']['assets']['content']['pluginconnectionsconnection']);
+        if (isset($_SESSION['glpimenu']['assets']['content'][Connection::class])) {
+            unset($_SESSION['glpimenu']['assets']['content'][Connection::class]);
         }
     }
 }

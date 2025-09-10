@@ -29,6 +29,7 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
  */
 
 use Glpi\Plugin\Hooks;
+use GlpiPlugin\Accounts\Account;
 use GlpiPlugin\Connections\Connection;
 use GlpiPlugin\Connections\Connection_Item;
 use GlpiPlugin\Connections\Profile;
@@ -80,8 +81,8 @@ function plugin_init_connections()
                 'Supplier'],
         ]);
 
-        if (class_exists('PluginAccountsAccount')) {
-            PluginAccountsAccount::registerType(Connection::class);
+        if (class_exists(Account::class)) {
+            Account::registerType(Connection::class);
         }
 
         if (Session::haveRight("plugin_connections_connection", READ)
