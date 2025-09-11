@@ -35,7 +35,7 @@ use GlpiPlugin\Connections\ConnectionType;
 use GlpiPlugin\Connections\GuaranteedConnectionRate;
 use GlpiPlugin\Connections\ConnectionInjection;
 use GlpiPlugin\Connections\Profile as ConnectionProfile;
-
+use Plugin;
 /**
  * @return bool
  * @throws GlpitestSQLError
@@ -51,7 +51,7 @@ function plugin_connections_install()
     // Go for 1.7.0
     if (!$DB->tableExists('glpi_plugin_connection')
        && !$DB->tableExists('glpi_plugin_connections_connections')) { // Fresh install
-        $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/empty-10.0.0.sql");
+        $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/empty-11.0.0.sql");
 
         // We're 1.6.0 update to 1.6.4
     } elseif ($DB->tableExists('glpi_plugin_connections_connectionratesguaranteed')
@@ -80,7 +80,7 @@ function plugin_connections_install()
     } elseif (!$DB->FieldExists("glpi_plugin_connections_connections", "users_id_tech")) {
         $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-10.0.0.sql");
     }
-
+    $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-11.0.0.sql");
 
     if ($update) {
         $iterator = $DB->request([
@@ -100,27 +100,27 @@ function plugin_connections_install()
 
         $DB->doQuery("ALTER TABLE `glpi_plugin_connections_profiles` DROP `name`;");
 
-        Plugin::migrateItemType(
-            [4400 => Connection::class],
-            [
-                "glpi_bookmarks",
-                "glpi_bookmarks_users",
-                "glpi_displaypreferences",
-                "glpi_documents_items",
-                "glpi_infocoms",
-                "glpi_logs",
-                "glpi_tickets",
-            ],
-            ["glpi_plugin_connections_connections_items"]
-        );
+//        Plugin::migrateItemType(
+//            [4400 => Connection::class],
+//            [
+//                "glpi_bookmarks",
+//                "glpi_bookmarks_users",
+//                "glpi_displaypreferences",
+//                "glpi_documents_items",
+//                "glpi_infocoms",
+//                "glpi_logs",
+//                "glpi_tickets",
+//            ],
+//            ["glpi_plugin_connections_connections_items"]
+//        );
 
-        Plugin::migrateItemType(
-            [
-                1200 => "PluginAppliancesAppliance",
-                1300 => "PluginWebapplicationsWebapplication",
-            ],
-            ["glpi_plugin_connections_connections_items"]
-        );
+//        Plugin::migrateItemType(
+//            [
+//                1200 => "PluginAppliancesAppliance",
+//                1300 => "PluginWebapplicationsWebapplication",
+//            ],
+//            ["glpi_plugin_connections_connections_items"]
+//        );
     }
 
     ConnectionProfile::initProfile();
