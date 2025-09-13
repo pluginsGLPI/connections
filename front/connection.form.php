@@ -33,38 +33,38 @@ use GlpiPlugin\Connections\Connection_Item;
 if (!isset($_GET["id"])) $_GET["id"] = "";
 if (!isset($_GET["withtemplate"])) $_GET["withtemplate"] = "";
 
-$PluginConnectionsConnection      = new Connection();
-$PluginConnectionsConnection_Item = new Connection_Item();
+$Connection      = new Connection();
+$Connection_Item = new Connection_Item();
 
 if (isset($_POST["add"]) && !isset($_POST["additem"])) {
-   $PluginConnectionsConnection->check(-1, UPDATE, $_POST);
-   $newID = $PluginConnectionsConnection->add($_POST);
+    $Connection->check(-1, UPDATE, $_POST);
+   $newID = $Connection->add($_POST);
    Html::back();
 
 } elseif (isset($_POST["delete"])) {
-   $PluginConnectionsConnection->check($_POST['id'], UPDATE);
-   $PluginConnectionsConnection->delete($_POST);
+    $Connection->check($_POST['id'], UPDATE);
+    $Connection->delete($_POST);
    Html::redirect(Toolbox::getItemTypeSearchURL(Connection::class));
 
 } elseif (isset($_POST["restore"])) {
-   $PluginConnectionsConnection->check($_POST['id'], UPDATE);
-   $PluginConnectionsConnection->restore($_POST);
+    $Connection->check($_POST['id'], UPDATE);
+    $Connection->restore($_POST);
    Html::redirect(Toolbox::getItemTypeSearchURL(Connection::class));
 
 } elseif (isset($_POST["purge"])) {
-   $PluginConnectionsConnection->check($_POST['id'], UPDATE);
-   $PluginConnectionsConnection->delete($_POST, 1);
+    $Connection->check($_POST['id'], UPDATE);
+    $Connection->delete($_POST, 1);
    Html::redirect(Toolbox::getItemTypeSearchURL(Connection::class));
 
 } elseif (isset($_POST["update"])) {
-   $PluginConnectionsConnection->check($_POST['id'], UPDATE);
-   $PluginConnectionsConnection->update($_POST);
+    $Connection->check($_POST['id'], UPDATE);
+    $Connection->update($_POST);
    Html::back();
 
 } elseif (isset($_POST["additem"])) {
    if (!empty($_POST['itemtype']) && $_POST['items_id'] > 0) {
-      $PluginConnectionsConnection_Item->check(-1, UPDATE, $_POST);
-      $PluginConnectionsConnection_Item->addItem(
+       $Connection_Item->check(-1, UPDATE, $_POST);
+       $Connection_Item->addItem(
          $_POST["plugin_connections_connections_id"],
          $_POST['items_id'],
          $_POST['itemtype']
@@ -76,15 +76,15 @@ if (isset($_POST["add"]) && !isset($_POST["additem"])) {
    foreach ($_POST["item"] as $key => $val) {
       $input = ['id' => $key];
       if ($val == 1) {
-         $PluginConnectionsConnection_Item->deleteItem($input);
+          $Connection_Item->deleteItem($input);
       }
    }
    Html::back();
 
 } elseif (isset($_POST["deleteconnections"])) {
    $input = ['id' => $_POST["id"]];
-   $PluginConnectionsConnection_Item->check($_POST["id"], UPDATE);
-   $PluginConnectionsConnection_Item->delete($input);
+    $Connection_Item->check($_POST["id"], UPDATE);
+   $Connection_Item->delete($input);
    Html::back();
 
 } else {
@@ -103,7 +103,7 @@ if (isset($_POST["add"]) && !isset($_POST["additem"])) {
       "connections"
    );
 
-   $PluginConnectionsConnection->display($_GET);
+   $Connection->display($_GET);
 
    Html::footer();
 }

@@ -39,9 +39,9 @@ Html::header(
     ""
 );
 
-$PluginConnectionsConnection = new Connection();
+$Connection = new Connection();
 
-if ($PluginConnectionsConnection->canView() || Session::haveRight("config", UPDATE)) {
+if ($Connection->canView() || Session::haveRight("config", UPDATE)) {
     Search::show(Connection::class);
 } else {
     throw new AccessDeniedHttpException();

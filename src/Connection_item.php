@@ -397,13 +397,13 @@ final class Connection_Item extends CommonDBRelation
         $table                       = $this->getTable();
         $rand                        = mt_rand();
         $dbu                         = new DbUtils();
-        $PluginConnectionsConnection = new Connection();
+        $Connection = new Connection();
         $entitiesRestrict            = $dbu->getEntitiesRestrictRequest(
             " AND ",
             "glpi_plugin_connections_connections",
             '',
             '',
-            $PluginConnectionsConnection->maybeRecursive()
+            $Connection->maybeRecursive()
         );
 
         $query  = "SELECT  t.`plugin_connections_connections_id`
@@ -562,13 +562,13 @@ final class Connection_Item extends CommonDBRelation
         $item                        = new $itemtype();
         $canread                     = $item->can($ID, READ);
         $dbu                         = new DbUtils();
-        $PluginConnectionsConnection = new Connection();
+        $Connection = new Connection();
         $entitiesRestrict            = $dbu->getEntitiesRestrictRequest(
             " AND ",
             "glpi_plugin_connections_connections",
             '',
             '',
-            $PluginConnectionsConnection->maybeRecursive()
+            $Connection->maybeRecursive()
         );
 
         $query  = "SELECT `glpi_plugin_connections_connections`.*
@@ -714,13 +714,13 @@ final class Connection_Item extends CommonDBRelation
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
 
-        $PluginConnectionsConnection_Item = new self();
+        $Connection_Item = new self();
         if ($item->getType() == Connection::class) {
-            $PluginConnectionsConnection_Item->showItemFromPlugin($item);
+            $Connection_Item->showItemFromPlugin($item);
         } elseif (in_array($item->getType(), self::getClasses(true))) {
-            $PluginConnectionsConnection_Item->showPluginFromItems($item->getType(), $item->getID());
+            $Connection_Item->showPluginFromItems($item->getType(), $item->getID());
         } elseif ($item->getType() == 'Supplier') {
-            $PluginConnectionsConnection_Item->showPluginFromSupplier($item->getType(), $item->getID());
+            $Connection_Item->showPluginFromSupplier($item->getType(), $item->getID());
         }
 
         return true;

@@ -186,7 +186,7 @@ function plugin_connections_uninstall()
                     OR `itemtype_impacted` IN ('GlpiPlugin\Connections\Connection')");
 
     if (class_exists('PluginDatainjectionModel')) {
-        PluginDatainjectionModel::clean(['itemtype' => 'PluginConnectionsConnection']);
+        PluginDatainjectionModel::clean(['itemtype' => Connection::class]);
     }
 
     //Delete rights associated with the plugin
