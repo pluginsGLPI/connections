@@ -114,7 +114,7 @@ function plugin_version_connections()
         'version'        => PLUGIN_CONNECTIONS_VERSION,
         'license'        => 'GPLv2+',
         'oldname'        => 'connection',
-        'author'         => 'Xavier Caillaud, Jean Marc GRISARD, TECLIB\'',
+        'author'         => "<a href='https//blogglpi.infotel.com'>Infotel</a>, Xavier CAILLAUD, Jean Marc GRISARD, TECLIB'",
         'homepage'       => 'https://github.com/pluginsGLPI/connections',
         'requirements'   => [
             'glpi' => [

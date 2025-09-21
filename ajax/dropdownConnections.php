@@ -39,6 +39,8 @@ if (!defined('GLPI_ROOT')) {
 }
 
 Session::checkCentralAccess();
+
+global $DB;
 // Make a select box with all glpi users
 
 $where = " WHERE (`glpi_plugin_connections_connections`.`plugin_connections_connectiontypes_id` = '" . $_POST['plugin_connections_connectiontypes_id'] . "')

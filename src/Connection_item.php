@@ -212,7 +212,7 @@ final class Connection_Item extends CommonDBRelation
     }
 
     /**
-     * @param \Connection $connection
+     * @param Connection $connection
      *
      * @return bool
      * @throws \GlpitestSQLError

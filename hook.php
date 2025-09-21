@@ -35,7 +35,7 @@ use GlpiPlugin\Connections\ConnectionType;
 use GlpiPlugin\Connections\GuaranteedConnectionRate;
 use GlpiPlugin\Connections\ConnectionInjection;
 use GlpiPlugin\Connections\Profile as ConnectionProfile;
-use Plugin;
+
 /**
  * @return bool
  * @throws GlpitestSQLError
@@ -167,17 +167,20 @@ function plugin_connections_uninstall()
         $DB->doQuery("DROP TABLE IF EXISTS `$table`;");
     }
 
-    $tables_glpi = [
-        "glpi_displaypreferences",
-        "glpi_documents_items",
-        "glpi_savedsearches",
-        "glpi_logs",
-        "glpi_items_tickets",
-        "glpi_impactitems",
-    ];
-
-    foreach ($tables_glpi as $table_glpi) {
-        $DB->doQuery("DELETE FROM `$table_glpi` WHERE `itemtype` = 'GlpiPlugin\Connections\Connection';");
+    $itemtypes = ['Alert',
+        'DisplayPreference',
+        'Document_Item',
+        'ImpactItem',
+        'Item_Ticket',
+        'Link_Itemtype',
+        'Notepad',
+        'SavedSearch',
+        'DropdownTranslation',
+        'NotificationTemplate',
+        'Notification'];
+    foreach ($itemtypes as $itemtype) {
+        $item = new $itemtype;
+        $item->deleteByCriteria(['itemtype' => Connection::class]);
     }
 
     $DB->doQuery("DELETE
@@ -191,7 +194,7 @@ function plugin_connections_uninstall()
 
     //Delete rights associated with the plugin
     $profileRight = new ProfileRight();
-    foreach (Profile::getAllRights() as $right) {
+    foreach (ConnectionProfile::getAllRights() as $right) {
         $profileRight->deleteByCriteria(['name' => $right['field']]);
     }
     Connection::removeRightsFromSession();
