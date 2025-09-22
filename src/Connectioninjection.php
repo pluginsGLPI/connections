@@ -84,20 +84,6 @@ class ConnectionInjection extends Connection implements PluginDatainjectionInjec
         return $tab;
     }
 
-    /**
-     * @param array         $values
-     * @param array|options $options
-     *
-     * @return an
-     * @internal param fields $fields to add into glpi
-     * @internal param options $options used during creation
-     */
-    function deleteObject($values = [], $options = [])
-    {
-        $lib = new PluginDatainjectionCommonInjectionLib($this, $values, $options);
-        $lib->deleteObject();
-        return $lib->getInjectionResults();
-    }
 
     /**
      * @param array|fields  $values
