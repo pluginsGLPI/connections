@@ -92,7 +92,7 @@ function plugin_init_connections()
             ];
         }
 
-        $CFG_GLPI['impact_asset_types'][Connection::class] = PLUGINCONNECTIONS_NOTFULL_WEBDIR . "/pics/icon.png";
+        $CFG_GLPI['impact_asset_types'][Connection::class] = PLUGINCONNECTIONS_WEBDIR . "/pics/icon.png";
         if (isset($_SESSION['glpiactiveprofile']['interface'])
           && $_SESSION['glpiactiveprofile']['interface'] == 'central') {
             $PLUGIN_HOOKS[Hooks::ADD_CSS]['connections'] = "connections.css";
