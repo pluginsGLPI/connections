@@ -102,6 +102,7 @@ function plugin_init_connections()
     }
 }
 
+
 // Get the name and the version of the plugin - Needed
 /**
  * @return array
