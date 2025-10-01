@@ -585,7 +585,7 @@ final class Connection_Item extends CommonDBRelation
             $colsup = 0;
         }
 
-        echo "<div align='center'><table class='tab_cadre_fixe'>";
+        echo "<div class='center'><table class='tab_cadre_fixe'>";
         echo "<tr><th colspan='" . (5 + $colsup) . "'>" . __('Connections linked', 'connections') . ":</th></tr>";
         echo "<tr><th>" . __('Name') . "</th>";
         if (Session::isMultiEntitiesMode()) {
