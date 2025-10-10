@@ -28,6 +28,7 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
  */
 
+use Glpi\Search\Provider\SQLProvider;
 use GlpiPlugin\Connections\Connection;
 use GlpiPlugin\Connections\Connection_Item;
 use GlpiPlugin\Connections\ConnectionRate;
@@ -326,56 +327,100 @@ function plugin_connections_getAddSearchOptions($itemtype)
  * @param $linkfield
  * @param $already_link_tables
  *
- * @return Left|string
+ * @return array
  */
 function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfield, &$already_link_tables)
 {
     switch ($new_table) {
         case "glpi_plugin_connections_connections_items":
-            return " LEFT JOIN `$new_table` ON (`$ref_table`.`id` = `$new_table`.`plugin_connections_connections_id`) ";
-            break;
-
-        case "glpi_plugin_connections_connections":
-            $out = " LEFT JOIN `glpi_plugin_connections_connections_items` ON (`$ref_table`.`id` = `glpi_plugin_connections_connections_items`.`items_id` AND `glpi_plugin_connections_connections_items`.`itemtype` = '$type') ";
-            $out .= " LEFT JOIN `glpi_plugin_connections_connections` ON (`glpi_plugin_connections_connections`.`id` = `glpi_plugin_connections_connections_items`.`plugin_connections_connections_id`) ";
+            $out['LEFT JOIN'] = [
+                $new_table => [
+                    'ON' => [
+                        $ref_table  => 'id',
+                        $new_table  => 'plugin_connections_connections_id'
+                    ],
+                ],
+            ];
             return $out;
-            break;
-
+        case "glpi_plugin_connections_connections":
+            $out['LEFT JOIN'] = [
+                'glpi_plugin_connections_connections_items' => [
+                    'ON' => [
+                        $ref_table  => 'id',
+                        'glpi_plugin_connections_connections_items'  => 'items_id', [
+                            'AND' => [
+                                'glpi_plugin_connections_connections_items.itemtype' => $type,
+                            ],
+                        ],
+                    ],
+                ],
+                'glpi_plugin_connections_connections' => [
+                    'ON' => [
+                        'glpi_plugin_connections_connections'  => 'id',
+                        'glpi_plugin_connections_connections_items'  => 'plugin_connections_connections_id'
+                    ],
+                ],
+            ];
+            return $out;
         case "glpi_plugin_connections_connectiontypes":
-            $out = Search::addLeftJoin(
+            $out = SQLProvider::getLeftJoinCriteria(
                 $type,
                 $ref_table,
                 $already_link_tables,
                 "glpi_plugin_connections_connections",
                 $linkfield
             );
-            $out .= " LEFT JOIN `glpi_plugin_connections_connectiontypes` ON (`glpi_plugin_connections_connectiontypes`.`id` = `glpi_plugin_connections_connections`.`plugin_connections_connectiontypes_id`) ";
+            $left = [
+                'glpi_plugin_connections_connectiontypes' => [
+                    'ON' => [
+                        'glpi_plugin_connections_connectiontypes'    => 'id',
+                        'glpi_plugin_connections_connections'                  => 'plugin_connections_connectiontypes_id'
+                    ],
+                ],
+            ];
+            $out['LEFT JOIN'] = array_merge($out, $left);
             return $out;
 
         case "glpi_plugin_connections_connectionrates":
-            $out = Search::addLeftJoin(
+            $out = SQLProvider::getLeftJoinCriteria(
                 $type,
                 $ref_table,
                 $already_link_tables,
                 "glpi_plugin_connections_connections",
                 $linkfield
             );
-            $out .= " LEFT JOIN `glpi_plugin_connections_connectionrates` ON (`glpi_plugin_connections_connectionrates`.`id` = `glpi_plugin_connections_connections`.`plugin_connections_connectionrates_id`) ";
+            $left = [
+                'glpi_plugin_connections_connectionrates' => [
+                    'ON' => [
+                        'glpi_plugin_connections_connectionrates'    => 'id',
+                        'glpi_plugin_connections_connections'                  => 'plugin_connections_connectionrates_id'
+                    ],
+                ],
+            ];
+            $out['LEFT JOIN'] = array_merge($out, $left);
             return $out;
 
         case "glpi_plugin_connections_guaranteedconnectionrates":
-            $out = Search::addLeftJoin(
+            $out = SQLProvider::getLeftJoinCriteria(
                 $type,
                 $ref_table,
                 $already_link_tables,
                 "glpi_plugin_connections_connections",
                 $linkfield
             );
-            $out .= " LEFT JOIN `glpi_plugin_connections_guaranteedconnectionrates` ON (`glpi_plugin_connections_guaranteedconnectionrates`.`id` = `glpi_plugin_connections_connections`.`plugin_connections_guaranteedconnectionrates_id`) ";
+            $left = [
+                'glpi_plugin_connections_guaranteedconnectionrates' => [
+                    'ON' => [
+                        'glpi_plugin_connections_guaranteedconnectionrates'    => 'id',
+                        'glpi_plugin_connections_connections'                  => 'plugin_connections_guaranteedconnectionrates_id'
+                    ],
+                ],
+            ];
+            $out['LEFT JOIN'] = array_merge($out, $left);
             return $out;
     }
 
-    return "";
+    return [];
 }
 
 /**
