@@ -83,6 +83,78 @@ function plugin_connections_install()
     }
     $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-11.0.0.sql");
 
+    //DisplayPreferences Migration
+    $classes = ['PluginConnectionsConnection' => Connection::class];
+
+    foreach ($classes as $old => $new) {
+        $displayusers = $DB->request([
+            'SELECT' => [
+                'users_id'
+            ],
+            'DISTINCT' => true,
+            'FROM' => 'glpi_displaypreferences',
+            'WHERE' => [
+                'itemtype' => $old,
+            ],
+        ]);
+
+        if (count($displayusers) > 0) {
+            foreach ($displayusers as $displayuser) {
+                $iterator = $DB->request([
+                    'SELECT' => [
+                        'num',
+                        'id'
+                    ],
+                    'FROM' => 'glpi_displaypreferences',
+                    'WHERE' => [
+                        'itemtype' => $old,
+                        'users_id' => $displayuser['users_id'],
+                        'interface' => 'central'
+                    ],
+                ]);
+
+                if (count($iterator) > 0) {
+                    foreach ($iterator as $data) {
+                        $iterator2 = $DB->request([
+                            'SELECT' => [
+                                'id'
+                            ],
+                            'FROM' => 'glpi_displaypreferences',
+                            'WHERE' => [
+                                'itemtype' => $new,
+                                'users_id' => $displayuser['users_id'],
+                                'num' => $data['num'],
+                                'interface' => 'central'
+                            ],
+                        ]);
+                        if (count($iterator2) > 0) {
+                            foreach ($iterator2 as $dataid) {
+                                $query = $DB->buildDelete(
+                                    'glpi_displaypreferences',
+                                    [
+                                        'id' => $dataid['id'],
+                                    ]
+                                );
+                                $DB->doQuery($query);
+                            }
+                        } else {
+                            $query = $DB->buildUpdate(
+                                'glpi_displaypreferences',
+                                [
+                                    'itemtype' => $new,
+                                ],
+                                [
+                                    'id' => $data['id'],
+                                ]
+                            );
+                            $DB->doQuery($query);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     if ($update) {
         $iterator = $DB->request([
             'SELECT' => [
@@ -378,7 +450,7 @@ function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfiel
                     ],
                 ],
             ];
-            $out['LEFT JOIN'] = array_merge($out, $left);
+            $out['LEFT JOIN'] = array_merge($out['LEFT JOIN'], $left);
             return $out;
 
         case "glpi_plugin_connections_connectionrates":
@@ -397,7 +469,7 @@ function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfiel
                     ],
                 ],
             ];
-            $out['LEFT JOIN'] = array_merge($out, $left);
+            $out['LEFT JOIN'] = array_merge($out['LEFT JOIN'], $left);
             return $out;
 
         case "glpi_plugin_connections_guaranteedconnectionrates":
@@ -416,7 +488,7 @@ function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfiel
                     ],
                 ],
             ];
-            $out['LEFT JOIN'] = array_merge($out, $left);
+            $out['LEFT JOIN'] = array_merge($out['LEFT JOIN'], $left);
             return $out;
     }
 
