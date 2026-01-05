@@ -450,7 +450,11 @@ function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfiel
                     ],
                 ],
             ];
-            $out['LEFT JOIN'] = array_merge($out['LEFT JOIN'], $left);
+            if (isset($out['LEFT JOIN'])) {
+                $out['LEFT JOIN'] = array_merge($out['LEFT JOIN'], $left);
+            } else {
+                $out['LEFT JOIN'] = $left;
+            }
             return $out;
 
         case "glpi_plugin_connections_connectionrates":
@@ -469,7 +473,11 @@ function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfiel
                     ],
                 ],
             ];
-            $out['LEFT JOIN'] = array_merge($out['LEFT JOIN'], $left);
+            if (isset($out['LEFT JOIN'])) {
+                $out['LEFT JOIN'] = array_merge($out['LEFT JOIN'], $left);
+            } else {
+                $out['LEFT JOIN'] = $left;
+            }
             return $out;
 
         case "glpi_plugin_connections_guaranteedconnectionrates":
@@ -488,7 +496,11 @@ function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfiel
                     ],
                 ],
             ];
-            $out['LEFT JOIN'] = array_merge($out['LEFT JOIN'], $left);
+            if (isset($out['LEFT JOIN'])) {
+                $out['LEFT JOIN'] = array_merge($out['LEFT JOIN'], $left);
+            } else {
+                $out['LEFT JOIN'] = $left;
+            }
             return $out;
     }
 
