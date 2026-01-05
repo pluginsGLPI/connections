@@ -31,13 +31,7 @@ along with connections. If not, see <http://www.gnu.org/licenses/>.
 use Glpi\Exception\Http\AccessDeniedHttpException;
 use GlpiPlugin\Connections\Connection;
 
-Html::header(
-    __('Connections', 'connections'),
-    $_SERVER["PHP_SELF"],
-    "assets",
-    "pluginconnectionsconnection",
-    ""
-);
+Html::header(Connection::getTypeName(2), '', "assets", Connection::class);
 
 $Connection = new Connection();
 
