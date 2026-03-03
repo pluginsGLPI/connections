@@ -1,4 +1,5 @@
 <?php
+
 /*
  * @version $Id: HEADER 15930 2011-10-30 15:47:55Z tsmr $
 -------------------------------------------------------------------------
@@ -34,9 +35,12 @@ use CommonDBTM;
 use CommonGLPI;
 use DbUtils;
 use Dropdown;
+use Entity;
+use Glpi\Application\View\TemplateRenderer;
 use Html;
 use Log;
 use Session;
+use Supplier;
 use Toolbox;
 
 /**
@@ -45,27 +49,48 @@ use Toolbox;
 final class Connection_Item extends CommonDBRelation
 {
 
-    public static $itemtype_1    = Connection::class;
-    public static $items_id_1    = 'plugin_connections_connections_id';
+    public static $rightname = 'plugin_connections_connection';
+
+    public static $itemtype_1 = Connection::class;
+    public static $items_id_1 = 'plugin_connections_connections_id';
     public static $take_entity_1 = false;
 
-    public static $itemtype_2    = 'itemtype';
-    public static $items_id_2    = 'items_id';
+    public static $itemtype_2 = 'itemtype';
+    public static $items_id_2 = 'items_id';
     public static $take_entity_2 = true;
-
-    static $rightname = 'plugin_connections_connection';
 
 
     /**
-     * @param \CommonDBTM $item
+     * Get the standard massive actions which are forbidden
+     *
+     * @return array of massive actions
+     **@since version 0.84
+     *
+     */
+    public function getForbiddenStandardMassiveAction()
+    {
+        $forbidden = parent::getForbiddenStandardMassiveAction();
+        $forbidden[] = 'update';
+        $forbidden[] = 'add_note';
+        return $forbidden;
+    }
+
+    public static function getIcon()
+    {
+        return Connection::getIcon();
+    }
+
+    /**
+     * @param CommonDBTM $item
      */
     public static function cleanForItem(CommonDBTM $item)
     {
-
         $temp = new self();
         $temp->deleteByCriteria(
-            ['itemtype' => $item->getType(),
-                'items_id' => $item->getField('id')]
+            [
+                'itemtype' => $item->getType(),
+                'items_id' => $item->getField('id')
+            ]
         );
     }
 
@@ -76,12 +101,11 @@ final class Connection_Item extends CommonDBRelation
      */
     public static function getClasses($all = false)
     {
-
         static $types = [
             'NetworkEquipment',
             'Appliance',
             'Computer',
-            'Certificate'
+            'Certificate',
         ];
 
         if ($all) {
@@ -105,43 +129,13 @@ final class Connection_Item extends CommonDBRelation
      * @param $connections_id
      * @param $items_id
      * @param $itemtype
-     *
-     * @return bool
-     * @throws \GlpitestSQLError
-     */
-    public function getFromDBbyConnectionsAndItem($connections_id, $items_id, $itemtype)
-    {
-        global $DB;
-
-        $query = "SELECT * FROM `" . $this->getTable() . "`
-                WHERE `plugin_connections_connections_id` = '" . $connections_id . "'
-                AND `itemtype` = '" . $itemtype . "'
-                AND `items_id` = '" . $items_id . "'";
-        if ($result = $DB->doQuery($query)) {
-            if ($DB->numrows($result) != 1) {
-                return false;
-            }
-            $this->fields = $DB->fetchAssoc($result);
-            if (is_array($this->fields) && count($this->fields)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * @param $connections_id
-     * @param $items_id
-     * @param $itemtype
      */
     public function addItem($connections_id, $items_id, $itemtype)
     {
         $input = [
             'plugin_connections_connections_id' => $connections_id,
-            'items_id'                          => $items_id,
-            'itemtype'                          => $itemtype,
+            'items_id' => $items_id,
+            'itemtype' => $itemtype,
         ];
 
         if ($this->add($input)) {
@@ -170,12 +164,11 @@ final class Connection_Item extends CommonDBRelation
      */
     public function deleteItem($input)
     {
-
         $this->check($input['id'], UPDATE);
 
         $connections_id = $this->getField('plugin_connections_connections_id');
-        $itemtype       = $this->getField('itemtype');
-        $items_id       = $this->getField('items_id');
+        $itemtype = $this->getField('itemtype');
+        $items_id = $this->getField('items_id');
         if ($this->delete($input)) {
             // History Log into Connection
             $item = new $itemtype();
@@ -204,454 +197,25 @@ final class Connection_Item extends CommonDBRelation
      */
     public function deleteItemByConnectionsAndItem($connections_id, $items_id, $itemtype)
     {
-        if ($this->getFromDBbyConnectionsAndItem($connections_id, $items_id, $itemtype)) {
+        if ($this->getFromDBByCrit([
+            'plugin_connections_connections_id' => $connections_id,
+            'items_id' => $items_id,
+            'itemtype' => $itemtype
+        ])) {
             $this->delete([
-                'id' => $this->fields["id"]
+                'id' => $this->fields["id"],
             ]);
         }
     }
 
-    /**
-     * @param Connection $connection
-     *
-     * @return bool
-     * @throws \GlpitestSQLError
-     */
-    public function showItemFromPlugin(Connection $connection)
-    {
-        global $DB;
-
-        $instID = $connection->fields['id'];
-        if (!$connection->can($instID, READ)) {
-            return false;
-        }
-
-        $rand    = mt_rand();
-        $dbu     = new DbUtils();
-        $canedit = $connection->can($instID, UPDATE);
-
-        $query = "SELECT DISTINCT `itemtype`
-             FROM `glpi_plugin_connections_connections_items`
-             WHERE `plugin_connections_connections_id` = '$instID'
-             ORDER BY `itemtype`
-             LIMIT " . count(self::getClasses(true));
-
-        $result = $DB->doQuery($query);
-        $number = $DB->numrows($result);
-
-        if (Session::isMultiEntitiesMode()) {
-            $colsup = 1;
-        } else {
-            $colsup = 0;
-        }
-
-        if ($canedit) {
-            echo "<div class='firstbloc'>";
-            echo "<form method='post' name='connections_form$rand' id='connections_form$rand'
-         action='" . Toolbox::getItemTypeFormURL(Connection::class) . "'>";
-
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_2'><th colspan='" . ($canedit ? (5 + $colsup) : (4 + $colsup)) . "'>" .
-                __('Add an item') . "</th></tr>";
-
-            echo "<tr class='tab_bg_1'><td colspan='" . (3 + $colsup) . "' class='center'>";
-            echo Html::hidden('plugin_connections_connections_id', ['value' => $instID]);
-            Dropdown::showSelectItemFromItemtypes(['items_id_name' => 'items_id',
-                'itemtypes'     => self::getClasses(true),
-                'entity_restrict'
-                => ($connection->fields['is_recursive']
-                    ? getSonsOf(
-                        'glpi_entities',
-                        $connection->fields['entities_id']
-                    )
-                    : $connection->fields['entities_id']),
-                'checkright'
-                => true,
-            ]);
-            echo "</td>";
-            echo "<td colspan='2' class='tab_bg_2'>";
-            echo Html::submit(_sx('button', 'Add'), ['name' => 'additem', 'class' => 'btn btn-primary']);
-            echo "</td></tr>";
-            echo "</table>";
-            Html::closeForm();
-            echo "</div>";
-        }
-
-        echo "<div class='spaced'>";
-        if ($canedit && $number) {
-            Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-            $massiveactionparams = [];
-            Html::showMassiveActions($massiveactionparams);
-        }
-        echo "<table class='tab_cadre_fixe'>";
-        echo "<tr>";
-
-        if ($canedit && $number) {
-            echo "<th width='10'>" . Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand) . "</th>";
-        }
-
-        echo "<th>" . __('Type') . "</th>";
-        echo "<th>" . __('Name') . "</th>";
-        if (Session::isMultiEntitiesMode()) {
-            echo "<th>" . __('Entity') . "</th>";
-        }
-        echo "<th>" . __('Serial number') . "</th>";
-        echo "<th>" . __('Inventory number') . "</th>";
-        echo "</tr>";
-
-        for ($i = 0; $i < $number; $i++) {
-            $itemType = $DB->result($result, $i, "itemtype");
-
-            if (!($item = $dbu->getItemForItemtype($itemType))) {
-                continue;
-            }
-
-            if ($item->canView()) {
-                $column    = "name";
-                $itemTable = $dbu->getTableForItemType($itemType);
-
-                $query = "SELECT `" . $itemTable . "`.*,
-                             `glpi_plugin_connections_connections_items`.`id` AS items_id,
-                             `glpi_entities`.`id` AS entity "
-                    . " FROM `glpi_plugin_connections_connections_items`, `" . $itemTable
-                    . "` LEFT JOIN `glpi_entities` ON (`glpi_entities`.`id` = `" . $itemTable . "`.`entities_id`) "
-                    . " WHERE `" . $itemTable . "`.`id` = `glpi_plugin_connections_connections_items`.`items_id`
-                AND `glpi_plugin_connections_connections_items`.`itemtype` = '$itemType'
-                AND `glpi_plugin_connections_connections_items`.`plugin_connections_connections_id` = '$instID' "
-                    . $dbu->getEntitiesRestrictRequest(" AND ", $itemTable, '', '', $item->maybeRecursive());
-
-                if ($item->maybeTemplate()) {
-                    $query .= " AND `" . $itemTable . "`.`is_template` = '0'";
-                }
-                $query .= " ORDER BY `glpi_entities`.`completename`, `" . $itemTable . "`.`$column`";
-
-                if ($result_linked = $DB->doQuery($query)) {
-                    if ($DB->numrows($result_linked)) {
-                        Session::initNavigateListItems($itemType, Connection::getTypeName(2) . " = " . $connection->fields['name']);
-
-                        while ($data = $DB->fetchAssoc($result_linked)) {
-                            $item->getFromDB($data["id"]);
-
-                            Session::addToNavigateListItems($itemType, $data["id"]);
-
-                            $ID = "";
-
-                            if ($_SESSION["glpiis_ids_visible"] || empty($data["name"])) {
-                                $ID = " (" . $data["id"] . ")";
-                            }
-
-                            $link = Toolbox::getItemTypeFormURL($itemType);
-                            $name = "<a href=\"" . $link . "?id=" . $data["id"] . "\">"
-                                . $data["name"] . "$ID</a>";
-
-                            echo "<tr class='tab_bg_1'>";
-
-                            if ($canedit) {
-                                echo "<td width='10'>";
-                                Html::showMassiveActionCheckBox(__CLASS__, $data["items_id"]);
-                                echo "</td>";
-                            }
-                            echo "<td class='center'>" . $item::getTypeName(1) . "</td>";
-
-                            echo "<td class='center' " . (isset($data['is_deleted']) && $data['is_deleted'] ? "class='tab_bg_2_2'" : "") .
-                                ">" . $name . "</td>";
-
-                            if (Session::isMultiEntitiesMode()) {
-                                echo "<td class='center'>" . Dropdown::getDropdownName("glpi_entities", $data['entity']) . "</td>";
-                            }
-
-                            echo "<td class='center'>" . (isset($data["serial"]) ? "" . $data["serial"] . "" : "-") . "</td>";
-                            echo "<td class='center'>" . (isset($data["otherserial"]) ? "" . $data["otherserial"] . "" : "-") . "</td>";
-
-                            echo "</tr>";
-                        }
-                    }
-                }
-            }
-        }
-        echo "</table>";
-
-        if ($canedit && $number) {
-            $paramsma['ontop'] = false;
-            Html::showMassiveActions($paramsma);
-            Html::closeForm();
-        }
-        echo "</div>";
-    }
-
-    //from items
-
-    /**
-     * @param        $itemtype
-     * @param        $ID
-     * @param string $withtemplate
-     *
-     * @throws \GlpitestSQLError
-     */
-    public function showPluginFromItems($itemtype, $ID, $withtemplate = '')
-    {
-        global $DB;
-
-        $item                        = new $itemtype();
-        $canedit                     = $item->can($ID, UPDATE);
-        $table                       = $this->getTable();
-        $rand                        = mt_rand();
-        $dbu                         = new DbUtils();
-        $Connection = new Connection();
-        $entitiesRestrict            = $dbu->getEntitiesRestrictRequest(
-            " AND ",
-            "glpi_plugin_connections_connections",
-            '',
-            '',
-            $Connection->maybeRecursive()
-        );
-
-        $query  = "SELECT  t.`plugin_connections_connections_id`
-                FROM `$table` t
-                WHERE t.`items_id` = '$ID'
-                AND t.`itemtype` = '$itemtype'";
-        $result = $DB->doQuery($query);
-        $number = $DB->numrows($result);
-        $used   = [];
-        if ($number) {
-            while ($data = $DB->fetchArray($result)) {
-                $used[Connection::class][] = $data['plugin_connections_connections_id'];
-            }
-        }
-
-        if ($canedit) {
-            echo "<div class='firstbloc'>";
-            echo "<form name='connection_form$rand' id='connection_form$rand' method='post'
-                action='" . Toolbox::getItemTypeFormURL(Connection::class) . "'>";
-
-            echo "<table class='tab_cadre_fixe'>";
-            echo "<tr class='tab_bg_2'><th colspan='2'>" . __('Add an item') . "</th></tr>";
-
-            echo "<tr class='tab_bg_1'><td class='right'>";
-            Dropdown::showSelectItemFromItemtypes(['itemtypes'
-            => [Connection::class],
-                'entity_restrict'
-                => ($item->fields['is_recursive']
-                    ? getSonsOf(
-                        'glpi_entities',
-                        $item->fields['entities_id']
-                    )
-                    : $item->fields['entities_id']),
-                'checkright'
-                => true,
-                'items_id_name'
-                => 'plugin_connections_connections_id',
-                'used' => $used]);
-            echo "</td><td class='center'>";
-            echo Html::submit(_sx('button', 'Add'), ['name' => 'add', 'class' => 'btn btn-primary']);
-            echo Html::hidden('items_id', ['value' => $ID]);
-            echo Html::hidden('additem', ['value' => true]);
-            echo Html::hidden('itemtype', ['value' => $item->getType()]);
-            echo "</td></tr>";
-            echo "</table>";
-            Html::closeForm();
-            echo "</div>";
-        }
-
-        $query  = "SELECT  t.`id` AS IDD, `glpi_plugin_connections_connections`.*
-                FROM `$table` t, `glpi_plugin_connections_connections`
-                LEFT JOIN `glpi_entities` ON (`glpi_entities`.`id` = `glpi_plugin_connections_connections`.`entities_id`)
-                WHERE t.`items_id` = '$ID'
-                AND t.`itemtype` = '$itemtype'
-                AND t.`plugin_connections_connections_id` = `glpi_plugin_connections_connections`.`id`
-                $entitiesRestrict
-                ORDER BY `glpi_plugin_connections_connections`.`name` ";
-        $result = $DB->doQuery($query);
-        $number = $DB->numrows($result);
-
-        echo "<div class='spaced'>";
-        if ($canedit && $number) {
-            Html::openMassiveActionsForm('mass' . __CLASS__ . $rand);
-            $massiveactionparams = ['container' => 'mass' . __CLASS__ . $rand];
-            Html::showMassiveActions($massiveactionparams);
-        }
-        echo "<table class='tab_cadre_fixehov'>";
-        $header_begin  = "<tr>";
-        $header_top    = '';
-        $header_bottom = '';
-        $header_end    = '';
-        if ($canedit && $number) {
-            $header_top    .= "<th width='10'>" . Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
-            $header_top    .= "</th>";
-            $header_bottom .= "<th width='10'>" . Html::getCheckAllAsCheckbox('mass' . __CLASS__ . $rand);
-            $header_bottom .= "</th>";
-        }
-        $header_end .= "<th>" . __('Entity') . "</th>";
-        $header_end .= "<th>" . __('Name') . "</th>";
-        $header_end .= "<th>" . __('Type of Connections', 'connections') . "</th>";
-        $header_end .= "<th>" . __('Rates', 'connections') . "</th>";
-        $header_end .= "<th>" . __('Guaranteed Rates', 'connections') . "</th>";
-
-        if ($number) {
-            echo $header_begin . $header_top . $header_end;
-        }
-
-        while ($data = $DB->fetchArray($result)) {
-            $name = $data["name"];
-            if ($_SESSION["glpiis_ids_visible"]
-                || empty($data["name"])) {
-                $name = sprintf(__('%1$s (%2$s)'), $name, $data["id"]);
-            }
-            if ($_SESSION['glpiactiveprofile']['interface'] != 'helpdesk') {
-                $link     = Connection::getFormURLWithID($data['id']);
-                $namelink = "<a href=\"" . $link . "\">" . $name . "</a>";
-            } else {
-                $namelink = $name;
-            }
-
-            echo "<tr class='tab_bg_1'>";
-            if ($canedit) {
-                echo "<td width='10'>";
-                Html::showMassiveActionCheckBox(__CLASS__, $data["IDD"]);
-                echo "</td>";
-            }
-
-            echo "<td class='center'>";
-            echo Dropdown::getDropdownName("glpi_entities", $data['entities_id']) . "</td>";
-            echo "<td class='center" .
-                (isset($data['is_deleted']) && $data['is_deleted'] ? " tab_bg_2_2'" : "'");
-            echo ">" . $namelink . "</td>";
-            echo "<td class='center'>";
-            echo Dropdown::getDropdownName(
-                $dbu->getTableForItemType(ConnectionType::class),
-                $data['plugin_connections_connectiontypes_id']
-            ) . "</td>";
-            echo "<td class='center'>";
-            echo Dropdown::getDropdownName(
-                $dbu->getTableForItemType(ConnectionRate::class),
-                $data['plugin_connections_connectionrates_id']
-            ) . "</td>";
-            echo "<td class='center'>";
-            echo Dropdown::getDropdownName(
-                $dbu->getTableForItemType(GuaranteedConnectionRate::class),
-                $data['plugin_connections_guaranteedconnectionrates_id']
-            ) . "</td>";
-            echo "</tr>";
-        }
-
-        if ($number) {
-            echo $header_begin . $header_bottom . $header_end;
-        }
-
-        echo "</table>";
-        if ($canedit && $number) {
-            $massiveactionparams['ontop'] = false;
-            Html::showMassiveActions($massiveactionparams);
-            Html::closeForm();
-        }
-        echo "</div>";
-    }
-
-
-    /**
-     * @param        $itemtype
-     * @param        $ID
-     * @param string $withtemplate
-     *
-     * @throws \GlpitestSQLError
-     */
-    public function showPluginFromSupplier($itemtype, $ID, $withtemplate = '')
-    {
-        global $DB, $CFG_GLPI;
-
-        $item                        = new $itemtype();
-        $canread                     = $item->can($ID, READ);
-        $dbu                         = new DbUtils();
-        $Connection = new Connection();
-        $entitiesRestrict            = $dbu->getEntitiesRestrictRequest(
-            " AND ",
-            "glpi_plugin_connections_connections",
-            '',
-            '',
-            $Connection->maybeRecursive()
-        );
-
-        $query  = "SELECT `glpi_plugin_connections_connections`.*
-                FROM `glpi_plugin_connections_connections`
-                LEFT JOIN `glpi_entities` ON (`glpi_entities`.`id` = `glpi_plugin_connections_connections`.`entities_id`)
-                WHERE `suppliers_id` = '" . $ID . "'
-                $entitiesRestrict
-                ORDER BY `glpi_plugin_connections_connections`.`name`";
-        $result = $DB->doQuery($query);
-
-        if (Session::isMultiEntitiesMode()) {
-            $colsup = 1;
-        } else {
-            $colsup = 0;
-        }
-
-        echo "<div class='center'><table class='tab_cadre_fixe'>";
-        echo "<tr><th colspan='" . (5 + $colsup) . "'>" . __('Connections linked', 'connections') . ":</th></tr>";
-        echo "<tr><th>" . __('Name') . "</th>";
-        if (Session::isMultiEntitiesMode()) {
-            echo "<th>" . __('Entity') . "</th>";
-        }
-        echo "<th>" . __('Technician in charge of the hardware') . "</th>";
-        echo "<th>" . __('Type of Connections', 'connections') . "</th>";
-        echo "<th>" . __('Last update') . "</th>";
-        echo "</tr>";
-
-        while ($data = $DB->fetchArray($result)) {
-            echo "<tr class='tab_bg_1" . ($data["is_deleted"] == '1' ? "_2" : "") . "'>";
-
-            if ($withtemplate != 3 && $canread
-                && (in_array($data['entities_id'], $_SESSION['glpiactiveentities'])
-                    || $data["is_recursive"])) {
-                echo "<td class='center'>";
-                echo "<a href='" . PLUGINCONNECTIONS_WEBDIR . "/front/connection.form.php?id=" . $data["id"] . "'>";
-                echo $data["name"];
-                if ($_SESSION["glpiis_ids_visible"]) {
-                    echo " (" . $data["id"] . ")";
-                }
-                echo "</a></td>";
-            } else {
-                echo "<td class='center'>" . $data["name"];
-                if ($_SESSION["glpiis_ids_visible"]) {
-                    echo " (" . $data["id"] . ")";
-                }
-                echo "</td>";
-            }
-
-            if (Session::isMultiEntitiesMode()) {
-                echo "<td class='center'>";
-                echo Dropdown::getDropdownName("glpi_entities", $data['entities_id']);
-                echo "</td>";
-            }
-
-            echo "<td class='center'>";
-            echo getUsername($data["users_id"]);
-            echo "</td>";
-
-            echo "<td class='center'>";
-            echo Dropdown::getDropdownName(
-                "glpi_plugin_connections_connectiontypes",
-                $data["plugin_connections_connectiontypes_id"]
-            );
-            echo "</td>";
-
-            echo "<td class='center'>";
-            echo Html::convDate($data["date_mod"]);
-            echo "</td>";
-
-            echo "</tr>";
-        }
-
-        echo "</table></div>";
-    }
 
     /**
      * @param Connection $item
      *
      * @return int
      */
-    static function countForConnection(Connection $item)
+    public static function countForConnection(Connection $item)
     {
-
         $types = self::getClasses();
         if (count($types) == 0) {
             return 0;
@@ -659,30 +223,27 @@ final class Connection_Item extends CommonDBRelation
         $dbu = new DbUtils();
         return $dbu->countElementsInTable(
             'glpi_plugin_connections_connections_items',
-            ["plugin_connections_connections_id" => $item->getID(),
-                "itemtype"                      => $types
+            [
+                "plugin_connections_connections_id" => $item->getID(),
+                "itemtype" => $types,
             ]
         );
     }
 
-    public static function getIcon()
-    {
-        return Connection::getIcon();
-    }
-
     /**
-     * @param \CommonGLPI $item
-     * @param int         $withtemplate
+     * @param CommonGLPI $item
+     * @param int $withtemplate
      *
      * @return array|string
      */
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0)
     {
-
-        $dbu = new DbUtils();
         if ($item->getType() == Connection::class && count(self::getClasses(false))) {
             if ($_SESSION['glpishow_count_on_tabs']) {
-                return self::createTabEntry(_n('Associated item', 'Associated items', 2), self::countForConnection($item));
+                return self::createTabEntry(
+                    _n('Associated item', 'Associated items', 2),
+                    self::countForConnection($item)
+                );
             }
             return _n('Associated item', 'Associated items', 2);
         } elseif (in_array($item->getType(), self::getClasses(true))
@@ -705,25 +266,32 @@ final class Connection_Item extends CommonDBRelation
     }
 
     /**
-     * @param \CommonGLPI $item
-     * @param int         $tabnum
-     * @param int         $withtemplate
+     * @param CommonGLPI $item
+     * @param int $tabnum
+     * @param int $withtemplate
      *
      * @return bool
      */
     public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
     {
-
-        $Connection_Item = new self();
-        if ($item->getType() == Connection::class) {
-            $Connection_Item->showItemFromPlugin($item);
-        } elseif (in_array($item->getType(), self::getClasses(true))) {
-            $Connection_Item->showPluginFromItems($item->getType(), $item->getID());
-        } elseif ($item->getType() == 'Supplier') {
-            $Connection_Item->showPluginFromSupplier($item->getType(), $item->getID());
+        if (!$item instanceof CommonDBTM) {
+            return false;
         }
 
-        return true;
+        if ($item instanceof Connection) {
+            return self::showForConnection($item, $withtemplate);
+        }
+        if (Connection::canView()
+            && in_array($item->getType(), self::getClasses(true))) {
+            return self::showForAsset($item);
+        }
+
+        if (Connection::canView()
+            && $item->getType() == 'Supplier') {
+            return self::showForSupplier($item);
+        }
+
+        return false;
     }
 
 
@@ -732,13 +300,15 @@ final class Connection_Item extends CommonDBRelation
      *
      * @return int
      */
-    static function countForItem(CommonDBTM $item)
+    public static function countForItem(CommonDBTM $item)
     {
         $dbu = new DbUtils();
         return $dbu->countElementsInTable(
             'glpi_plugin_connections_connections_items',
-            ["itemtype" => $item->getType(),
-            "items_id" => $item->getID()]
+            [
+                "itemtype" => $item->getType(),
+                "items_id" => $item->getID()
+            ]
         );
     }
 
@@ -747,12 +317,352 @@ final class Connection_Item extends CommonDBRelation
      *
      * @return int
      */
-    static function countSupplierForItem(CommonDBTM $item)
+    public static function countSupplierForItem(CommonDBTM $item)
     {
         $dbu = new DbUtils();
         return $dbu->countElementsInTable(
             'glpi_plugin_connections_connections',
             ["suppliers_id" => $item->getID()]
         );
+    }
+
+
+    /**
+     * Print the HTML array for Items linked to a connection
+     *
+     * @param Connection $connection
+     * @param int $withtemplate
+     *
+     * @return bool
+     **/
+    public static function showForConnection(Connection $connection, int $withtemplate = 0): bool
+    {
+        $instID = $connection->getID();
+
+        if (!$connection->can($instID, READ)) {
+            return false;
+        }
+        $canedit = $connection->canEdit($instID);
+        $rand = mt_rand();
+
+        $types_iterator = self::getDistinctTypes($instID);
+
+        $totalnb = 0;
+        $entity_names_cache = [];
+        $entries = [];
+        $used = [];
+
+        foreach ($types_iterator as $row) {
+            $itemtype = $row['itemtype'];
+            if (!($item = getItemForItemtype($itemtype)) || !$item::canView()) {
+                continue;
+            }
+
+            $itemtype_name = $item::getTypeName(1);
+            $iterator = self::getTypeItems($instID, $itemtype);
+            $nb = count($iterator);
+
+            foreach ($iterator as $data) {
+                $name = $data[$itemtype::getNameField()];
+                if (
+                    $_SESSION["glpiis_ids_visible"]
+                    || empty($data[$itemtype::getNameField()])
+                ) {
+                    $name = sprintf(__('%1$s (%2$s)'), $name, $data["id"]);
+                }
+                $link = $item::getFormURLWithID($data['id']);
+                $namelink = "<a href=\"" . htmlescape($link) . "\">" . htmlescape($name) . "</a>";
+
+                if (!isset($entity_names_cache[$data['entity']])) {
+                    $entity_names_cache[$data['entity']] = Dropdown::getDropdownName("glpi_entities", $data['entity']);
+                }
+
+                $entries[] = [
+                    'itemtype' => self::class,
+                    'id' => $data['linkid'],
+                    'row_class' => (isset($data['is_deleted']) && $data['is_deleted']) ? 'table-deleted' : '',
+                    'type' => $itemtype_name,
+                    'name' => $namelink,
+                    'entity' => $entity_names_cache[$data['entity']],
+                    'serial' => $data["serial"] ?? '-',
+                    'otherserial' => $data["otherserial"] ?? '-',
+                ];
+                $used[$itemtype][$data['id']] = $data['id'];
+            }
+            $totalnb += $nb;
+        }
+
+        $columns = [
+            'type' => _n('Type', 'Types', 1),
+        ];
+        if (Session::isMultiEntitiesMode()) {
+            $columns['entity'] = Entity::getTypeName(1);
+        }
+        $columns += [
+            'name' => __('Name'),
+            'serial' => __('Serial number'),
+            'otherserial' => __('Inventory number'),
+        ];
+        $formatters = [
+            'name' => 'raw_html',
+        ];
+        $footers = [];
+        if ($totalnb > 0) {
+            $footers = [
+                [sprintf(__('%1$s = %2$s'), __('Total'), $totalnb)],
+            ];
+        }
+
+        TemplateRenderer::getInstance()->display('@connections/item_connection.html.twig', [
+            'item' => $connection,
+            'can_edit' => $canedit && $withtemplate != 2,
+            'withtemplate' => $withtemplate,
+            'used' => $used,
+            'types' => self::getClasses(true),
+            'datatable_params' => [
+                'is_tab' => true,
+                'nofilter' => true,
+                'nosort' => true,
+                'columns' => $columns,
+                'formatters' => $formatters,
+                'entries' => $entries,
+                'footers' => $footers,
+                'total_number' => count($entries),
+                'filtered_number' => count($entries),
+                'showmassiveactions' => $canedit,
+                'massiveactionparams' => [
+                    'container' => 'massiveactioncontainer' . $rand,
+                    'itemtype' => self::class,
+                ],
+            ],
+        ]);
+
+        return true;
+    }
+
+    //from items
+    private static function showForAsset(CommonDBTM $item): bool
+    {
+        global $DB;
+
+        $used = $entries = [];
+
+
+        $criteria = [
+            'SELECT' => [
+                'glpi_plugin_connections_connections_items.id AS assocID',
+                'glpi_entities.id AS entity',
+                'glpi_plugin_connections_connections.name AS assocName',
+                'glpi_plugin_connections_connections.*'
+            ],
+            'FROM' => 'glpi_plugin_connections_connections_items',
+            'LEFT JOIN' => [
+                'glpi_plugin_connections_connections' => [
+                    'ON' => [
+                        'glpi_plugin_connections_connections_items' => 'plugin_connections_connections_id',
+                        'glpi_plugin_connections_connections' => 'id',
+                    ],
+                ],
+                'glpi_entities' => [
+                    'ON' => [
+                        'glpi_plugin_connections_connections' => 'entities_id',
+                        'glpi_entities' => 'id',
+                    ],
+                ],
+            ],
+            'WHERE' => [
+                'glpi_plugin_connections_connections_items.items_id' => $item->getID(),
+                'glpi_plugin_connections_connections_items.itemtype' => $item->getType(),
+            ],
+            'ORDERBY' => 'assocName',
+        ];
+        $criteria['WHERE'] = $criteria['WHERE'] + getEntitiesRestrictCriteria(
+                'glpi_plugin_connections_connections',
+                '',
+                '',
+                true
+            );
+
+        $iterator_list = $DB->request($criteria);
+
+        foreach ($iterator_list as $value) {
+            $used[] = $value['id'];
+            $connection = new Connection();
+
+            $connectionID = $value['id'];
+            $result = $connection->getFromDB($value['id']);
+
+            if ($result === false || !$connection->can($connection->getID(), READ)) {
+                continue;
+            }
+
+            $rand = mt_rand();
+            $entries[] = [
+                'itemtype' => self::class,
+                'id' => $value['assocID'],
+                'name' => $connection->getLink(),
+                'entities_id' => Dropdown::getDropdownName("glpi_entities", $connection->fields['entities_id']),
+                'plugin_connections_connectiontypes_id' => Dropdown::getDropdownName(
+                    "glpi_plugin_connections_connectiontypes",
+                    $connection->fields["plugin_connections_connectiontypes_id"]
+                ),
+                'plugin_connections_connectionrates_id' => Dropdown::getDropdownName(
+                    "glpi_plugin_connections_connectionrates",
+                    $connection->fields["plugin_connections_connectionrates_id"]
+                ),
+                'plugin_connections_guaranteedconnectionrates_id' => Dropdown::getDropdownName(
+                    "glpi_plugin_connections_guaranteedconnectionrates",
+                    $connection->fields["plugin_connections_guaranteedconnectionrates_id"]
+                ),
+            ];
+        }
+
+        $cols = [
+            'columns' => [
+                "name" => __('Name'),
+                "entities_id" => __s('Entity'),
+                "plugin_connections_connectiontypes_id" => __s('Type of Connections', 'connections'),
+                "plugin_connections_connectionrates_id" => __s('Rates', 'connections'),
+                "plugin_connections_guaranteedconnectionrates_id" => __s('Guaranteed Rates', 'connections'),
+            ],
+            'formatters' => [
+                'name' => 'raw_html',
+                'entities_id' => 'raw_html',
+                'plugin_connections_connectiontypes_id' => 'raw_html',
+                'plugin_connections_connectionrates_id' => 'raw_html',
+                'plugin_connections_guaranteedconnectionrates_id' => 'raw_html',
+            ],
+        ];
+
+
+        $footers = [];
+
+        TemplateRenderer::getInstance()->display('@connections/item_connection.html.twig', [
+            'item' => $item,
+            'can_edit' => $item->canEdit($item->getID()),
+            'used' => $used,
+            'datatable_params' => [
+                'is_tab' => true,
+                'nofilter' => true,
+                'nosort' => true,
+                'columns' => $cols['columns'],
+                'formatters' => $cols['formatters'],
+                'entries' => $entries,
+                'footers' => $footers,
+                'total_number' => count($entries),
+                'filtered_number' => count($entries),
+                'showmassiveactions' => $item->canEdit($item->getID()),
+                'massiveactionparams' => [
+                    'container' => 'massiveactioncontainer' . $rand,
+                    'itemtype' => self::class,
+                ],
+            ],
+        ]);
+
+        return true;
+    }
+
+
+    private static function showForSupplier(Supplier $item): bool
+    {
+        global $DB;
+
+        $used = $entries = [];
+
+
+        $criteria = [
+            'SELECT' => ['glpi_plugin_connections_connections.*'],
+            'FROM' => 'glpi_plugin_connections_connections',
+            'LEFT JOIN' => [
+                'glpi_entities' => [
+                    'ON' => [
+                        'glpi_plugin_connections_connections' => 'entities_id',
+                        'glpi_entities' => 'id',
+                    ],
+                ],
+            ],
+            'WHERE' => [
+                'suppliers_id' => $item->getID(),
+            ],
+            'ORDERBY' => 'glpi_plugin_connections_connections.name',
+        ];
+        $criteria['WHERE'] = $criteria['WHERE'] + getEntitiesRestrictCriteria(
+                'glpi_plugin_connections_connections',
+                '',
+                '',
+                true
+            );
+
+        $iterator_list = $DB->request($criteria);
+
+        foreach ($iterator_list as $value) {
+            $used[] = $value['id'];
+            $connection = new Connection();
+
+            $connectionID = $value['id'];
+            $result = $connection->getFromDB($value['id']);
+
+            if ($result === false || !$connection->can($connection->getID(), READ)) {
+                continue;
+            }
+
+            $entries[] = [
+                'itemtype' => self::class,
+                'id' => $value['id'],
+                'name' => $connection->getLink(),
+                'entities_id' => Dropdown::getDropdownName("glpi_entities", $connection->fields['entities_id']),
+                'plugin_connections_connectiontypes_id' => Dropdown::getDropdownName(
+                    "glpi_plugin_connections_connectiontypes",
+                    $connection->fields["plugin_connections_connectiontypes_id"]
+                ),
+                'plugin_connections_connectionrates_id' => Dropdown::getDropdownName(
+                    "glpi_plugin_connections_connectionrates",
+                    $connection->fields["plugin_connections_connectionrates_id"]
+                ),
+                'plugin_connections_guaranteedconnectionrates_id' => Dropdown::getDropdownName(
+                    "glpi_plugin_connections_guaranteedconnectionrates",
+                    $connection->fields["plugin_connections_guaranteedconnectionrates_id"]
+                ),
+            ];
+        }
+
+        $cols = [
+            'columns' => [
+                "name" => __('Name'),
+                "entities_id" => __s('Entity'),
+                "plugin_connections_connectiontypes_id" => __s('Type of Connections', 'connections'),
+                "plugin_connections_connectionrates_id" => __s('Rates', 'connections'),
+                "plugin_connections_guaranteedconnectionrates_id" => __s('Guaranteed Rates', 'connections'),
+            ],
+            'formatters' => [
+                'name' => 'raw_html',
+                'entities_id' => 'raw_html',
+                'plugin_connections_connectiontypes_id' => 'raw_html',
+                'plugin_connections_connectionrates_id' => 'raw_html',
+                'plugin_connections_guaranteedconnectionrates_id' => 'raw_html',
+            ],
+        ];
+
+
+        $footers = [];
+
+        TemplateRenderer::getInstance()->display('@connections/item_connection.html.twig', [
+            'item' => $item,
+            'can_edit' => false,
+            'used' => $used,
+            'datatable_params' => [
+                'is_tab' => true,
+                'nofilter' => true,
+                'nosort' => true,
+                'columns' => $cols['columns'],
+                'formatters' => $cols['formatters'],
+                'entries' => $entries,
+                'footers' => $footers,
+                'total_number' => count($entries),
+                'filtered_number' => count($entries),
+            ],
+        ]);
+
+        return true;
     }
 }

@@ -212,7 +212,6 @@ function plugin_connections_uninstall()
     global $DB;
 
     $tables = [
-        'glpi_plugin_connections_configs',
         "glpi_plugin_connections_connections",
         "glpi_plugin_connections_connections_items",
         "glpi_plugin_connections_connectiontypes",
@@ -228,6 +227,7 @@ function plugin_connections_uninstall()
 
     //old versions
     $tables = [
+        'glpi_plugin_connections_configs',
         "glpi_plugin_connection",
         "glpi_plugin_connection_device",
         'glpi_plugin_connections_connectionratesguaranteed',
