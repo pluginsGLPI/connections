@@ -483,7 +483,7 @@ final class Connection_Item extends CommonDBRelation
             );
 
         $iterator_list = $DB->request($criteria);
-
+        $rand = mt_rand();
         foreach ($iterator_list as $value) {
             $used[] = $value['id'];
             $connection = new Connection();
@@ -495,7 +495,6 @@ final class Connection_Item extends CommonDBRelation
                 continue;
             }
 
-            $rand = mt_rand();
             $entries[] = [
                 'itemtype' => self::class,
                 'id' => $value['assocID'],

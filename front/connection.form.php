@@ -42,17 +42,17 @@ if (isset($_POST["add"]) && !isset($_POST["additem"])) {
    Html::back();
 
 } elseif (isset($_POST["delete"])) {
-    $Connection->check($_POST['id'], UPDATE);
+    $Connection->check($_POST['id'], DELETE);
     $Connection->delete($_POST);
    Html::redirect(Toolbox::getItemTypeSearchURL(Connection::class));
 
 } elseif (isset($_POST["restore"])) {
-    $Connection->check($_POST['id'], UPDATE);
+    $Connection->check($_POST['id'], PURGE);
     $Connection->restore($_POST);
    Html::redirect(Toolbox::getItemTypeSearchURL(Connection::class));
 
 } elseif (isset($_POST["purge"])) {
-    $Connection->check($_POST['id'], UPDATE);
+    $Connection->check($_POST['id'], PURGE);
     $Connection->delete($_POST, 1);
    Html::redirect(Toolbox::getItemTypeSearchURL(Connection::class));
 
