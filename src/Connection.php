@@ -34,7 +34,6 @@ use CommonDBTM;
 use DbUtils;
 use Dropdown;
 use Glpi\Application\View\TemplateRenderer;
-use Html;
 use Location;
 use MassiveAction;
 use Session;
@@ -299,12 +298,12 @@ class Connection extends CommonDBTM
                     'checkright'
                     => true,
                 ]);
-                echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction', 'class' => 'btn btn-primary']);
+                TemplateRenderer::getInstance()->display('@connections/massiveaction_submit.html.twig');
                 return true;
                 break;
             case "transfer":
                 Dropdown::show('Entity');
-                echo Html::submit(_x('button', 'Post'), ['name' => 'massiveaction', 'class' => 'btn btn-primary']);
+                TemplateRenderer::getInstance()->display('@connections/massiveaction_submit.html.twig');
                 return true;
                 break;
         }
@@ -330,26 +329,26 @@ class Connection extends CommonDBTM
                 if ($item->getType() == 'GlpiPlugin\Connections\Connection') {
                     foreach ($ids as $key) {
                         $item->getFromDB($key);
-                        $type = ConnectionType::transfer($item->fields["plugin_connections_connections_id"], $input['entities_id']);
+                        $type = ConnectionType::transfer($item->fields["plugin_connections_connectiontypes_id"], $input['entities_id']);
                         if ($type > 0) {
-                            $values["id"]                                = $key;
-                            $values["plugin_connections_connections_id"] = $type;
+                            $values["id"]                                    = $key;
+                            $values["plugin_connections_connectiontypes_id"] = $type;
                             $item->update($values);
                         }
                         unset($values);
 
-                        $rate = ConnectionRate::transfer($item->fields["plugin_connections_connections_id"], $input['entities_id']);
+                        $rate = ConnectionRate::transfer($item->fields["plugin_connections_connectionrates_id"], $input['entities_id']);
                         if ($rate > 0) {
-                            $values["id"]                                = $key;
-                            $values["plugin_connections_connections_id"] = $rate;
+                            $values["id"]                                    = $key;
+                            $values["plugin_connections_connectionrates_id"] = $rate;
                             $item->update($values);
                         }
                         unset($values);
 
-                        $grate = GuaranteedConnectionRate::transfer($item->fields["plugin_connections_connections_id"], $input['entities_id']);
+                        $grate = GuaranteedConnectionRate::transfer($item->fields["plugin_connections_guaranteedconnectionrates_id"], $input['entities_id']);
                         if ($grate > 0) {
-                            $values["id"]                                = $key;
-                            $values["plugin_connections_connections_id"] = $grate;
+                            $values["id"]                                             = $key;
+                            $values["plugin_connections_guaranteedconnectionrates_id"] = $grate;
                             $item->update($values);
                         }
 
@@ -387,10 +386,15 @@ class Connection extends CommonDBTM
             case 'uninstall':
                 $input = $ma->getInput();
                 foreach ($ids as $key) {
-                    if ($connection_item->deleteItemByConnectionsAndItem($key, $input['item_item'], $input['typeitem'])) {
-                        $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
+                    if ($item->can($key, UPDATE)) {
+                        if ($connection_item->deleteItemByConnectionsAndItem($key, $input['item_item'], $input['typeitem'])) {
+                            $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
+                        } else {
+                            $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
+                        }
                     } else {
-                        $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
+                        $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_NORIGHT);
+                        $ma->addMessage($item->getErrorMessage(ERROR_RIGHT));
                     }
                 }
                 return;

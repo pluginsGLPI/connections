@@ -27,6 +27,7 @@
  --------------------------------------------------------------------------
  */
 
+use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Connections\Connection;
 use GlpiPlugin\Connections\Connection_Item;
 
@@ -37,7 +38,7 @@ $Connection      = new Connection();
 $Connection_Item = new Connection_Item();
 
 if (isset($_POST["add"]) && !isset($_POST["additem"])) {
-    $Connection->check(-1, UPDATE, $_POST);
+    $Connection->check(-1, CREATE, $_POST);
    $newID = $Connection->add($_POST);
    Html::back();
 
@@ -63,6 +64,9 @@ if (isset($_POST["add"]) && !isset($_POST["additem"])) {
 
 } elseif (isset($_POST["additem"])) {
    if (!empty($_POST['itemtype']) && $_POST['items_id'] > 0) {
+       if (!in_array($_POST['itemtype'], Connection_Item::getClasses(true), true)) {
+           throw new BadRequestHttpException();
+       }
        $Connection_Item->check(-1, UPDATE, $_POST);
        $Connection_Item->addItem(
          $_POST["plugin_connections_connections_id"],
@@ -73,10 +77,12 @@ if (isset($_POST["add"]) && !isset($_POST["additem"])) {
    Html::back();
 
 } elseif (isset($_POST["deleteitem"])) {
-   foreach ($_POST["item"] as $key => $val) {
-      $input = ['id' => $key];
-      if ($val == 1) {
-          $Connection_Item->deleteItem($input);
+   if (isset($_POST["item"]) && is_array($_POST["item"])) {
+      foreach ($_POST["item"] as $key => $val) {
+         $input = ['id' => $key];
+         if ($val == 1) {
+             $Connection_Item->deleteItem($input);
+         }
       }
    }
    Html::back();

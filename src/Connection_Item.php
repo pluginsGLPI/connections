@@ -524,11 +524,9 @@ final class Connection_Item extends CommonDBRelation
                 "plugin_connections_guaranteedconnectionrates_id" => __s('Guaranteed Rates', 'connections'),
             ],
             'formatters' => [
+                // Only the "name" column holds trusted HTML (getLink()); the dropdown
+                // name columns are plain text and must be auto-escaped by the datatable.
                 'name' => 'raw_html',
-                'entities_id' => 'raw_html',
-                'plugin_connections_connectiontypes_id' => 'raw_html',
-                'plugin_connections_connectionrates_id' => 'raw_html',
-                'plugin_connections_guaranteedconnectionrates_id' => 'raw_html',
             ],
         ];
 
@@ -633,11 +631,9 @@ final class Connection_Item extends CommonDBRelation
                 "plugin_connections_guaranteedconnectionrates_id" => __s('Guaranteed Rates', 'connections'),
             ],
             'formatters' => [
+                // Only the "name" column holds trusted HTML (getLink()); the dropdown
+                // name columns are plain text and must be auto-escaped by the datatable.
                 'name' => 'raw_html',
-                'entities_id' => 'raw_html',
-                'plugin_connections_connectiontypes_id' => 'raw_html',
-                'plugin_connections_connectionrates_id' => 'raw_html',
-                'plugin_connections_guaranteedconnectionrates_id' => 'raw_html',
             ],
         ];
 

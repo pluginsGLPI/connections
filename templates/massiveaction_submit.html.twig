@@ -1,6 +1,4 @@
-<?php
-
-/*
+{#
  -------------------------------------------------------------------------
  connections plugin for GLPI
  Copyright (C) 2015-2026 by the connections Development Team.
@@ -25,19 +23,8 @@
  You should have received a copy of the GNU General Public License
  along with connections. If not, see <http://www.gnu.org/licenses/>.
  --------------------------------------------------------------------------
- */
+ #}
 
-use Glpi\Exception\Http\AccessDeniedHttpException;
-use GlpiPlugin\Connections\Connection;
+{% import 'components/form/basic_inputs_macros.html.twig' as inputs %}
 
-$Connection = new Connection();
-
-if (!$Connection->canView() && !Session::haveRight("config", UPDATE)) {
-    throw new AccessDeniedHttpException();
-}
-
-Html::header(Connection::getTypeName(2), '', "assets", Connection::class);
-
-Search::show(Connection::class);
-
-Html::footer();
+{{ inputs.submit('massiveaction', _x('button', 'Post'), 1, {class: 'btn btn-primary'}) }}
