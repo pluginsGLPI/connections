@@ -163,10 +163,11 @@ function plugin_connections_install()
         ]);
         if (count($iterator) > 0) {
             foreach ($iterator as $data) {
-                $query = "UPDATE `glpi_plugin_connections_profiles`
-                      SET `profiles_id` = '" . $data["id"] . "'
-                      WHERE `id` = '" . $data["id"] . "';";
-                $DB->doQuery($query);
+                $DB->update(
+                    'glpi_plugin_connections_profiles',
+                    ['profiles_id' => $data['id']],
+                    ['id' => $data['id']]
+                );
             }
         }
 
@@ -255,10 +256,12 @@ function plugin_connections_uninstall()
         $item->deleteByCriteria(['itemtype' => Connection::class]);
     }
 
-    $DB->doQuery("DELETE
-                  FROM `glpi_impactrelations`
-                  WHERE `itemtype_source` IN ('GlpiPlugin\Connections\Connection')
-                    OR `itemtype_impacted` IN ('GlpiPlugin\Connections\Connection')");
+    $DB->delete('glpi_impactrelations', [
+        'OR' => [
+            ['itemtype_source'   => Connection::class],
+            ['itemtype_impacted' => Connection::class],
+        ],
+    ]);
 
     if (class_exists('PluginDatainjectionModel')) {
         PluginDatainjectionModel::clean(['itemtype' => Connection::class]);
@@ -535,66 +538,78 @@ function plugin_connections_giveItem($type, $ID, $data, $num)
 
     switch ($table . '.' . $field) {
         case "glpi_plugin_connections_connections_items.items_id":
-            $query_device  = "SELECT DISTINCT `itemtype`
-                          FROM `glpi_plugin_connections_connections_items`
-                          WHERE `plugin_connections_connections_id` = '" . $data['id'] . "'
-                          ORDER BY `itemtype`";
-            $result_device = $DB->doQuery($query_device);
-            $number_device = $DB->numrows($result_device);
+            $type_iterator = $DB->request([
+                'SELECT'   => 'itemtype',
+                'DISTINCT' => true,
+                'FROM'     => 'glpi_plugin_connections_connections_items',
+                'WHERE'    => ['plugin_connections_connections_id' => $data['id']],
+                'ORDER'    => 'itemtype',
+            ]);
 
             $out         = '';
             $connections = $data['id'];
 
-            if ($number_device > 0) {
-                for ($i = 0; $i < $number_device; $i++) {
-                    $column   = "name";
-                    $itemtype = $DB->result($result_device, $i, "itemtype");
+            foreach ($type_iterator as $type_row) {
+                $column   = "name";
+                $itemtype = $type_row['itemtype'];
 
-                    if (!class_exists($itemtype)) {
-                        continue;
-                    }
-                    $item = new $itemtype();
-                    if ($item->canView()) {
-                        $table_item       = getTableForItemType($itemtype);
-                        $entitiesRestrict = getEntitiesRestrictRequest(
-                            " AND ",
-                            $table_item,
-                            '',
-                            '',
-                            $item->maybeRecursive()
-                        );
-                        $mayBeTemplated   = ($item->maybeTemplate())
-                        ? " AND `$table_item`.`is_template` = '0'"
-                        : '';
+                if (!class_exists($itemtype)) {
+                    continue;
+                }
+                $item = new $itemtype();
+                if (!$item->canView()) {
+                    $out .= ' ';
+                    continue;
+                }
 
-                        $query = "SELECT `$table_item`.*, `glpi_entities`.`ID` AS entity
-                            FROM `glpi_plugin_connections_connections_items` ci, `$table_item`
-                            LEFT JOIN `glpi_entities` ON (`glpi_entities`.`id` = `$table_item`.`entities_id`)
-                            WHERE `$table_item`.`id` = ci.`items_id`
-                            AND ci.`itemtype` = '$itemtype'
-                            AND ci.`plugin_connections_connections_id` = '$connections'
-                            $mayBeTemplated
-                            ORDER BY `glpi_entities`.`completename`, `$table_item`.`$column`";
-                        if ($result_linked = $DB->doQuery($query)) {
-                            if ($DB->numrows($result_linked)) {
-                                $item = new $itemtype();
+                $table_item = getTableForItemType($itemtype);
 
-                                while ($data = $DB->fetchAssoc($result_linked)) {
-                                    if ($item->getFromDB($data['id'])) {
-                                        $out .= $item->getTypeName() . " - " . $item->getLink() . "<br>";
-                                    }
-                                }
-                            } else {
-                                $out .= ' ';
-                            }
+                $where = [
+                    'ci.itemtype'                          => $itemtype,
+                    'ci.plugin_connections_connections_id' => $connections,
+                ];
+                if ($item->maybeTemplate()) {
+                    $where["$table_item.is_template"] = 0;
+                }
+                $where = array_merge(
+                    $where,
+                    getEntitiesRestrictCriteria($table_item, '', '', $item->maybeRecursive())
+                );
+
+                $linked = $DB->request([
+                    'SELECT'     => ["$table_item.*", 'glpi_entities.id AS entity'],
+                    'FROM'       => $table_item,
+                    'INNER JOIN' => [
+                        'glpi_plugin_connections_connections_items AS ci' => [
+                            'ON' => [
+                                'ci'         => 'items_id',
+                                $table_item  => 'id',
+                            ],
+                        ],
+                    ],
+                    'LEFT JOIN'  => [
+                        'glpi_entities' => [
+                            'ON' => [
+                                'glpi_entities' => 'id',
+                                $table_item     => 'entities_id',
+                            ],
+                        ],
+                    ],
+                    'WHERE'      => $where,
+                    'ORDER'      => ['glpi_entities.completename', "$table_item.$column"],
+                ]);
+
+                if (count($linked)) {
+                    foreach ($linked as $row) {
+                        if ($item->getFromDB($row['id'])) {
+                            $out .= $item->getTypeName() . " - " . $item->getLink() . "<br>";
                         }
-                    } else {
-                        $out .= ' ';
                     }
+                } else {
+                    $out .= ' ';
                 }
             }
             return $out;
-            break;
     }
     return "";
 }

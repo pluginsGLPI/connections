@@ -1,0 +1,175 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Parameter \#2 \$force of method CommonDBTM\:\:delete\(\) expects bool, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: front/connection.form.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 1
+			path: hook.php
+
+		-
+			message: '#^Missing PHPDoc tag @var for global variable \$INJECTABLE_TYPES$#'
+			identifier: glpi.missingGlobalVarType
+			count: 1
+			path: hook.php
+
+		-
+			message: '#^PHPDoc tag @throws with type GlpitestSQLError is not subtype of Throwable$#'
+			identifier: throws.notThrowable
+			count: 3
+			path: hook.php
+
+		-
+			message: '#^Parameter \#1 \$checkitem \(null\) of method GlpiPlugin\\Connections\\Connection\:\:getSpecificMassiveActions\(\) should be compatible with parameter \$checkitem \(CommonDBTM\) of method CommonDBTM\:\:getSpecificMassiveActions\(\)$#'
+			identifier: method.childParameterType
+			count: 1
+			path: src/Connection.php
+
+		-
+			message: '#^Parameter \#1 \$itemtype of method CommonGLPI\:\:addStandardTab\(\) expects class\-string\<CommonGLPI\>, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Connection.php
+
+		-
+			message: '#^Unreachable statement \- code above always terminates\.$#'
+			identifier: deadCode.unreachable
+			count: 2
+			path: src/Connection.php
+
+		-
+			message: '#^Method GlpiPlugin\\Connections\\ConnectionInjection\:\:addOrUpdateObject\(\) has invalid return type GlpiPlugin\\Connections\\an\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/ConnectionInjection.php
+
+		-
+			message: '#^Method GlpiPlugin\\Connections\\ConnectionInjection\:\:addOrUpdateObject\(\) should return GlpiPlugin\\Connections\\an but returns array\.$#'
+			identifier: return.type
+			count: 1
+			path: src/ConnectionInjection.php
+
+		-
+			message: '#^Method GlpiPlugin\\Connections\\ConnectionInjection\:\:getOptions\(\) has invalid return type GlpiPlugin\\Connections\\the\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/ConnectionInjection.php
+
+		-
+			message: '#^Parameter \$options of method GlpiPlugin\\Connections\\ConnectionInjection\:\:addOrUpdateObject\(\) has invalid type GlpiPlugin\\Connections\\options\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/ConnectionInjection.php
+
+		-
+			message: '#^Parameter \$values of method GlpiPlugin\\Connections\\ConnectionInjection\:\:addOrUpdateObject\(\) has invalid type GlpiPlugin\\Connections\\fields\.$#'
+			identifier: class.notFound
+			count: 1
+			path: src/ConnectionInjection.php
+
+		-
+			message: '#^Return type \(GlpiPlugin\\Connections\\an\) of method GlpiPlugin\\Connections\\ConnectionInjection\:\:addOrUpdateObject\(\) should be compatible with return type \(array\) of method PluginDatainjectionInjectionInterface\:\:addOrUpdateObject\(\)$#'
+			identifier: method.childReturnType
+			count: 1
+			path: src/ConnectionInjection.php
+
+		-
+			message: '#^Method GlpiPlugin\\Connections\\ConnectionRate\:\:transfer\(\) should return int but return statement is missing\.$#'
+			identifier: return.missing
+			count: 2
+			path: src/ConnectionRate.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/ConnectionRate.php
+
+		-
+			message: '#^Method GlpiPlugin\\Connections\\ConnectionType\:\:transfer\(\) should return int but return statement is missing\.$#'
+			identifier: return.missing
+			count: 2
+			path: src/ConnectionType.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/ConnectionType.php
+
+		-
+			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
+			identifier: glpi.forbidDynamicInstantiation
+			count: 3
+			path: src/Connection_Item.php
+
+		-
+			message: '#^Method GlpiPlugin\\Connections\\Connection_Item\:\:getTabNameForItem\(\) never returns array so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: src/Connection_Item.php
+
+		-
+			message: '#^Parameter \#1 \$item of static method GlpiPlugin\\Connections\\Connection_Item\:\:countForConnection\(\) expects GlpiPlugin\\Connections\\Connection, CommonGLPI given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Connection_Item.php
+
+		-
+			message: '#^Parameter \#1 \$item of static method GlpiPlugin\\Connections\\Connection_Item\:\:countForItem\(\) expects CommonDBTM, CommonGLPI given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Connection_Item.php
+
+		-
+			message: '#^Parameter \#1 \$item of static method GlpiPlugin\\Connections\\Connection_Item\:\:countSupplierForItem\(\) expects CommonDBTM, CommonGLPI given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Connection_Item.php
+
+		-
+			message: '#^Parameter \#1 \$item of static method GlpiPlugin\\Connections\\Connection_Item\:\:showForSupplier\(\) expects Supplier, CommonDBTM given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Connection_Item.php
+
+		-
+			message: '#^Method GlpiPlugin\\Connections\\GuaranteedConnectionRate\:\:transfer\(\) should return int but return statement is missing\.$#'
+			identifier: return.missing
+			count: 2
+			path: src/GuaranteedConnectionRate.php
+
+		-
+			message: '#^Call to an undefined method CommonGLPI\:\:getField\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Method GlpiPlugin\\Connections\\Profile\:\:getAllRights\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Method GlpiPlugin\\Connections\\Profile\:\:migrateOneProfile\(\) should return bool but return statement is missing\.$#'
+			identifier: return.missing
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^Static method GlpiPlugin\\Connections\\Profile\:\:getAllRights\(\) invoked with 1 parameter, 0 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Profile.php
+
+		-
+			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
+			identifier: glpi.forbidExit
+			count: 1
+			path: src/Profile.php

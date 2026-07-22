@@ -53,7 +53,6 @@ function plugin_init_connections()
 {
     global $PLUGIN_HOOKS, $CFG_GLPI;
 
-    $PLUGIN_HOOKS['csrf_compliant']['connections']   = true;
     $PLUGIN_HOOKS['change_profile']['connections']   = [Profile::class, 'initProfile'];
     $PLUGIN_HOOKS['assign_to_ticket']['connections'] = true;
 

@@ -267,7 +267,7 @@ class Connection extends CommonDBTM
         $isadmin = static::canUpdate();
         $actions = parent::getSpecificMassiveActions($checkitem);
 
-        if ($_SESSION['glpiactiveprofile']['interface'] == 'central') {
+        if (($_SESSION['glpiactiveprofile']['interface'] ?? '') == 'central') {
             if ($isadmin) {
                 $actions['GlpiPlugin\Connections\Connection' . MassiveAction::CLASS_ACTION_SEPARATOR . 'install']   = _x('button', 'Associate');
                 $actions['GlpiPlugin\Connections\Connection' . MassiveAction::CLASS_ACTION_SEPARATOR . 'uninstall'] = _x('button', 'Dissociate');
@@ -399,19 +399,18 @@ class Connection extends CommonDBTM
         return;
     }
 
-    /*
-     * Return the SQL command to retrieve linked object
-     *
-     * @return a SQL command which return a set of (itemtype, items_id)
-     */
     /**
-     * @return string
+     * Return the query builder criteria to retrieve linked objects (itemtype, items_id).
+     *
+     * @return array
      */
     public function getSelectLinkedItem()
     {
-        return "SELECT `itemtype`, `items_id`
-              FROM `glpi_plugin_connections_connections_items`
-              WHERE `plugin_connections_connections_id` = '" . $this->fields['id'] . "'";
+        return [
+            'SELECT' => ['itemtype', 'items_id'],
+            'FROM'   => 'glpi_plugin_connections_connections_items',
+            'WHERE'  => ['plugin_connections_connections_id' => $this->fields['id']],
+        ];
     }
 
     /**
