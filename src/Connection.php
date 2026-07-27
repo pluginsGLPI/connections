@@ -366,10 +366,23 @@ class Connection extends CommonDBTM
                 return;
             case 'install':
                 $input = $ma->getInput();
+                // Security (S1): the add() below bypasses check(), and getInput()
+                // carries raw client POST. Validate the target itemtype against the
+                // whitelist and confirm the current user can access the target item
+                // (entity scope included) before linking it, exactly like the
+                // additem controller does.
+                $target = self::getTargetItem($input);
+                if ($target === null) {
+                    foreach ($ids as $key) {
+                        $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
+                    }
+                    $ma->addMessage($item->getErrorMessage(ERROR_RIGHT));
+                    return;
+                }
                 foreach ($ids as $key) {
                     if ($item->can($key, UPDATE)) {
                         $values = ['plugin_connections_connections_id' => $key,
-                            'items_id'                          => $input["item_item"],
+                            'items_id'                          => (int) $input["item_item"],
                             'itemtype'                          => $input['typeitem']];
                         if ($connection_item->add($values)) {
                             $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
@@ -385,9 +398,19 @@ class Connection extends CommonDBTM
 
             case 'uninstall':
                 $input = $ma->getInput();
+                // Security (S1): same guard as install — validate the target
+                // itemtype and access before removing the relation.
+                $target = self::getTargetItem($input);
+                if ($target === null) {
+                    foreach ($ids as $key) {
+                        $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
+                    }
+                    $ma->addMessage($item->getErrorMessage(ERROR_RIGHT));
+                    return;
+                }
                 foreach ($ids as $key) {
                     if ($item->can($key, UPDATE)) {
-                        if ($connection_item->deleteItemByConnectionsAndItem($key, $input['item_item'], $input['typeitem'])) {
+                        if ($connection_item->deleteItemByConnectionsAndItem($key, (int) $input['item_item'], $input['typeitem'])) {
                             $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
                         } else {
                             $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
@@ -401,6 +424,39 @@ class Connection extends CommonDBTM
         }
 
         return;
+    }
+
+    /**
+     * Validate the target item of an install/uninstall massive action.
+     *
+     * The massive action links an arbitrary item (itemtype + id) coming from raw
+     * client POST to a connection. This whitelists the itemtype against
+     * Connection_Item::getClasses() and confirms the current user can access the
+     * target item (entity scope included) before the relation is created/removed.
+     *
+     * @param array $input Massive action input ($ma->getInput()).
+     *
+     * @return CommonDBTM|null The validated target item, or null if invalid/forbidden.
+     */
+    private static function getTargetItem(array $input): ?CommonDBTM
+    {
+        $itemtype = $input['typeitem'] ?? '';
+        $items_id = (int) ($input['item_item'] ?? 0);
+
+        if (
+            $items_id <= 0
+            || !is_string($itemtype)
+            || !in_array($itemtype, Connection_Item::getClasses(true), true)
+        ) {
+            return null;
+        }
+
+        $target = getItemForItemtype($itemtype);
+        if (!($target instanceof CommonDBTM) || !$target->can($items_id, READ)) {
+            return null;
+        }
+
+        return $target;
     }
 
     /**

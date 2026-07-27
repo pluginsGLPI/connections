@@ -100,7 +100,10 @@ final class Connection_Item extends CommonDBRelation
      */
     public static function getClasses($all = false)
     {
-        static $types = [
+        // Operate on a local copy: a static cache was previously mutated by the
+        // unset() below, so a getClasses(false) call permanently shrank the list
+        // and later getClasses(true) calls no longer returned the four types.
+        $types = [
             'NetworkEquipment',
             'Appliance',
             'Computer',
@@ -113,6 +116,7 @@ final class Connection_Item extends CommonDBRelation
 
         foreach ($types as $key => $type) {
             if (!class_exists($type)) {
+                unset($types[$key]);
                 continue;
             }
             $item = new $type();
@@ -120,7 +124,7 @@ final class Connection_Item extends CommonDBRelation
                 unset($types[$key]);
             }
         }
-        return $types;
+        return array_values($types);
     }
 
 

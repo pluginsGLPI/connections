@@ -119,7 +119,7 @@ final class Profile extends \Profile
         $rights = self::getAllRights(true);
 
         $twig = TemplateRenderer::getInstance();
-        $twig->display('@badges/profile.html.twig', [
+        $twig->display('@connections/profile.html.twig', [
             'id' => $item->getID(),
             'profile' => $profile,
             'title' => self::getTypeName(Session::getPluralNumber()),
