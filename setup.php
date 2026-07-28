@@ -33,7 +33,7 @@ use GlpiPlugin\Connections\Connection;
 use GlpiPlugin\Connections\Connection_Item;
 use GlpiPlugin\Connections\Profile;
 
-define('PLUGIN_CONNECTIONS_VERSION', '11.0.6');
+define('PLUGIN_CONNECTIONS_VERSION', '11.0.7');
 
 global $CFG_GLPI;
 
