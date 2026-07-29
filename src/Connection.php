@@ -326,10 +326,27 @@ class Connection extends CommonDBTM
         switch ($ma->getAction()) {
             case 'transfer':
                 $input = $ma->getInput();
+                // Security (S1): update() does not perform a right/entity check by
+                // itself, and for a custom massive action the framework only
+                // guarantees READ visibility on the selected items. Validate the
+                // destination entity once, then re-check UPDATE per connection,
+                // exactly like the install/uninstall branches do.
+                $entities_id = (int) ($input['entities_id'] ?? -1);
+                if ($entities_id < 0 || !Session::haveAccessToEntity($entities_id)) {
+                    foreach ($ids as $key) {
+                        $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
+                    }
+                    $ma->addMessage($item->getErrorMessage(ERROR_RIGHT));
+                    return;
+                }
                 if ($item->getType() == 'GlpiPlugin\Connections\Connection') {
                     foreach ($ids as $key) {
-                        $item->getFromDB($key);
-                        $type = ConnectionType::transfer($item->fields["plugin_connections_connectiontypes_id"], $input['entities_id']);
+                        if (!$item->can($key, UPDATE)) {
+                            $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_NORIGHT);
+                            $ma->addMessage($item->getErrorMessage(ERROR_RIGHT));
+                            continue;
+                        }
+                        $type = ConnectionType::transfer($item->fields["plugin_connections_connectiontypes_id"], $entities_id);
                         if ($type > 0) {
                             $values["id"]                                    = $key;
                             $values["plugin_connections_connectiontypes_id"] = $type;
@@ -337,7 +354,7 @@ class Connection extends CommonDBTM
                         }
                         unset($values);
 
-                        $rate = ConnectionRate::transfer($item->fields["plugin_connections_connectionrates_id"], $input['entities_id']);
+                        $rate = ConnectionRate::transfer($item->fields["plugin_connections_connectionrates_id"], $entities_id);
                         if ($rate > 0) {
                             $values["id"]                                    = $key;
                             $values["plugin_connections_connectionrates_id"] = $rate;
@@ -345,7 +362,7 @@ class Connection extends CommonDBTM
                         }
                         unset($values);
 
-                        $grate = GuaranteedConnectionRate::transfer($item->fields["plugin_connections_guaranteedconnectionrates_id"], $input['entities_id']);
+                        $grate = GuaranteedConnectionRate::transfer($item->fields["plugin_connections_guaranteedconnectionrates_id"], $entities_id);
                         if ($grate > 0) {
                             $values["id"]                                             = $key;
                             $values["plugin_connections_guaranteedconnectionrates_id"] = $grate;
@@ -354,7 +371,7 @@ class Connection extends CommonDBTM
 
                         unset($values);
                         $values["id"]          = $key;
-                        $values["entities_id"] = $input['entities_id'];
+                        $values["entities_id"] = $entities_id;
 
                         if ($item->update($values)) {
                             $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
