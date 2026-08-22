@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- connections plugin for GLPI
- Copyright (C) 2015-2026 by the connections Development Team.
-
- https://github.com/pluginsGLPI/connections
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of connections.
-
- connections is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- connections is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with connections. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * connections plugin for GLPI
+ * Copyright (C) 2015-2026 by the connections Development Team.
+ *
+ * https://github.com/pluginsGLPI/connections
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of connections.
+ *
+ * connections is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * connections is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with connections. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use Glpi\Plugin\Hooks;
@@ -83,8 +83,9 @@ function plugin_init_connections()
             Account::registerType(Connection::class);
         }
 
-        if (Session::haveRight("plugin_connections_connection", READ)
-            || Session::haveRight("config", READ)) {
+        // Show the menu on the plugin's own READ right only, matching the page guard
+        // in front/connection.php (no `config` fallback that bypasses the plugin rights).
+        if (Session::haveRight("plugin_connections_connection", READ)) {
             $PLUGIN_HOOKS['menu_toadd']['connections'] = [
                 'assets' => Connection::class,
             ];

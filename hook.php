@@ -1,30 +1,30 @@
 <?php
 
-/*
- -------------------------------------------------------------------------
- connections plugin for GLPI
- Copyright (C) 2015-2026 by the connections Development Team.
-
- https://github.com/pluginsGLPI/connections
- -------------------------------------------------------------------------
-
- LICENSE
-
- This file is part of connections.
-
- connections is free software; you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation; either version 3 of the License, or
- (at your option) any later version.
-
- connections is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
- You should have received a copy of the GNU General Public License
- along with connections. If not, see <http://www.gnu.org/licenses/>.
- --------------------------------------------------------------------------
+/**
+ * -------------------------------------------------------------------------
+ * connections plugin for GLPI
+ * Copyright (C) 2015-2026 by the connections Development Team.
+ *
+ * https://github.com/pluginsGLPI/connections
+ * -------------------------------------------------------------------------
+ *
+ * LICENSE
+ *
+ * This file is part of connections.
+ *
+ * connections is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * connections is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with connections. If not, see <http://www.gnu.org/licenses/>.
+ * --------------------------------------------------------------------------
  */
 
 use Glpi\Search\Provider\SQLProvider;
@@ -221,12 +221,9 @@ function plugin_connections_uninstall()
         "glpi_plugin_connections_notificationstates",
     ];
 
-    foreach ($tables as $table) {
-        $DB->doQuery("DROP TABLE IF EXISTS `$table`;");
-    }
 
     //old versions
-    $tables = [
+    $oldtables = [
         'glpi_plugin_connections_configs',
         "glpi_plugin_connection",
         "glpi_plugin_connection_device",
@@ -235,10 +232,6 @@ function plugin_connections_uninstall()
         "glpi_plugin_connection_profiles",
         "glpi_plugin_connection_mailing",
     ];
-
-    foreach ($tables as $table) {
-        $DB->doQuery("DROP TABLE IF EXISTS `$table`;");
-    }
 
     $itemtypes = ['Alert',
         'DisplayPreference',
@@ -272,6 +265,15 @@ function plugin_connections_uninstall()
     foreach (ConnectionProfile::getAllRights() as $right) {
         $profileRight->deleteByCriteria(['name' => $right['field']]);
     }
+
+    foreach ($tables as $table) {
+        $DB->dropTable($table, true);
+    }
+
+    foreach ($oldtables as $table) {
+        $DB->dropTable($table, true);
+    }
+
     Connection::removeRightsFromSession();
     ConnectionProfile::removeRightsFromSession();
 
