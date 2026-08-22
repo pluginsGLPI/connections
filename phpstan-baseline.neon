@@ -105,7 +105,7 @@ parameters:
 		-
 			message: '#^Instantiating an object from an unrestricted dynamic string is forbidden \(see https\://github\.com/glpi\-project/phpstan\-glpi\?tab\=readme\-ov\-file\#forbiddynamicinstantiationrule\)\.$#'
 			identifier: glpi.forbidDynamicInstantiation
-			count: 3
+			count: 2
 			path: src/Connection_Item.php
 
 		-

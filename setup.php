@@ -41,7 +41,7 @@ if (!defined("PLUGINCONNECTIONS_DIR")) {
     define("PLUGINCONNECTIONS_DIR", Plugin::getPhpDir("connections"));
 }
 if (!defined("PLUGINCONNECTIONS_WEBDIR")) {
-    $root = $CFG_GLPI['root_doc'] . '/plugins/connections';
+    $root = ($CFG_GLPI['root_doc'] ?? '') . '/plugins/connections';
     define("PLUGINCONNECTIONS_WEBDIR", $root);
 }
 if (!defined("PLUGINCONNECTIONS_NOTFULL_WEBDIR")) {
