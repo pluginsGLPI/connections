@@ -33,79 +33,85 @@ use Glpi\Exception\Http\BadRequestHttpException;
 use GlpiPlugin\Connections\Connection;
 use GlpiPlugin\Connections\Connection_Item;
 
-if (!isset($_GET["id"])) $_GET["id"] = "";
-if (!isset($_GET["withtemplate"])) $_GET["withtemplate"] = "";
+if (!isset($_GET["id"])) {
+    $_GET["id"] = "";
+}
+if (!isset($_GET["withtemplate"])) {
+    $_GET["withtemplate"] = "";
+}
 
 $Connection      = new Connection();
 $Connection_Item = new Connection_Item();
 
 if (isset($_POST["add"]) && !isset($_POST["additem"])) {
     $Connection->check(-1, CREATE, $_POST);
-   $newID = $Connection->add($_POST);
-   Html::back();
+    $newID = $Connection->add($_POST);
+    Html::back();
 
 } elseif (isset($_POST["delete"])) {
     $Connection->check($_POST['id'], DELETE);
     $Connection->delete($_POST);
-   Html::redirect(Toolbox::getItemTypeSearchURL(Connection::class));
+    Html::redirect(Toolbox::getItemTypeSearchURL(Connection::class));
 
 } elseif (isset($_POST["restore"])) {
     $Connection->check($_POST['id'], PURGE);
     $Connection->restore($_POST);
-   Html::redirect(Toolbox::getItemTypeSearchURL(Connection::class));
+    Html::redirect(Toolbox::getItemTypeSearchURL(Connection::class));
 
 } elseif (isset($_POST["purge"])) {
     $Connection->check($_POST['id'], PURGE);
     $Connection->delete($_POST, 1);
-   Html::redirect(Toolbox::getItemTypeSearchURL(Connection::class));
+    Html::redirect(Toolbox::getItemTypeSearchURL(Connection::class));
 
 } elseif (isset($_POST["update"])) {
     $Connection->check($_POST['id'], UPDATE);
     $Connection->update($_POST);
-   Html::back();
+    Html::back();
 
 } elseif (isset($_POST["additem"])) {
-   if (!empty($_POST['itemtype']) && $_POST['items_id'] > 0) {
-       if (!in_array($_POST['itemtype'], Connection_Item::getClasses(true), true)) {
-           throw new BadRequestHttpException();
-       }
-       $Connection_Item->check(-1, UPDATE, $_POST);
-       $Connection_Item->addItem(
-         $_POST["plugin_connections_connections_id"],
-         $_POST['items_id'],
-         $_POST['itemtype']
-      );
-   }
-   Html::back();
+    if (!empty($_POST['itemtype']) && $_POST['items_id'] > 0) {
+        if (!in_array($_POST['itemtype'], Connection_Item::getClasses(true), true)) {
+            throw new BadRequestHttpException();
+        }
+        $Connection_Item->check(-1, UPDATE, $_POST);
+        $Connection_Item->addItem(
+            $_POST["plugin_connections_connections_id"],
+            $_POST['items_id'],
+            $_POST['itemtype'],
+        );
+    }
+    Html::back();
 
 } elseif (isset($_POST["deleteitem"])) {
-   if (isset($_POST["item"]) && is_array($_POST["item"])) {
-      foreach ($_POST["item"] as $key => $val) {
-         $input = ['id' => $key];
-         if ($val == 1) {
-             $Connection_Item->deleteItem($input);
-         }
-      }
-   }
-   Html::back();
+    if (isset($_POST["item"]) && is_array($_POST["item"])) {
+        foreach ($_POST["item"] as $key => $val) {
+            $input = ['id' => $key];
+            if ($val == 1) {
+                $Connection_Item->deleteItem($input);
+            }
+        }
+    }
+    Html::back();
 
 } elseif (isset($_POST["deleteconnections"])) {
-   $input = ['id' => $_POST["id"]];
+    $input = ['id' => $_POST["id"]];
     $Connection_Item->check($_POST["id"], UPDATE);
-   $Connection_Item->delete($input);
-   Html::back();
+    $Connection_Item->delete($input);
+    Html::back();
 
 } else {
-   Session::checkRight('plugin_connections_connection', READ);
+    Session::checkRight('plugin_connections_connection', READ);
 
-   if (!isset($_SESSION['glpi_tab'])) $_SESSION['glpi_tab'] = 1;
-   if (isset($_GET['onglet'])) {
-      $_SESSION['glpi_tab'] = $_GET['onglet'];
-   }
+    if (!isset($_SESSION['glpi_tab'])) {
+        $_SESSION['glpi_tab'] = 1;
+    }
+    if (isset($_GET['onglet'])) {
+        $_SESSION['glpi_tab'] = $_GET['onglet'];
+    }
 
-   Html::header(Connection::getTypeName(2), '', "assets", Connection::class);
+    Html::header(Connection::getTypeName(2), '', "assets", Connection::class);
 
-   $Connection->display($_GET);
+    $Connection->display($_GET);
 
-   Html::footer();
+    Html::footer();
 }

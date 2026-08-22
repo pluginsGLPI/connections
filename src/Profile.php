@@ -81,21 +81,21 @@ final class Profile extends \Profile
     *
     * @return bool
     */
-//    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
-//    {
-//
-//        if ($item->getType() == 'Profile') {
-//            $ID   = $item->getID();
-//            $prof = new self();
-//            //In case there's no right for this profile, create it
-//            self::addDefaultProfileInfos(
-//                $ID,
-//                ['plugin_connections_connection' => 0]
-//            );
-//            $prof->showForm($ID);
-//        }
-//        return true;
-//    }
+    //    public static function displayTabContentForItem(CommonGLPI $item, $tabnum = 1, $withtemplate = 0)
+    //    {
+    //
+    //        if ($item->getType() == 'Profile') {
+    //            $ID   = $item->getID();
+    //            $prof = new self();
+    //            //In case there's no right for this profile, create it
+    //            self::addDefaultProfileInfos(
+    //                $ID,
+    //                ['plugin_connections_connection' => 0]
+    //            );
+    //            $prof->showForm($ID);
+    //        }
+    //        return true;
+    //    }
 
     /**
      * @param CommonGLPI $item
@@ -137,7 +137,7 @@ final class Profile extends \Profile
 
         self::addDefaultProfileInfos(
             $profiles_id,
-            ['plugin_connections_connection' => ALLSTANDARDRIGHT]
+            ['plugin_connections_connection' => ALLSTANDARDRIGHT],
         );
     }
 
@@ -155,13 +155,13 @@ final class Profile extends \Profile
         foreach ($rights as $right => $value) {
             if ($dbu->countElementsInTable(
                 'glpi_profilerights',
-                ["profiles_id" => $profiles_id, "name" => $right]
+                ["profiles_id" => $profiles_id, "name" => $right],
             ) && $drop_existing) {
                 $profileRight->deleteByCriteria(['profiles_id' => $profiles_id, 'name' => $right]);
             }
             if (!$dbu->countElementsInTable(
                 'glpi_profilerights',
-                ["profiles_id" => $profiles_id, "name" => $right]
+                ["profiles_id" => $profiles_id, "name" => $right],
             )) {
                 $myright['profiles_id'] = $profiles_id;
                 $myright['name']        = $right;
@@ -185,8 +185,8 @@ final class Profile extends \Profile
             ['itemtype' => Connection::class,
                 'label'    => Connection::getTypeName(Session::getPluralNumber()),
                 'field' => Connection::$rightname,
-                'rights' => \Profile::getRightsFor(Connection::class)
-            ]
+                'rights' => \Profile::getRightsFor(Connection::class),
+            ],
         ];
         return $rights;
     }
@@ -263,9 +263,9 @@ final class Profile extends \Profile
         //Add new rights in glpi_profilerights table
         foreach ($profile->getAllRights(true) as $data) {
             if ($dbu->countElementsInTable(
-                    "glpi_profilerights",
-                    ["name" => $data['field']]
-                ) == 0) {
+                "glpi_profilerights",
+                ["name" => $data['field']],
+            ) == 0) {
                 ProfileRight::addProfileRights([$data['field']]);
             }
         }

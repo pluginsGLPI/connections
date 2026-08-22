@@ -38,24 +38,24 @@ use CommonDropdown;
  */
 final class GuaranteedConnectionRate extends CommonDropdown
 {
-    static $rightname = 'plugin_connections_connection';
+    public static $rightname = 'plugin_connections_connection';
 
-   /**
-    * @param int $nb
-    *
-    * @return string
-    */
+    /**
+     * @param int $nb
+     *
+     * @return string
+     */
     public static function getTypeName($nb = 0)
     {
         return __('Guaranteed Rates', 'connections');
     }
 
-   /**
-    * @param $ID
-    * @param $entity
-    *
-    * @return int
-    */
+    /**
+     * @param $ID
+     * @param $entity
+     *
+     * @return int
+     */
     public static function transfer($ID, $entity)
     {
         global $DB;
@@ -63,8 +63,8 @@ final class GuaranteedConnectionRate extends CommonDropdown
         if ($ID > 0) {
             $table = self::getTable();
             $iterator = $DB->request([
-               'FROM'   => $table,
-               'WHERE'  => ['id' => $ID]
+                'FROM'   => $table,
+                'WHERE'  => ['id' => $ID],
             ]);
 
             foreach ($iterator as $data) {

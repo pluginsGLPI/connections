@@ -47,7 +47,6 @@ use Toolbox;
  */
 final class Connection_Item extends CommonDBRelation
 {
-
     public static $rightname = 'plugin_connections_connection';
 
     public static $itemtype_1 = Connection::class;
@@ -88,8 +87,8 @@ final class Connection_Item extends CommonDBRelation
         $temp->deleteByCriteria(
             [
                 'itemtype' => $item->getType(),
-                'items_id' => $item->getField('id')
-            ]
+                'items_id' => $item->getField('id'),
+            ],
         );
     }
 
@@ -203,7 +202,7 @@ final class Connection_Item extends CommonDBRelation
         if ($this->getFromDBByCrit([
             'plugin_connections_connections_id' => $connections_id,
             'items_id' => $items_id,
-            'itemtype' => $itemtype
+            'itemtype' => $itemtype,
         ])) {
             $this->delete([
                 'id' => $this->fields["id"],
@@ -229,7 +228,7 @@ final class Connection_Item extends CommonDBRelation
             [
                 "plugin_connections_connections_id" => $item->getID(),
                 "itemtype" => $types,
-            ]
+            ],
         );
     }
 
@@ -245,7 +244,7 @@ final class Connection_Item extends CommonDBRelation
             if ($_SESSION['glpishow_count_on_tabs']) {
                 return self::createTabEntry(
                     _n('Associated item', 'Associated items', 2),
-                    self::countForConnection($item)
+                    self::countForConnection($item),
                 );
             }
             return _n('Associated item', 'Associated items', 2);
@@ -310,8 +309,8 @@ final class Connection_Item extends CommonDBRelation
             'glpi_plugin_connections_connections_items',
             [
                 "itemtype" => $item->getType(),
-                "items_id" => $item->getID()
-            ]
+                "items_id" => $item->getID(),
+            ],
         );
     }
 
@@ -325,7 +324,7 @@ final class Connection_Item extends CommonDBRelation
         $dbu = new DbUtils();
         return $dbu->countElementsInTable(
             'glpi_plugin_connections_connections',
-            ["suppliers_id" => $item->getID()]
+            ["suppliers_id" => $item->getID()],
         );
     }
 
@@ -456,7 +455,7 @@ final class Connection_Item extends CommonDBRelation
                 'glpi_plugin_connections_connections_items.id AS assocID',
                 'glpi_entities.id AS entity',
                 'glpi_plugin_connections_connections.name AS assocName',
-                'glpi_plugin_connections_connections.*'
+                'glpi_plugin_connections_connections.*',
             ],
             'FROM' => 'glpi_plugin_connections_connections_items',
             'LEFT JOIN' => [
@@ -480,11 +479,11 @@ final class Connection_Item extends CommonDBRelation
             'ORDERBY' => 'assocName',
         ];
         $criteria['WHERE'] = $criteria['WHERE'] + getEntitiesRestrictCriteria(
-                'glpi_plugin_connections_connections',
-                '',
-                '',
-                true
-            );
+            'glpi_plugin_connections_connections',
+            '',
+            '',
+            true,
+        );
 
         $iterator_list = $DB->request($criteria);
         $rand = mt_rand();
@@ -506,15 +505,15 @@ final class Connection_Item extends CommonDBRelation
                 'entities_id' => Dropdown::getDropdownName("glpi_entities", $connection->fields['entities_id']),
                 'plugin_connections_connectiontypes_id' => Dropdown::getDropdownName(
                     "glpi_plugin_connections_connectiontypes",
-                    $connection->fields["plugin_connections_connectiontypes_id"]
+                    $connection->fields["plugin_connections_connectiontypes_id"],
                 ),
                 'plugin_connections_connectionrates_id' => Dropdown::getDropdownName(
                     "glpi_plugin_connections_connectionrates",
-                    $connection->fields["plugin_connections_connectionrates_id"]
+                    $connection->fields["plugin_connections_connectionrates_id"],
                 ),
                 'plugin_connections_guaranteedconnectionrates_id' => Dropdown::getDropdownName(
                     "glpi_plugin_connections_guaranteedconnectionrates",
-                    $connection->fields["plugin_connections_guaranteedconnectionrates_id"]
+                    $connection->fields["plugin_connections_guaranteedconnectionrates_id"],
                 ),
             ];
         }
@@ -587,11 +586,11 @@ final class Connection_Item extends CommonDBRelation
             'ORDERBY' => 'glpi_plugin_connections_connections.name',
         ];
         $criteria['WHERE'] = $criteria['WHERE'] + getEntitiesRestrictCriteria(
-                'glpi_plugin_connections_connections',
-                '',
-                '',
-                true
-            );
+            'glpi_plugin_connections_connections',
+            '',
+            '',
+            true,
+        );
 
         $iterator_list = $DB->request($criteria);
 
@@ -613,15 +612,15 @@ final class Connection_Item extends CommonDBRelation
                 'entities_id' => Dropdown::getDropdownName("glpi_entities", $connection->fields['entities_id']),
                 'plugin_connections_connectiontypes_id' => Dropdown::getDropdownName(
                     "glpi_plugin_connections_connectiontypes",
-                    $connection->fields["plugin_connections_connectiontypes_id"]
+                    $connection->fields["plugin_connections_connectiontypes_id"],
                 ),
                 'plugin_connections_connectionrates_id' => Dropdown::getDropdownName(
                     "glpi_plugin_connections_connectionrates",
-                    $connection->fields["plugin_connections_connectionrates_id"]
+                    $connection->fields["plugin_connections_connectionrates_id"],
                 ),
                 'plugin_connections_guaranteedconnectionrates_id' => Dropdown::getDropdownName(
                     "glpi_plugin_connections_guaranteedconnectionrates",
-                    $connection->fields["plugin_connections_guaranteedconnectionrates_id"]
+                    $connection->fields["plugin_connections_guaranteedconnectionrates_id"],
                 ),
             ];
         }

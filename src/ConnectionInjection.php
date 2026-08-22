@@ -37,7 +37,7 @@ use Search;
 #[AllowDynamicProperties]
 class ConnectionInjection extends Connection implements PluginDatainjectionInjectionInterface
 {
-    static function getTable($classname = null)
+    public static function getTable($classname = null)
     {
         return Connection::getTable();
     }
@@ -45,7 +45,7 @@ class ConnectionInjection extends Connection implements PluginDatainjectionInjec
     /**
      * @return bool
      */
-    function isPrimaryType()
+    public function isPrimaryType()
     {
         return true;
     }
@@ -53,7 +53,7 @@ class ConnectionInjection extends Connection implements PluginDatainjectionInjec
     /**
      * @return array
      */
-    function connectedTo()
+    public function connectedTo()
     {
         return [];
     }
@@ -63,7 +63,7 @@ class ConnectionInjection extends Connection implements PluginDatainjectionInjec
      *
      * @return array|the
      */
-    function getOptions($primary_type = '')
+    public function getOptions($primary_type = '')
     {
 
         $tab = Search::getOptions(get_parent_class($this));
@@ -92,7 +92,7 @@ class ConnectionInjection extends Connection implements PluginDatainjectionInjec
      * @internal param fields $values to add into glpi
      * @internal param options $options used during creation
      */
-    function addOrUpdateObject($values = [], $options = [])
+    public function addOrUpdateObject($values = [], $options = [])
     {
 
         $lib = new PluginDatainjectionCommonInjectionLib($this, $values, $options);

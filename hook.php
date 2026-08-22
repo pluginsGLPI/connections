@@ -88,7 +88,7 @@ function plugin_connections_install()
     foreach ($classes as $old => $new) {
         $displayusers = $DB->request([
             'SELECT' => [
-                'users_id'
+                'users_id',
             ],
             'DISTINCT' => true,
             'FROM' => 'glpi_displaypreferences',
@@ -102,13 +102,13 @@ function plugin_connections_install()
                 $iterator = $DB->request([
                     'SELECT' => [
                         'num',
-                        'id'
+                        'id',
                     ],
                     'FROM' => 'glpi_displaypreferences',
                     'WHERE' => [
                         'itemtype' => $old,
                         'users_id' => $displayuser['users_id'],
-                        'interface' => 'central'
+                        'interface' => 'central',
                     ],
                 ]);
 
@@ -116,14 +116,14 @@ function plugin_connections_install()
                     foreach ($iterator as $data) {
                         $iterator2 = $DB->request([
                             'SELECT' => [
-                                'id'
+                                'id',
                             ],
                             'FROM' => 'glpi_displaypreferences',
                             'WHERE' => [
                                 'itemtype' => $new,
                                 'users_id' => $displayuser['users_id'],
                                 'num' => $data['num'],
-                                'interface' => 'central'
+                                'interface' => 'central',
                             ],
                         ]);
                         if (count($iterator2) > 0) {
@@ -132,7 +132,7 @@ function plugin_connections_install()
                                     'glpi_displaypreferences',
                                     [
                                         'id' => $dataid['id'],
-                                    ]
+                                    ],
                                 );
                                 $DB->doQuery($query);
                             }
@@ -144,7 +144,7 @@ function plugin_connections_install()
                                 ],
                                 [
                                     'id' => $data['id'],
-                                ]
+                                ],
                             );
                             $DB->doQuery($query);
                         }
@@ -166,34 +166,34 @@ function plugin_connections_install()
                 $DB->update(
                     'glpi_plugin_connections_profiles',
                     ['profiles_id' => $data['id']],
-                    ['id' => $data['id']]
+                    ['id' => $data['id']],
                 );
             }
         }
 
         $DB->doQuery("ALTER TABLE `glpi_plugin_connections_profiles` DROP `name`;");
 
-//        Plugin::migrateItemType(
-//            [4400 => Connection::class],
-//            [
-//                "glpi_bookmarks",
-//                "glpi_bookmarks_users",
-//                "glpi_displaypreferences",
-//                "glpi_documents_items",
-//                "glpi_infocoms",
-//                "glpi_logs",
-//                "glpi_tickets",
-//            ],
-//            ["glpi_plugin_connections_connections_items"]
-//        );
+        //        Plugin::migrateItemType(
+        //            [4400 => Connection::class],
+        //            [
+        //                "glpi_bookmarks",
+        //                "glpi_bookmarks_users",
+        //                "glpi_displaypreferences",
+        //                "glpi_documents_items",
+        //                "glpi_infocoms",
+        //                "glpi_logs",
+        //                "glpi_tickets",
+        //            ],
+        //            ["glpi_plugin_connections_connections_items"]
+        //        );
 
-//        Plugin::migrateItemType(
-//            [
-//                1200 => "PluginAppliancesAppliance",
-//                1300 => "PluginWebapplicationsWebapplication",
-//            ],
-//            ["glpi_plugin_connections_connections_items"]
-//        );
+        //        Plugin::migrateItemType(
+        //            [
+        //                1200 => "PluginAppliancesAppliance",
+        //                1300 => "PluginWebapplicationsWebapplication",
+        //            ],
+        //            ["glpi_plugin_connections_connections_items"]
+        //        );
     }
 
     ConnectionProfile::initProfile();
@@ -245,7 +245,7 @@ function plugin_connections_uninstall()
         'NotificationTemplate',
         'Notification'];
     foreach ($itemtypes as $itemtype) {
-        $item = new $itemtype;
+        $item = new $itemtype();
         $item->deleteByCriteria(['itemtype' => Connection::class]);
     }
 
@@ -413,7 +413,7 @@ function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfiel
                 $new_table => [
                     'ON' => [
                         $ref_table  => 'id',
-                        $new_table  => 'plugin_connections_connections_id'
+                        $new_table  => 'plugin_connections_connections_id',
                     ],
                 ],
             ];
@@ -433,7 +433,7 @@ function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfiel
                 'glpi_plugin_connections_connections' => [
                     'ON' => [
                         'glpi_plugin_connections_connections'  => 'id',
-                        'glpi_plugin_connections_connections_items'  => 'plugin_connections_connections_id'
+                        'glpi_plugin_connections_connections_items'  => 'plugin_connections_connections_id',
                     ],
                 ],
             ];
@@ -444,13 +444,13 @@ function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfiel
                 $ref_table,
                 $already_link_tables,
                 "glpi_plugin_connections_connections",
-                $linkfield
+                $linkfield,
             );
             $left = [
                 'glpi_plugin_connections_connectiontypes' => [
                     'ON' => [
                         'glpi_plugin_connections_connectiontypes'    => 'id',
-                        'glpi_plugin_connections_connections'                  => 'plugin_connections_connectiontypes_id'
+                        'glpi_plugin_connections_connections'                  => 'plugin_connections_connectiontypes_id',
                     ],
                 ],
             ];
@@ -467,13 +467,13 @@ function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfiel
                 $ref_table,
                 $already_link_tables,
                 "glpi_plugin_connections_connections",
-                $linkfield
+                $linkfield,
             );
             $left = [
                 'glpi_plugin_connections_connectionrates' => [
                     'ON' => [
                         'glpi_plugin_connections_connectionrates'    => 'id',
-                        'glpi_plugin_connections_connections'                  => 'plugin_connections_connectionrates_id'
+                        'glpi_plugin_connections_connections'                  => 'plugin_connections_connectionrates_id',
                     ],
                 ],
             ];
@@ -490,13 +490,13 @@ function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfiel
                 $ref_table,
                 $already_link_tables,
                 "glpi_plugin_connections_connections",
-                $linkfield
+                $linkfield,
             );
             $left = [
                 'glpi_plugin_connections_guaranteedconnectionrates' => [
                     'ON' => [
                         'glpi_plugin_connections_guaranteedconnectionrates'    => 'id',
-                        'glpi_plugin_connections_connections'                  => 'plugin_connections_guaranteedconnectionrates_id'
+                        'glpi_plugin_connections_connections'                  => 'plugin_connections_guaranteedconnectionrates_id',
                     ],
                 ],
             ];
@@ -575,7 +575,7 @@ function plugin_connections_giveItem($type, $ID, $data, $num)
                 }
                 $where = array_merge(
                     $where,
-                    getEntitiesRestrictCriteria($table_item, '', '', $item->maybeRecursive())
+                    getEntitiesRestrictCriteria($table_item, '', '', $item->maybeRecursive()),
                 );
 
                 $linked = $DB->request([
