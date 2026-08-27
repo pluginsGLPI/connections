@@ -155,23 +155,21 @@ function plugin_connections_install()
     }
 
     if ($update) {
-        $iterator = $DB->request([
-            'SELECT' => [
-                'id',
-            ],
-            'FROM' => 'glpi_plugin_connections_profiles',
-        ]);
-        if (count($iterator) > 0) {
-            foreach ($iterator as $data) {
-                $DB->update(
-                    'glpi_plugin_connections_profiles',
-                    ['profiles_id' => $data['id']],
-                    ['id' => $data['id']],
-                );
-            }
+
+        foreach ($DB->request(['FROM' => 'glpi_plugin_connections_profiles']) as $data) {
+            $DB->update('glpi_plugin_connections_profiles', [
+                'profiles_id' => $data['id'],
+            ], [
+                'id' => $data['id'],
+            ]);
         }
 
-        $DB->doQuery("ALTER TABLE `glpi_plugin_connections_profiles` DROP `name`;");
+
+        if ($DB->fieldExists('glpi_plugin_connections_profiles', 'name')) {
+            $migration = new Migration(PLUGIN_CONNECTIONS_VERSION);
+            $migration->dropField('glpi_plugin_connections_profiles', 'name');
+            $migration->migrationOneTable('glpi_plugin_connections_profiles');
+        }
 
         //        Plugin::migrateItemType(
         //            [4400 => Connection::class],
