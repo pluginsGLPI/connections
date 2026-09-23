@@ -81,6 +81,8 @@ function plugin_connections_install()
         $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-10.0.0.sql");
     }
     $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-11.0.0.sql");
+    // Idempotent itemtype renames (problems, changes) missing from update-11.0.0.sql
+    $DB->runFile(PLUGINCONNECTIONS_DIR . "/sql/update-11.0.3.sql");
 
     //DisplayPreferences Migration
     $classes = ['PluginConnectionsConnection' => Connection::class];
@@ -236,6 +238,11 @@ function plugin_connections_uninstall()
         'Document_Item',
         'ImpactItem',
         'Item_Ticket',
+        'Item_Problem',
+        'Change_Item',
+        'Contract_Item',
+        'Infocom',
+        'Log',
         'Link_Itemtype',
         'Notepad',
         'SavedSearch',
@@ -245,6 +252,18 @@ function plugin_connections_uninstall()
     foreach ($itemtypes as $itemtype) {
         $item = new $itemtype();
         $item->deleteByCriteria(['itemtype' => Connection::class]);
+    }
+
+    // Remove the class from the profiles' helpdesk visible types (registered in setup.php)
+    foreach ($DB->request(['SELECT' => ['id', 'helpdesk_item_type'], 'FROM' => 'glpi_profiles']) as $data) {
+        $types = importArrayFromDB($data['helpdesk_item_type']);
+        if (in_array(Connection::class, $types, true)) {
+            $DB->update(
+                'glpi_profiles',
+                ['helpdesk_item_type' => exportArrayToDB(array_values(array_diff($types, [Connection::class])))],
+                ['id' => $data['id']],
+            );
+        }
     }
 
     $DB->delete('glpi_impactrelations', [
@@ -428,10 +447,15 @@ function plugin_connections_addLeftJoin($type, $ref_table, $new_table, $linkfiel
                         ],
                     ],
                 ],
+                // The core only scopes the main search table: restrict the joined
+                // connections to the active entities here, so that 4410-4413 never
+                // expose a connection the user cannot see (e.g. after a transfer).
                 'glpi_plugin_connections_connections' => [
                     'ON' => [
                         'glpi_plugin_connections_connections'  => 'id',
-                        'glpi_plugin_connections_connections_items'  => 'plugin_connections_connections_id',
+                        'glpi_plugin_connections_connections_items'  => 'plugin_connections_connections_id', [
+                            'AND' => getEntitiesRestrictCriteria('glpi_plugin_connections_connections', '', '', true),
+                        ],
                     ],
                 ],
             ];

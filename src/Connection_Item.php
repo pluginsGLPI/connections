@@ -163,6 +163,8 @@ final class Connection_Item extends CommonDBRelation
 
     /**
      * @param $input
+     *
+     * @return bool
      */
     public function deleteItem($input)
     {
@@ -189,25 +191,11 @@ final class Connection_Item extends CommonDBRelation
             $changes[1] = $item->getNameID(['forceid' => true]);
             $changes[2] = '';
             Log::history($items_id, $item->getType(), $changes, Connection::class, 16);
-        }
-    }
 
-    /**
-     * @param $connections_id
-     * @param $items_id
-     * @param $itemtype
-     */
-    public function deleteItemByConnectionsAndItem($connections_id, $items_id, $itemtype)
-    {
-        if ($this->getFromDBByCrit([
-            'plugin_connections_connections_id' => $connections_id,
-            'items_id' => $items_id,
-            'itemtype' => $itemtype,
-        ])) {
-            $this->delete([
-                'id' => $this->fields["id"],
-            ]);
+            return true;
         }
+
+        return false;
     }
 
 
@@ -304,14 +292,28 @@ final class Connection_Item extends CommonDBRelation
      */
     public static function countForItem(CommonDBTM $item)
     {
-        $dbu = new DbUtils();
-        return $dbu->countElementsInTable(
-            'glpi_plugin_connections_connections_items',
-            [
-                "itemtype" => $item->getType(),
-                "items_id" => $item->getID(),
+        global $DB;
+
+        // Same entity scope as the tab content (showForAsset()), so the badge
+        // does not reveal connections living in unreachable entities.
+        $result = $DB->request([
+            'COUNT'      => 'cpt',
+            'FROM'       => 'glpi_plugin_connections_connections_items',
+            'INNER JOIN' => [
+                'glpi_plugin_connections_connections' => [
+                    'ON' => [
+                        'glpi_plugin_connections_connections_items' => 'plugin_connections_connections_id',
+                        'glpi_plugin_connections_connections'       => 'id',
+                    ],
+                ],
             ],
-        );
+            'WHERE' => [
+                'glpi_plugin_connections_connections_items.itemtype' => $item->getType(),
+                'glpi_plugin_connections_connections_items.items_id' => $item->getID(),
+            ] + getEntitiesRestrictCriteria('glpi_plugin_connections_connections', '', '', true),
+        ])->current();
+
+        return (int) ($result['cpt'] ?? 0);
     }
 
     /**
@@ -322,9 +324,11 @@ final class Connection_Item extends CommonDBRelation
     public static function countSupplierForItem(CommonDBTM $item)
     {
         $dbu = new DbUtils();
+        // Same entity scope as the tab content (showForSupplier()).
         return $dbu->countElementsInTable(
             'glpi_plugin_connections_connections',
-            ["suppliers_id" => $item->getID()],
+            ["suppliers_id" => $item->getID()]
+                + getEntitiesRestrictCriteria('glpi_plugin_connections_connections', '', '', true),
         );
     }
 

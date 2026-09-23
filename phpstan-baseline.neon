@@ -85,21 +85,9 @@ parameters:
 			path: src/ConnectionRate.php
 
 		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
-			path: src/ConnectionRate.php
-
-		-
 			message: '#^Method GlpiPlugin\\Connections\\ConnectionType\:\:transfer\(\) should return int but return statement is missing\.$#'
 			identifier: return.missing
 			count: 2
-			path: src/ConnectionType.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
-			count: 1
 			path: src/ConnectionType.php
 
 		-
@@ -151,25 +139,7 @@ parameters:
 			path: src/Profile.php
 
 		-
-			message: '#^Method GlpiPlugin\\Connections\\Profile\:\:getAllRights\(\) invoked with 1 parameter, 0 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: src/Profile.php
-
-		-
 			message: '#^Method GlpiPlugin\\Connections\\Profile\:\:migrateOneProfile\(\) should return bool but return statement is missing\.$#'
 			identifier: return.missing
-			count: 1
-			path: src/Profile.php
-
-		-
-			message: '#^Static method GlpiPlugin\\Connections\\Profile\:\:getAllRights\(\) invoked with 1 parameter, 0 required\.$#'
-			identifier: arguments.count
-			count: 1
-			path: src/Profile.php
-
-		-
-			message: '#^You should not use the `die` function\. It prevents the execution of post\-request/post\-command routines\.$#'
-			identifier: glpi.forbidExit
 			count: 1
 			path: src/Profile.php

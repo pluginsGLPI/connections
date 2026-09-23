@@ -36,10 +36,6 @@ use Html;
 use ProfileRight;
 use Session;
 
-if (!defined('GLPI_ROOT')) {
-    die("Sorry. You can't access directly to this file");
-}
-
 /**
  * Class Profile
  */
@@ -116,7 +112,7 @@ final class Profile extends \Profile
         $profile = new \Profile();
         $profile->getFromDB($item->getID());
 
-        $rights = self::getAllRights(true);
+        $rights = self::getAllRights();
 
         $twig = TemplateRenderer::getInstance();
         $twig->display('@connections/profile.html.twig', [
@@ -261,7 +257,7 @@ final class Profile extends \Profile
         $profile = new self();
         $dbu     = new DbUtils();
         //Add new rights in glpi_profilerights table
-        foreach ($profile->getAllRights(true) as $data) {
+        foreach ($profile->getAllRights() as $data) {
             if ($dbu->countElementsInTable(
                 "glpi_profilerights",
                 ["name" => $data['field']],

@@ -311,6 +311,45 @@ class Connection extends CommonDBTM
     }
 
     /**
+     * Check that every asset linked to a connection stays reachable once the
+     * connection is moved to $entities_id (mirrors CommonDBRelation::canRelationItem()).
+     *
+     * @param int  $connections_id
+     * @param int  $entities_id    Destination entity
+     * @param bool $is_recursive   Recursivity of the connection
+     *
+     * @return bool
+     */
+    private static function areLinkedItemsCoherentWithEntity(int $connections_id, int $entities_id, bool $is_recursive): bool
+    {
+        global $DB;
+
+        $links = $DB->request([
+            'SELECT' => ['itemtype', 'items_id'],
+            'FROM'   => Connection_Item::getTable(),
+            'WHERE'  => ['plugin_connections_connections_id' => $connections_id],
+        ]);
+        foreach ($links as $link) {
+            $asset = getItemForItemtype($link['itemtype']);
+            if (!$asset || !$asset->getFromDB($link['items_id']) || !$asset->isEntityAssign()) {
+                continue;
+            }
+            $asset_entity = (int) $asset->getEntityID();
+            if ($asset_entity === $entities_id) {
+                continue;
+            }
+            if ($is_recursive && in_array($entities_id, getAncestorsOf('glpi_entities', $asset_entity))) {
+                continue;
+            }
+            if ($asset->isRecursive() && in_array($asset_entity, getAncestorsOf('glpi_entities', $entities_id))) {
+                continue;
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * @param MassiveAction $ma
      * @param CommonDBTM    $item
      * @param array          $ids
@@ -344,6 +383,19 @@ class Connection extends CommonDBTM
                         if (!$item->can($key, UPDATE)) {
                             $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_NORIGHT);
                             $ma->addMessage($item->getErrorMessage(ERROR_RIGHT));
+                            continue;
+                        }
+                        // Refuse a transfer that would leave links to assets outside the
+                        // destination entity (the same coherency rule the core enforces
+                        // when the link is created), instead of silently keeping them.
+                        if (!self::areLinkedItemsCoherentWithEntity($key, $entities_id, (bool) $item->fields['is_recursive'])) {
+                            $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
+                            $ma->addMessage(
+                                sprintf(
+                                    __('%1$s: some associated items are not visible from the destination entity', 'connections'),
+                                    $item->getNameID(),
+                                ),
+                            );
                             continue;
                         }
                         $type = ConnectionType::transfer($item->fields["plugin_connections_connectiontypes_id"], $entities_id);
@@ -401,6 +453,13 @@ class Connection extends CommonDBTM
                         $values = ['plugin_connections_connections_id' => $key,
                             'items_id'                          => (int) $input["item_item"],
                             'itemtype'                          => $input['typeitem']];
+                        // add() replays no right: validate the relation itself (entity
+                        // coherency of both ends via canRelationItem()), like the form does.
+                        if (!$connection_item->can(-1, CREATE, $values)) {
+                            $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_NORIGHT);
+                            $ma->addMessage($connection_item->getErrorMessage(ERROR_RIGHT));
+                            continue;
+                        }
                         if ($connection_item->add($values)) {
                             $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
                         } else {
@@ -427,7 +486,23 @@ class Connection extends CommonDBTM
                 }
                 foreach ($ids as $key) {
                     if ($item->can($key, UPDATE)) {
-                        if ($connection_item->deleteItemByConnectionsAndItem($key, (int) $input['item_item'], $input['typeitem'])) {
+                        $found = $connection_item->getFromDBByCrit([
+                            'plugin_connections_connections_id' => $key,
+                            'items_id'                          => (int) $input['item_item'],
+                            'itemtype'                          => $target->getType(),
+                        ]);
+                        if (!$found) {
+                            $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);
+                            continue;
+                        }
+                        // Same right check and history as the unlink button of the
+                        // item tab (front/connection.form.php -> deleteItem()).
+                        if (!$connection_item->can($connection_item->getID(), UPDATE)) {
+                            $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_NORIGHT);
+                            $ma->addMessage($connection_item->getErrorMessage(ERROR_RIGHT));
+                            continue;
+                        }
+                        if ($connection_item->deleteItem(['id' => $connection_item->getID()])) {
                             $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_OK);
                         } else {
                             $ma->itemDone($item->getType(), $key, MassiveAction::ACTION_KO);

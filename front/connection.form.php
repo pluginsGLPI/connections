@@ -102,13 +102,6 @@ if (isset($_POST["add"]) && !isset($_POST["additem"])) {
 } else {
     Session::checkRight('plugin_connections_connection', READ);
 
-    if (!isset($_SESSION['glpi_tab'])) {
-        $_SESSION['glpi_tab'] = 1;
-    }
-    if (isset($_GET['onglet'])) {
-        $_SESSION['glpi_tab'] = $_GET['onglet'];
-    }
-
     Html::header(Connection::getTypeName(2), '', "assets", Connection::class);
 
     $Connection->display($_GET);
