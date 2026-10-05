@@ -38,7 +38,7 @@ use CommonDropdown;
  */
 final class ConnectionType extends CommonDropdown
 {
-    public static $rightname = 'plugin_connections_connection';
+    public static string $rightname = 'plugin_connections_connection';
 
     /**
      * @param int $nb

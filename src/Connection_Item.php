@@ -47,15 +47,15 @@ use Toolbox;
  */
 final class Connection_Item extends CommonDBRelation
 {
-    public static $rightname = 'plugin_connections_connection';
+    public static string $rightname = 'plugin_connections_connection';
 
-    public static $itemtype_1 = Connection::class;
-    public static $items_id_1 = 'plugin_connections_connections_id';
-    public static $take_entity_1 = false;
+    public static ?string $itemtype_1 = Connection::class;
+    public static ?string $items_id_1 = 'plugin_connections_connections_id';
+    public static bool $take_entity_1 = false;
 
-    public static $itemtype_2 = 'itemtype';
-    public static $items_id_2 = 'items_id';
-    public static $take_entity_2 = true;
+    public static ?string $itemtype_2 = 'itemtype';
+    public static ?string $items_id_2 = 'items_id';
+    public static bool $take_entity_2 = true;
 
 
     /**
@@ -237,14 +237,14 @@ final class Connection_Item extends CommonDBRelation
             }
             return _n('Associated item', 'Associated items', 2);
         } elseif (in_array($item->getType(), self::getClasses(true))
-            && Session::haveRight('plugin_connections_connection', READ)) {
+            && Session::haveRight(Connection::$rightname, READ)) {
             if ($_SESSION['glpishow_count_on_tabs']) {
                 return self::createTabEntry(Connection::getTypeName(2), self::countForItem($item));
             }
 
             return self::getTypeName(2);
         } elseif ($item->getType() == 'Supplier'
-            && Session::haveRight('plugin_connections_connection', READ)) {
+            && Session::haveRight(Connection::$rightname, READ)) {
             if ($_SESSION['glpishow_count_on_tabs']) {
                 return self::createTabEntry(Connection::getTypeName(2), self::countSupplierForItem($item));
             }

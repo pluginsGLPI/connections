@@ -43,8 +43,8 @@ use Session;
  */
 class Connection extends CommonDBTM
 {
-    public static $rightname = 'plugin_connections_connection';
-    public $dohistory = true;
+    public static string $rightname = 'plugin_connections_connection';
+    public bool $dohistory = true;
 
     /**
      * @param int $nb
@@ -271,7 +271,7 @@ class Connection extends CommonDBTM
                 $actions['GlpiPlugin\Connections\Connection' . MassiveAction::CLASS_ACTION_SEPARATOR . 'install']   = _x('button', 'Associate');
                 $actions['GlpiPlugin\Connections\Connection' . MassiveAction::CLASS_ACTION_SEPARATOR . 'uninstall'] = _x('button', 'Dissociate');
 
-                if (Session::haveRight('transfer', READ)
+                if (Session::haveRight(\Transfer::$rightname, READ)
                     && Session::isMultiEntitiesMode()
                 ) {
                     $actions[Connection::class . MassiveAction::CLASS_ACTION_SEPARATOR . 'transfer'] = __('Transfer');

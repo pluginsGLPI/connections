@@ -32,7 +32,6 @@
     <form method="post" action="{{ 'GlpiPlugin\\Connections\\Connection'|itemtype_form_path }}">
     <div class="d-flex">
         <div class="col-auto">
-        {{ inputs.hidden('_glpi_csrf_token', csrf_token()) }}
         {% if item is instanceof('GlpiPlugin\\Connections\\Connection') %}
             {{ inputs.hidden('plugin_connections_connections_id', item.getID()) }}
             {{ fields.dropdownItemsFromItemtypes('items_id', '', {

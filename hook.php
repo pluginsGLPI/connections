@@ -382,7 +382,7 @@ function plugin_connections_getAddSearchOptions($itemtype)
     $title = Connection::getTypeName(2);
 
     if (in_array($itemtype, Connection_Item::getClasses(true))) {
-        if (Session::haveRight("plugin_connections_connection", READ)) {
+        if (Session::haveRight(Connection::$rightname, READ)) {
             $sopt[4410]['table']         = 'glpi_plugin_connections_connections';
             $sopt[4410]['field']         = 'name';
             $sopt[4410]['linkfield']     = '';

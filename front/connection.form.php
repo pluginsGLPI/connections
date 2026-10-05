@@ -100,7 +100,7 @@ if (isset($_POST["add"]) && !isset($_POST["additem"])) {
     Html::back();
 
 } else {
-    Session::checkRight('plugin_connections_connection', READ);
+    Session::checkRight(Connection::$rightname, READ);
 
     Html::header(Connection::getTypeName(2), '', "assets", Connection::class);
 

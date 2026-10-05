@@ -85,7 +85,7 @@ function plugin_init_connections()
 
         // Show the menu on the plugin's own READ right only, matching the page guard
         // in front/connection.php (no `config` fallback that bypasses the plugin rights).
-        if (Session::haveRight("plugin_connections_connection", READ)) {
+        if (Session::haveRight(Connection::$rightname, READ)) {
             $PLUGIN_HOOKS['menu_toadd']['connections'] = [
                 'assets' => Connection::class,
             ];
@@ -118,8 +118,8 @@ function plugin_version_connections()
         'homepage'       => 'https://github.com/pluginsGLPI/connections',
         'requirements'   => [
             'glpi' => [
-                'min' => '11.0',
-                'max' => '12.0',
+                'min' => '11.0.99',
+                'max' => '12.0.99',
                 'dev' => false,
             ],
         ],

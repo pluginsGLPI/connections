@@ -38,7 +38,7 @@ use CommonDropdown;
  */
 final class ConnectionRate extends CommonDropdown
 {
-    public static $rightname = 'plugin_connections_connection';
+    public static string $rightname = 'plugin_connections_connection';
 
     /**
      * @param int $nb
