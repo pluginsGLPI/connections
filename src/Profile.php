@@ -266,6 +266,11 @@ final class Profile extends \Profile
             }
         }
 
+        // No session when installed from the console without --username
+        if (!isset($_SESSION['glpiactiveprofile']['id'])) {
+            return;
+        }
+
         $it = $DB->request([
             'FROM' => 'glpi_profilerights',
             'WHERE' => [

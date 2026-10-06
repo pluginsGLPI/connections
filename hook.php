@@ -196,9 +196,17 @@ function plugin_connections_install()
         //        );
     }
 
+    $migration = new Migration(PLUGIN_CONNECTIONS_VERSION);
+
+    // Grants full access to the profiles that can update the core configuration (super-admins),
+    // before initProfile() creates the right with no access for every other profile. Existing
+    // rights are left untouched, so that an update keeps the profiles settings.
+    $migration->addRight(Connection::$rightname, ALLSTANDARDRIGHT, [\Config::$rightname => UPDATE]);
+
     ConnectionProfile::initProfile();
-    ConnectionProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
-    $migration = new Migration("9.2");
+    if (isset($_SESSION['glpiactiveprofile']['id'])) {
+        ConnectionProfile::createFirstAccess($_SESSION['glpiactiveprofile']['id']);
+    }
     $migration->dropTable('glpi_plugin_connections_profiles');
     return true;
 }
